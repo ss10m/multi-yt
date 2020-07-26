@@ -1,0 +1,36 @@
+.room-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: whitesmoke;
+
+    .header {
+        height: 50px;
+        padding: 0 10px;
+        font-weight: 700;
+        background-color: #011c27;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        button {
+            position: absolute;
+            left: 10px;
+            height: 30px;
+            background-color: #042f44;
+            outline: none;
+            border: none;
+            color: whitesmoke;
+            border-radius: 3px;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+
+    .body {
+        flex: 1;
+    }
+}

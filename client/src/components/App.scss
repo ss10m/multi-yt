@@ -1,23 +1,31 @@
+@import url("https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700;800&display=swap");
+
 body {
     margin: 0;
     padding: 0;
 }
 
+* {
+    font-family: "Jost", sans-serif;
+}
+
 .main {
     height: 100vh;
-    min-height: 600px;
+    min-height: 800px;
+    min-width: 320px;
     display: grid;
     grid-template-areas:
         "player options"
         "player chat";
     grid-template-rows: 50% 50%;
     grid-template-columns: 1fr 400px;
+    background-color: #042f44;
 
     @media (max-width: 1100px) {
         grid-template-areas:
             "player player"
             "chat options";
-        grid-template-rows: min-content 1fr;
+        grid-template-rows: min-content 300px;
         grid-template-columns: 50% 1fr;
     }
 
@@ -37,11 +45,9 @@ body {
 }
 
 .chat {
-    background: red;
     grid-area: chat;
 }
 
 .options {
-    background: orange;
     grid-area: options;
 }

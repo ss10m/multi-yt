@@ -1,21 +1,27 @@
 import React from "react";
-import socketIO from "socket.io-client";
 import Player from "./Player/Player";
-import _ from "lodash";
+import { debounce } from "lodash";
+
+import { connect } from "react-redux";
+import { connectSocket } from "store/actions";
 
 import "./App.scss";
+
+import Chat from "./Chat/Chat";
+import Room from "./Room/Room";
+import Rooms from "./Rooms/Rooms";
 
 class App extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = { width: window.innerWidth, height: window.innerHeight, loaded: false, socket: null };
-        this.updateDimensions = _.debounce(this.updateDimensions, 1000);
+        this.updateDimensions = debounce(this.updateDimensions, 500);
     }
 
     componentDidMount() {
         window.addEventListener("resize", this.updateDimensions);
-        this.connectSocket();
+        this.props.connectSocket();
     }
 
     componentWillUnmount() {
@@ -27,17 +33,8 @@ class App extends React.Component {
         this.setState({ width: window.innerWidth, height: window.innerHeight });
     };
 
-    connectSocket = () => {
-        let socket = socketIO.connect();
-        //socket.on("update", this.handleUpdate);
-        //socket.on("notification", this.handleNotification);
-        this.setState({ socket, loaded: true });
-    };
     render() {
-        let { loaded, width, height } = this.state;
-        console.log(loaded);
-        if (!loaded) return <p>Loading</p>;
-        //return <Player />;
+        let { width, height } = this.state;
         return (
             <div className="main">
                 <div className="player">
@@ -45,11 +42,17 @@ class App extends React.Component {
                         <Player width={width} height={height} />
                     </div>
                 </div>
-                <div className="chat">chat</div>
-                <div className="options">options</div>
+                <Rooms />
+                <Chat />
             </div>
         );
     }
 }
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({
+    connectSocket: () => {
+        dispatch(connectSocket());
+    },
+});
+
+export default connect(null, mapDispatchToProps)(App);

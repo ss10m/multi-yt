@@ -1,0 +1,19 @@
+.chat {
+    display: flex;
+    flex-direction: column;
+    color: whitesmoke;
+
+    .header {
+        height: 50px;
+        padding: 0 10px;
+        font-weight: 700;
+        background-color: #011c27;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .body {
+        flex: 1;
+    }
+}

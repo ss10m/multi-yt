@@ -1,5 +1,8 @@
 import React from "react";
 import YouTube from "react-youtube";
+import { connect } from "react-redux";
+
+import { setPlayer } from "store/actions";
 
 import "./Player.scss";
 
@@ -53,46 +56,42 @@ class Player extends React.Component {
 
     _onPlayerReady = (event) => {
         let player = event.target;
-        console.log("PLAYER READY");
-        //event.target.pauseVideo();
-        console.log(player);
         player.seekTo(50);
         this.setState({ player });
+        this.props.setPlayer(player);
     };
 
     _onStateChange = (event) => {
         console.log(`STATE CHANGE: ${event.target.getPlayerState()}`);
     };
 
-    _onToggle = () => {
-        let { player } = this.state;
-        console.log(player.getPlayerState());
+    render() {
+        let { width, height } = this.props;
+        let playerWidth = 0;
+        let playerHeight = 0;
 
-        switch (player.getPlayerState()) {
-            case 1:
-                console.log("PLAYING");
-                player.pauseVideo();
-                break;
-            case 2:
-                console.log("STOPPED");
-                player.playVideo();
-                break;
-            default:
-                console.log("NEITHER");
+        if (width > 1100) {
+            playerWidth = width - 400;
+            playerHeight = Math.max(height, 600);
+        } else {
+            playerWidth = width;
+            playerHeight = (playerWidth * 9) / 16;
         }
 
-        //player.pauseVideo();
-    };
+        //return this.getPlayer();
 
-    render() {
-        console.log(this.state.player);
         return (
             <div>
-                {this.getPlayer()}
-                {/*<button onClick={this._onToggle}>TOGGLE</button>*/}
+                <div style={{ width: playerWidth, height: playerHeight }}></div>
             </div>
         );
     }
 }
 
-export default Player;
+const mapDispatchToProps = (dispatch) => ({
+    setPlayer: (player) => {
+        dispatch(setPlayer(player));
+    },
+});
+
+export default connect(null, mapDispatchToProps)(Player);
