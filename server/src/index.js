@@ -53,10 +53,18 @@ io.on("connection", (socket) => {
         if (!room.length) console.log(room);
         socket.leave(room);
         socket.emit("left-room", getRoomNames());
+        console.log(io.sockets.adapter.rooms);
     });
 
-    socket.on("rooms", async () => {
+    socket.on("rooms", () => {
+        console.log("------------------rooms------------------");
         socket.emit("rooms", getRoomNames());
+    });
+
+    socket.on("send-message", (message) => {
+        console.log("------------------send-message------------------");
+        console.log(message);
+        socket.to(getUserRoom(socket)[0]).emit("receive-message", message);
     });
 
     socket.on("disconnect", () => {

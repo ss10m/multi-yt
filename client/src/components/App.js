@@ -17,7 +17,7 @@ class App extends React.Component {
         super(props);
 
         this.state = {
-            showUsernamePrompt: true,
+            showUsernamePrompt: false,
             width: window.innerWidth,
             height: window.innerHeight,
             loaded: false,
@@ -57,7 +57,7 @@ class App extends React.Component {
                             <Player width={width} height={height} />
                         </div>
                     </div>
-                    {room ? <Room /> : <Rooms />}
+                    <div className="options">{room ? <Room /> : <Rooms />}</div>
                     <Chat />
                 </div>
             </>

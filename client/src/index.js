@@ -11,8 +11,9 @@ import App from "./components/App";
 import reducers from "./store/reducers.js";
 
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { faYoutube } from "@fortawesome/free-brands-svg-icons";
 
-library.add(faUserCircle);
+library.add(faUserCircle, faYoutube);
 
 const store = createStore(reducers, applyMiddleware(thunk));
 
