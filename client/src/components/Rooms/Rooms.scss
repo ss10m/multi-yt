@@ -20,9 +20,15 @@
             color: whitesmoke;
             border-radius: 3px;
 
-            &:hover {
+            &:hover:enabled {
                 cursor: pointer;
+                background-color: #013b52;
             }
+        }
+
+        .disabled {
+            //background-color: red;
+            opacity: 0.5;
         }
     }
 

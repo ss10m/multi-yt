@@ -22,9 +22,9 @@ io.on("connection", (socket) => {
     console.log("------------------connection------------------");
     socket.emit("rooms", getRoomNames());
 
-    socket.on("join-room", (room) => {
+    socket.on("join-room", (room, username) => {
         console.log("------------------join-room------------------");
-        console.log(room);
+        console.log(room, username);
 
         let rooms = getRoomNames();
         console.log("Available rooms: ", rooms);
@@ -35,8 +35,9 @@ io.on("connection", (socket) => {
         socket.emit("joined-room", { name: room, status: "waiting", players: [] });
     });
 
-    socket.on("create-room", () => {
+    socket.on("create-room", (username) => {
         console.log("------------------create-room------------------");
+        console.log(username);
 
         roomsId += 1;
         let room = "room" + roomsId;
@@ -44,6 +45,14 @@ io.on("connection", (socket) => {
         //console.log(getUserRoom(socket));
         //console.log(getRoomNames());
         socket.emit("joined-room", { name: room, status: "waiting", players: [] });
+    });
+
+    socket.on("leave-room", () => {
+        console.log("------------------leave-room------------------");
+        let room = getUserRoom(socket);
+        if (!room.length) console.log(room);
+        socket.leave(room);
+        socket.emit("left-room", getRoomNames());
     });
 
     socket.on("rooms", async () => {

@@ -3,19 +3,26 @@ import Player from "./Player/Player";
 import { debounce } from "lodash";
 
 import { connect } from "react-redux";
-import { connectSocket } from "store/actions";
+import { connectSocket, setUsername } from "store/actions";
 
 import "./App.scss";
 
 import Chat from "./Chat/Chat";
 import Room from "./Room/Room";
 import Rooms from "./Rooms/Rooms";
+import UsernamePrompt from "./UsernamePrompt/UsernamePrompt";
 
 class App extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = { width: window.innerWidth, height: window.innerHeight, loaded: false, socket: null };
+        this.state = {
+            showUsernamePrompt: true,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            loaded: false,
+            socket: null,
+        };
         this.updateDimensions = debounce(this.updateDimensions, 500);
     }
 
@@ -33,19 +40,27 @@ class App extends React.Component {
         this.setState({ width: window.innerWidth, height: window.innerHeight });
     };
 
+    confirmUsername = (username) => {
+        this.setState({ showUsernamePrompt: false });
+        this.props.setUsername(username);
+    };
+
     render() {
-        let { width, height } = this.state;
+        let { width, height, showUsernamePrompt } = this.state;
         let { room } = this.props;
         return (
-            <div className="main">
-                <div className="player">
-                    <div>
-                        <Player width={width} height={height} />
+            <>
+                {showUsernamePrompt && <UsernamePrompt confirmUsername={this.confirmUsername} />}
+                <div className="main">
+                    <div className="player">
+                        <div>
+                            <Player width={width} height={height} />
+                        </div>
                     </div>
+                    {room ? <Room /> : <Rooms />}
+                    <Chat />
                 </div>
-                {room ? <Room /> : <Rooms />}
-                <Chat />
-            </div>
+            </>
         );
     }
 }
@@ -59,6 +74,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
     connectSocket: () => {
         dispatch(connectSocket());
+    },
+    setUsername: (username) => {
+        dispatch(setUsername(username));
     },
 });
 

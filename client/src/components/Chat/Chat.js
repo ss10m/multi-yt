@@ -7,7 +7,7 @@ class Chat extends React.Component {
         return (
             <div className="box chat">
                 <div className="header">CHAT</div>
-                <div className="body">23</div>
+                <div className="body"></div>
             </div>
         );
     }

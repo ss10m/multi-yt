@@ -1,5 +1,16 @@
 import { combineReducers } from "redux";
 
+const SET_USERNAME = "SET_USERNAME";
+
+const usernameReducer = (state = null, action) => {
+    switch (action.type) {
+        case SET_USERNAME:
+            return action.username;
+        default:
+            return state;
+    }
+};
+
 const SET_SOCKET = "SET_SOCKET";
 const CLEAR_SOCKET = "CLEAR_SOCKET";
 
@@ -57,6 +68,7 @@ const roomReducer = (state = null, action) => {
 };
 
 export default combineReducers({
+    username: usernameReducer,
     socket: socketReducer,
     player: playerReducer,
     room: roomReducer,

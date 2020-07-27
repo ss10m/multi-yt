@@ -5,9 +5,14 @@ import { BrowserRouter, Route } from "react-router-dom";
 import { createStore, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
 import thunk from "redux-thunk";
+import { library } from "@fortawesome/fontawesome-svg-core";
 
 import App from "./components/App";
 import reducers from "./store/reducers.js";
+
+import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faUserCircle);
 
 const store = createStore(reducers, applyMiddleware(thunk));
 

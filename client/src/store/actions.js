@@ -13,17 +13,29 @@ export const connectSocket = () => async (dispatch) => {
         console.log("RESPONSE: joined-room");
         console.log(room);
         dispatch(setRoom(room));
+        dispatch(clearRooms());
+    });
+
+    socket.on("left-room", (rooms) => {
+        console.log("RESPONSE: left-room");
+        dispatch(clearRoom());
+        dispatch(setRooms(rooms));
     });
 };
 
-export const joinRoom = (socket, room) => async (dispatch) => {
+export const joinRoom = (socket, room, username) => async (dispatch) => {
     console.log("ACTION: join-room");
-    socket.emit("join-room", room);
+    socket.emit("join-room", room, username);
 };
 
-export const createRoom = (socket) => async (dispatch) => {
+export const leaveRoom = (socket) => async (dispatch) => {
+    console.log("ACTION: leave-room");
+    socket.emit("leave-room");
+};
+
+export const createRoom = (socket, username) => async (dispatch) => {
     console.log("ACTION: create-room");
-    socket.emit("create-room");
+    socket.emit("create-room", username);
 };
 
 export const refreshRooms = (socket) => async (dispatch) => {
@@ -54,11 +66,20 @@ export const setRooms = (rooms) => ({
     rooms,
 });
 
+export const clearRooms = () => ({
+    type: "CLEAR_ROOMS",
+});
+
 export const setRoom = (room) => ({
     type: "SET_ROOM",
     room,
 });
 
 export const clearRoom = () => ({
-    type: "SET_ROOM",
+    type: "CLEAR_ROOM",
+});
+
+export const setUsername = (username) => ({
+    type: "SET_USERNAME",
+    username,
 });
