@@ -4,14 +4,15 @@ export const connectSocket = () => async (dispatch) => {
     let socket = socketIO.connect();
     dispatch(setSocket(socket));
     socket.on("rooms", (rooms) => {
-        console.log("ACTION: rooms");
+        console.log("RESPONSE: rooms");
         console.log(rooms);
-        if (rooms.length) dispatch(setRooms(rooms));
+        dispatch(setRooms(rooms));
     });
 
     socket.on("joined-room", (room) => {
-        console.log("ACTION: joined-room");
+        console.log("RESPONSE: joined-room");
         console.log(room);
+        dispatch(setRoom(room));
     });
 };
 
@@ -23,6 +24,11 @@ export const joinRoom = (socket, room) => async (dispatch) => {
 export const createRoom = (socket) => async (dispatch) => {
     console.log("ACTION: create-room");
     socket.emit("create-room");
+};
+
+export const refreshRooms = (socket) => async (dispatch) => {
+    console.log("ACTION: rooms");
+    socket.emit("rooms");
 };
 
 export const setSocket = (socket) => ({
@@ -46,4 +52,13 @@ export const clearPlayer = () => ({
 export const setRooms = (rooms) => ({
     type: "SET_ROOMS",
     rooms,
+});
+
+export const setRoom = (room) => ({
+    type: "SET_ROOM",
+    room,
+});
+
+export const clearRoom = () => ({
+    type: "SET_ROOM",
 });

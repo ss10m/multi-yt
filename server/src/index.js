@@ -17,47 +17,52 @@ const server = http.Server(app);
 const io = ioClient(server);
 
 let roomsId = 0;
-const users = {};
 
 io.on("connection", (socket) => {
-    console.log("new user connected");
-    users[socket.id] = { name: "1" };
-    console.log(users);
+    console.log("------------------connection------------------");
     socket.emit("rooms", getRoomNames());
 
     socket.on("join-room", (room) => {
+        console.log("------------------join-room------------------");
         console.log(room);
 
-        console.log(io.sockets.adapter.rooms);
-
         let rooms = getRoomNames();
-        console.log(rooms);
+        console.log("Available rooms: ", rooms);
 
-        if (!rooms.includes(room.name)) return socket.emit("rooms", rooms);
+        if (!rooms.includes(room)) return socket.emit("rooms", rooms);
 
-        socket.join(room.name);
-        socket.emit("joined-room", room);
+        socket.join(room, () => console.log(io.sockets.adapter.rooms));
+        socket.emit("joined-room", { name: room, status: "waiting", players: [] });
     });
 
     socket.on("create-room", () => {
-        console.log("create-room");
-        console.log("LATEST ID :" + roomsId);
+        console.log("------------------create-room------------------");
 
         roomsId += 1;
         let room = "room" + roomsId;
-        socket.join(room);
-        socket.emit("joined-room", room);
+        socket.join(room, () => console.log(io.sockets.adapter.rooms));
+        //console.log(getUserRoom(socket));
+        //console.log(getRoomNames());
+        socket.emit("joined-room", { name: room, status: "waiting", players: [] });
+    });
+
+    socket.on("rooms", async () => {
+        socket.emit("rooms", getRoomNames());
     });
 
     socket.on("disconnect", () => {
-        console.log("disconnect");
-        delete users[socket.id];
-        console.log(users);
+        console.log("------------------disconnect------------------");
+        console.log(io.sockets.adapter.rooms);
+        console.log("[" + Object.keys(io.sockets.sockets).join(" - ") + "]");
     });
 });
 
 const getRoomNames = () => {
     return Object.keys(io.sockets.adapter.rooms).filter((room) => room.startsWith("room"));
+};
+
+const getUserRoom = (socket) => {
+    return Object.keys(socket.rooms).filter((room) => room.startsWith("room"));
 };
 
 app.get("*", (request, response) => {

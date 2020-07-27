@@ -35,6 +35,7 @@ class App extends React.Component {
 
     render() {
         let { width, height } = this.state;
+        let { room } = this.props;
         return (
             <div className="main">
                 <div className="player">
@@ -42,12 +43,18 @@ class App extends React.Component {
                         <Player width={width} height={height} />
                     </div>
                 </div>
-                <Rooms />
+                {room ? <Room /> : <Rooms />}
                 <Chat />
             </div>
         );
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        room: state.room,
+    };
+};
 
 const mapDispatchToProps = (dispatch) => ({
     connectSocket: () => {
@@ -55,4 +62,4 @@ const mapDispatchToProps = (dispatch) => ({
     },
 });
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

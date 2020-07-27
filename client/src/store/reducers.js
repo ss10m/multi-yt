@@ -42,8 +42,23 @@ const roomsReducer = (state = [], action) => {
     }
 };
 
+const SET_ROOM = "SET_ROOM";
+const CLEAR_ROOM = "CLEAR_ROOM";
+
+const roomReducer = (state = null, action) => {
+    switch (action.type) {
+        case SET_ROOM:
+            return action.room;
+        case CLEAR_ROOM:
+            return null;
+        default:
+            return state;
+    }
+};
+
 export default combineReducers({
     socket: socketReducer,
     player: playerReducer,
+    room: roomReducer,
     rooms: roomsReducer,
 });

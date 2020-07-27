@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 
-import { joinRoom, createRoom } from "store/actions";
+import { joinRoom, createRoom, refreshRooms } from "store/actions";
 
 import "./Rooms.scss";
 
@@ -42,7 +42,7 @@ class Rooms extends React.Component {
         return (
             <div className="rooms">
                 <div className="header">
-                    <button onClick={() => console.log("refresh")}>REFRESH</button>
+                    <button onClick={() => this.props.refreshRooms(socket)}>REFRESH</button>
                     <p>ROOMS</p>
                     <button onClick={() => this.props.createRoom(socket)}>CREATE</button>
                 </div>
@@ -66,6 +66,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     createRoom: (socket) => {
         dispatch(createRoom(socket));
+    },
+    refreshRooms: (socket) => {
+        dispatch(refreshRooms(socket));
     },
 });
 
