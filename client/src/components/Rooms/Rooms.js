@@ -11,24 +11,6 @@ class Rooms extends React.Component {
 
         this.state = { refreshDisabled: false };
     }
-    _onToggle = () => {
-        let { player } = this.props;
-        //console.log(player.getPlayerState());
-        if (!player) return;
-
-        switch (player.getPlayerState()) {
-            case 1:
-                console.log("PLAYING");
-                player.pauseVideo();
-                break;
-            case 2:
-                console.log("STOPPED");
-                player.playVideo();
-                break;
-            default:
-                console.log("NEITHER");
-        }
-    };
 
     refreshRooms = () => {
         let { socket } = this.props;
@@ -67,7 +49,6 @@ class Rooms extends React.Component {
                     <button onClick={() => this.props.createRoom(socket, username)}>CREATE</button>
                 </div>
                 <div className="body">{this.getRooms()}</div>
-                <button onClick={this._onToggle}>TOGGLE</button>
             </div>
         );
     }

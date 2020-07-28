@@ -28,6 +28,17 @@ export const connectSocket = () => async (dispatch) => {
         console.log("RESPONSE: receive-message");
         dispatch(addMessage(message));
     });
+
+    socket.on("load-video", (video) => {
+        console.log("RESPONSE: load-video");
+        console.log(video);
+        dispatch(setVideo(video));
+    });
+
+    socket.on("remove-video", () => {
+        console.log("RESPONSE: remove-video");
+        dispatch(clearVideo());
+    });
 };
 export const setSocket = (socket) => ({
     type: "SET_SOCKET",
@@ -35,13 +46,6 @@ export const setSocket = (socket) => ({
 });
 export const clearSocket = () => ({
     type: "CLEAR_SOCKET",
-});
-
-//=====================================
-//          PLAYER ACTIONS
-//=====================================
-export const clearPlayer = () => ({
-    type: "CLEAR_PLAYER",
 });
 
 //=====================================
@@ -113,4 +117,22 @@ export const addMessage = (message) => ({
 
 export const clearMessages = () => ({
     type: "CLEAR_MESSAGES",
+});
+
+//=====================================
+//           VIDEO ACTIONS
+//=====================================
+export const loadVideo = (socket, url) => async (dispatch) => {
+    console.log("ACTION: loadVideo");
+    socket.emit("load-video", url);
+};
+export const removeVideo = (socket) => async (dispatch) => {
+    socket.emit("remove-video");
+};
+export const setVideo = (video) => ({
+    type: "SET_VIDEO",
+    video,
+});
+export const clearVideo = () => ({
+    type: "CLEAR_VIDEO",
 });

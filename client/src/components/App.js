@@ -23,7 +23,7 @@ class App extends React.Component {
             loaded: false,
             socket: null,
         };
-        this.updateDimensions = debounce(this.updateDimensions, 500);
+        //this.updateDimensions = debounce(this.updateDimensions, 500);
     }
 
     componentDidMount() {

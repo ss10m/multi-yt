@@ -25,20 +25,6 @@ const socketReducer = (state = null, action) => {
     }
 };
 
-const SET_PLAYER = "SET_PLAYER";
-const CLEAR_PLAYER = "CLEAR_PLAYER";
-
-const playerReducer = (state = null, action) => {
-    switch (action.type) {
-        case SET_PLAYER:
-            return action.player;
-        case CLEAR_PLAYER:
-            return null;
-        default:
-            return state;
-    }
-};
-
 const SET_ROOMS = "SET_ROOMS";
 const CLEAR_ROOMS = "CLEAR_ROOMS";
 
@@ -112,11 +98,28 @@ const messagesReducer = (state = messages, action) => {
     }
 };
 
+const SET_VIDEO = "SET_VIDEO";
+const SET_PLAYER = "SET_PLAYER";
+const CLEAR_VIDEO = "CLEAR_VIDEO";
+
+const videoReducer = (state = null, action) => {
+    switch (action.type) {
+        case SET_VIDEO:
+            return { ...action.video };
+        case SET_PLAYER:
+            return { ...state, player: action.player };
+        case CLEAR_VIDEO:
+            return null;
+        default:
+            return state;
+    }
+};
+
 export default combineReducers({
     username: usernameReducer,
     socket: socketReducer,
-    player: playerReducer,
     room: roomReducer,
     rooms: roomsReducer,
     messages: messagesReducer,
+    video: videoReducer,
 });

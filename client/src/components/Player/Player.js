@@ -1,5 +1,6 @@
 import React from "react";
-import YouTube from "react-youtube";
+
+import ReactPlayer from "react-player/youtube";
 import { connect } from "react-redux";
 
 import { setPlayer } from "store/actions";
@@ -13,45 +14,86 @@ class Player extends React.Component {
         super(props);
 
         this.state = {
-            player: null,
+            isPlaying: false,
+            playedSeconds: 0,
         };
+
+        this.player = null;
     }
 
-    getPlayer = (playerWidth, playerHeight) => {
-        const opts = {
-            height: playerHeight - 10,
-            width: playerWidth,
-            playerVars: {
-                // https://developers.google.com/youtube/player_parameters
-                autoplay: 1,
-                //controls: 0,
-                fs: 0,
-                iv_load_policy: 3,
-                modestbranding: 0,
-                allow: "autoplay",
-            },
-        };
+    ref = (player) => {
+        this.player = player;
+    };
 
+    getPlayer = (playerWidth, playerHeight) => {
+        let { isPlaying } = this.state;
+        let { video } = this.props;
         return (
-            <div style={{ width: playerWidth, height: playerHeight }}>
-                <YouTube
-                    //videoId="QJD8mpcGykE"
-                    videoId="H8GptHQ0W2U"
-                    opts={opts}
-                    onReady={this._onPlayerReady}
-                    onStateChange={this._onStateChange}
-                    allow="autoplay; encrypted-media"
-                />
-            </div>
+            <>
+                <div style={{ width: playerWidth, height: playerHeight }} className="player-wrapper">
+                    <ReactPlayer
+                        ref={this.ref}
+                        url={video.url}
+                        width="100%"
+                        height="100%"
+                        playing={isPlaying}
+                        playbackRate={1}
+                        controls={false}
+                        muted={true}
+                        onReady={this._onPlayerReady}
+                        onBuffer={this._onBuffer}
+                        onBufferEnd={this._onBufferEnd}
+                        onStart={this._onStart}
+                        onEnded={this._onEnd}
+                        onPause={this._onPause}
+                        onProgress={this.handleProgress}
+                        style={{ position: "absolute" }}
+                    />
+                    <div className="overlay"></div>
+                </div>
+            </>
         );
     };
 
-    _onPlayerReady = (event) => {
-        let player = event.target;
-        //player.seekTo(50);
-        player.playVideo();
-        this.setState({ player });
-        this.props.setPlayer(player);
+    handleProgress = (state) => {
+        let { playedSeconds } = this.state;
+
+        if (Math.abs(playedSeconds - state.playedSeconds) > 2.5) {
+            console.log("SEEKED");
+        }
+
+        console.log(this.player);
+
+        this.setState({ playedSeconds: state.playedSeconds });
+    };
+    _onStart = () => {
+        console.log("ON START");
+
+        //console.log(this.player.seekTo(parseFloat(50)));
+        //this.player.seekTo(50);
+        //this.setState({  isPlaying: true });
+    };
+
+    _onEnd = () => {
+        console.log("ON END");
+    };
+
+    _onPlayerReady = () => {
+        console.log("PLAYER READY");
+        this.props.setPlayer(this.player);
+        this.setState({ isPlaying: true });
+    };
+
+    _onBuffer = () => {
+        console.log("BUFFERING");
+    };
+
+    _onBufferEnd = () => {
+        console.log("BUFFERING ENDED");
+    };
+
+    _onPause = () => {
+        console.log("PAUSED");
     };
 
     _onStateChange = (event) => {
@@ -59,7 +101,8 @@ class Player extends React.Component {
     };
 
     render() {
-        let { width, height } = this.props;
+        let { width, height, video } = this.props;
+        console.log(video);
         let playerWidth = 0;
         let playerHeight = 0;
 
@@ -67,7 +110,7 @@ class Player extends React.Component {
             playerWidth = width - 400;
             playerHeight = Math.max(height, 600);
         } else {
-            playerWidth = width;
+            playerWidth = Math.max(width, 320);
             playerHeight = (playerWidth * 9) / 16;
 
             if (playerHeight > height * 0.6) {
@@ -75,7 +118,7 @@ class Player extends React.Component {
             }
         }
 
-        return this.getPlayer(playerWidth, playerHeight);
+        if (video) return this.getPlayer(playerWidth, playerHeight - 10);
 
         return (
             <div>
@@ -91,10 +134,16 @@ class Player extends React.Component {
     }
 }
 
+const mapStateToProps = (state) => {
+    return {
+        video: state.video,
+    };
+};
+
 const mapDispatchToProps = (dispatch) => ({
     setPlayer: (player) => {
         dispatch(setPlayer(player));
     },
 });
 
-export default connect(null, mapDispatchToProps)(Player);
+export default connect(mapStateToProps, mapDispatchToProps)(Player);
