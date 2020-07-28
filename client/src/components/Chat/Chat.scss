@@ -3,6 +3,8 @@
     flex-direction: column;
     color: whitesmoke;
 
+    //flex-grow: 0;
+
     .header {
         height: 50px;
         flex-shrink: 0;
@@ -25,6 +27,7 @@
         .msgs {
             padding: 0 15px;
             flex: 1;
+
             -ms-overflow-style: none;
             scrollbar-width: none;
 

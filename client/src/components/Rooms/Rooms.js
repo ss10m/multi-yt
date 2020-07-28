@@ -67,6 +67,7 @@ class Rooms extends React.Component {
                     <button onClick={() => this.props.createRoom(socket, username)}>CREATE</button>
                 </div>
                 <div className="body">{this.getRooms()}</div>
+                <button onClick={this._onToggle}>TOGGLE</button>
             </div>
         );
     }

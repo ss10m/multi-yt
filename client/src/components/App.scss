@@ -1,8 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700;800&display=swap");
 
 body {
+    background-color: #18181b;
     margin: 0;
     padding: 0;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    overflow: auto;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 * {
@@ -11,7 +19,7 @@ body {
 
 .main {
     height: 100vh;
-    min-height: 800px;
+    min-height: 700px;
     min-width: 320px;
     display: grid;
     grid-template-areas:
@@ -19,23 +27,23 @@ body {
         "player chat";
     grid-template-rows: 50% 50%;
     grid-template-columns: 1fr 400px;
-    background-color: #18181b;
 
     @media (max-width: 1100px) {
         grid-template-areas:
             "player player"
             "options chat";
         grid-template-rows: min-content 1fr;
-        grid-template-columns: 50% 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        min-height: 0;
 
         .options {
             border-right: 1px solid black;
-            border-bottom: 2px solid black;
+            min-height: 300px;
         }
 
         .chat {
             border-left: 1px solid black;
-            border-bottom: 2px solid black;
+            min-height: 300px;
         }
     }
 
@@ -50,6 +58,7 @@ body {
         .options,
         .chat {
             border: none;
+            min-height: 300px;
         }
     }
 }
@@ -65,4 +74,5 @@ body {
 
 .options {
     grid-area: options;
+    //height: 100%;
 }

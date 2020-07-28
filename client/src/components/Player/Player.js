@@ -17,48 +17,39 @@ class Player extends React.Component {
         };
     }
 
-    getPlayer = () => {
-        let { width, height } = this.props;
-        //let width = window.innerWidth;
-        //let height = window.innerHeight;
-        let playerWidth = 0;
-        let playerHeight = 0;
-
-        console.log(width, height);
-
-        if (width > 1100) {
-            playerWidth = width - 400;
-            playerHeight = Math.max(height, 600);
-        } else {
-            playerWidth = width;
-            playerHeight = (playerWidth * 9) / 16;
-        }
-
-        console.log(width, playerHeight);
-
+    getPlayer = (playerWidth, playerHeight) => {
         const opts = {
             height: playerHeight - 10,
             width: playerWidth,
             playerVars: {
                 // https://developers.google.com/youtube/player_parameters
                 autoplay: 1,
+                //controls: 0,
+                fs: 0,
+                iv_load_policy: 3,
+                modestbranding: 0,
+                allow: "autoplay",
             },
         };
 
         return (
-            <YouTube
-                //videoId="QJD8mpcGykE"
-                videoId="H8GptHQ0W2U"
-                opts={opts}
-                onReady={this._onPlayerReady}
-                onStateChange={this._onStateChange}
-            />
+            <div style={{ width: playerWidth, height: playerHeight }}>
+                <YouTube
+                    //videoId="QJD8mpcGykE"
+                    videoId="H8GptHQ0W2U"
+                    opts={opts}
+                    onReady={this._onPlayerReady}
+                    onStateChange={this._onStateChange}
+                    allow="autoplay; encrypted-media"
+                />
+            </div>
         );
     };
 
     _onPlayerReady = (event) => {
         let player = event.target;
-        player.seekTo(50);
+        //player.seekTo(50);
+        player.playVideo();
         this.setState({ player });
         this.props.setPlayer(player);
     };
@@ -78,9 +69,13 @@ class Player extends React.Component {
         } else {
             playerWidth = width;
             playerHeight = (playerWidth * 9) / 16;
+
+            if (playerHeight > height * 0.6) {
+                playerHeight = height * 0.6;
+            }
         }
 
-        //return this.getPlayer();
+        return this.getPlayer(playerWidth, playerHeight);
 
         return (
             <div>

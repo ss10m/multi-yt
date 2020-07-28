@@ -101,7 +101,7 @@ let messages = [
 const ADD_MESSAGE = "ADD_MESSAGE";
 const CLEAR_MESSAGES = "CLEAR_MESSAGES";
 
-const messagesReducer = (state = [], action) => {
+const messagesReducer = (state = messages, action) => {
     switch (action.type) {
         case ADD_MESSAGE:
             return [...state, action.message];
