@@ -1,9 +1,10 @@
 import React from "react";
 import YouTube from "react-youtube";
 import { connect } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { setPlayer } from "store/actions";
+import { IconContext } from "react-icons";
+import { FaYoutube } from "react-icons/fa";
 
 import "./Player.scss";
 
@@ -83,8 +84,12 @@ class Player extends React.Component {
 
         return (
             <div>
-                <div style={{ width: playerWidth, height: playerHeight }}>
-                    <FontAwesomeIcon icon="youtube" size="1x" />
+                <div className="empty-player" style={{ width: playerWidth, height: playerHeight }}>
+                    <IconContext.Provider value={{ color: "#0e0e10", size: playerWidth / 3 }}>
+                        <div>
+                            <FaYoutube />
+                        </div>
+                    </IconContext.Provider>
                 </div>
             </div>
         );

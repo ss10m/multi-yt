@@ -1,5 +1,5 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FaUserCircle } from "react-icons/fa";
 
 import "./Input.scss";
 
@@ -8,7 +8,7 @@ export default (props) => {
     return (
         <div className="input">
             <div className="icon">
-                <FontAwesomeIcon icon={props.icon} size="1x" />
+                <FaUserCircle />
             </div>
             <div className={"field" + activeClass}>
                 <label>
