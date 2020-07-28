@@ -14,7 +14,6 @@ class Player extends React.Component {
         super(props);
 
         this.state = {
-            isPlaying: false,
             playedSeconds: 0,
         };
 
@@ -26,17 +25,21 @@ class Player extends React.Component {
     };
 
     getPlayer = (playerWidth, playerHeight) => {
-        let { isPlaying } = this.state;
         let { video } = this.props;
+        console.log(video);
+        console.log(video.isPlaying);
         return (
             <>
                 <div style={{ width: playerWidth, height: playerHeight }} className="player-wrapper">
                     <ReactPlayer
                         ref={this.ref}
+                        config={{
+                            playerVars: { disablekb: 1 },
+                        }}
                         url={video.url}
                         width="100%"
                         height="100%"
-                        playing={isPlaying}
+                        playing={video.isPlaying}
                         playbackRate={1}
                         controls={false}
                         muted={true}
@@ -56,6 +59,7 @@ class Player extends React.Component {
     };
 
     handleProgress = (state) => {
+        /*
         let { playedSeconds } = this.state;
 
         if (Math.abs(playedSeconds - state.playedSeconds) > 2.5) {
@@ -65,13 +69,13 @@ class Player extends React.Component {
         console.log(state.playedSeconds);
 
         this.setState({ playedSeconds: state.playedSeconds });
+        */
     };
     _onStart = () => {
         console.log("ON START");
 
         //console.log(this.player.seekTo(parseFloat(50)));
         //this.player.seekTo(50);
-        //this.setState({  isPlaying: true });
     };
 
     _onEnd = () => {
@@ -81,7 +85,6 @@ class Player extends React.Component {
     _onPlayerReady = () => {
         console.log("PLAYER READY");
         this.props.setPlayer(this.player);
-        this.setState({ isPlaying: true });
     };
 
     _onBuffer = () => {
@@ -102,7 +105,7 @@ class Player extends React.Component {
 
     render() {
         let { width, height, video } = this.props;
-        console.log(video);
+        //console.log(video);
         let playerWidth = 0;
         let playerHeight = 0;
 
@@ -122,7 +125,7 @@ class Player extends React.Component {
 
         return (
             <div>
-                <div className="empty-player" style={{ width: playerWidth, height: playerHeight }}>
+                <div className="empty-player" style={{ width: playerWidth, height: playerHeight - 10 }}>
                     <IconContext.Provider value={{ color: "#0e0e10", size: playerWidth / 3 }}>
                         <div>
                             <FaYoutube />

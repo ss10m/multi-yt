@@ -70,12 +70,17 @@ io.on("connection", (socket) => {
     socket.on("load-video", (url) => {
         console.log("------------------load-video------------------");
         console.log(url);
-        io.to(getUserRoom(socket)[0]).emit("load-video", { url });
+        io.to(getUserRoom(socket)[0]).emit("load-video", { url, isPlaying: true });
     });
 
     socket.on("remove-video", () => {
         console.log("------------------remove-video------------------");
         io.to(getUserRoom(socket)[0]).emit("remove-video");
+    });
+
+    socket.on("update-state", (state) => {
+        console.log("------------------update-state------------------");
+        io.to(getUserRoom(socket)[0]).emit("updated-state", state);
     });
 
     socket.on("disconnect", () => {

@@ -39,6 +39,12 @@ export const connectSocket = () => async (dispatch) => {
         console.log("RESPONSE: remove-video");
         dispatch(clearVideo());
     });
+
+    socket.on("updated-state", (updatedState) => {
+        console.log("RESPONSE: updated-state");
+        console.log(updatedState);
+        dispatch(updatePlayer(updatedState));
+    });
 };
 export const setSocket = (socket) => ({
     type: "SET_SOCKET",
@@ -123,11 +129,17 @@ export const clearMessages = () => ({
 //           VIDEO ACTIONS
 //=====================================
 export const loadVideo = (socket, url) => async (dispatch) => {
-    console.log("ACTION: loadVideo");
+    console.log("ACTION: load-video");
     socket.emit("load-video", url);
 };
 export const removeVideo = (socket) => async (dispatch) => {
+    console.log("ACTION: remove-video");
     socket.emit("remove-video");
+};
+export const stateUpdate = (socket, state) => async (dispatch) => {
+    console.log("ACTION: update-state");
+    console.log(state);
+    socket.emit("update-state", state);
 };
 export const setVideo = (video) => ({
     type: "SET_VIDEO",
@@ -135,4 +147,8 @@ export const setVideo = (video) => ({
 });
 export const clearVideo = () => ({
     type: "CLEAR_VIDEO",
+});
+export const updatePlayer = (updatedState) => ({
+    type: "UPDATE_PLAYER",
+    updatedState,
 });

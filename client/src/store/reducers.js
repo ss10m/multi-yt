@@ -100,6 +100,7 @@ const messagesReducer = (state = messages, action) => {
 
 const SET_VIDEO = "SET_VIDEO";
 const SET_PLAYER = "SET_PLAYER";
+const UPDATE_PLAYER = "UPDATE_PLAYER";
 const CLEAR_VIDEO = "CLEAR_VIDEO";
 
 const videoReducer = (state = null, action) => {
@@ -108,6 +109,8 @@ const videoReducer = (state = null, action) => {
             return { ...action.video };
         case SET_PLAYER:
             return { ...state, player: action.player };
+        case UPDATE_PLAYER:
+            return { ...state, ...action.updatedState };
         case CLEAR_VIDEO:
             return null;
         default:

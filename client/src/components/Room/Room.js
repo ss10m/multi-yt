@@ -4,9 +4,16 @@ import { connect } from "react-redux";
 import { IconContext } from "react-icons";
 import { FaPlay, FaPause } from "react-icons/fa";
 import { MdReplay10, MdReplay30, MdForward10, MdForward30 } from "react-icons/md";
-import { leaveRoom, loadVideo, removeVideo } from "store/actions";
+import { leaveRoom, loadVideo, removeVideo, stateUpdate } from "store/actions";
 
 import "./Room.scss";
+
+const PLAY = "PLAY";
+const PAUSE = "PAUSE";
+const SEEK_BACK_10 = "SEEK_BACK_10";
+const SEEK_BACK_30 = "SEEK_BACK_30";
+const SEEK_FORWARD_10 = "SEEK_FORWARD_10";
+const SEEK_FORWARD_30 = "SEEK_FORWARD_30";
 
 class Room extends React.Component {
     constructor(props) {
@@ -14,9 +21,10 @@ class Room extends React.Component {
         this.state = { url: "https://www.youtube.com/watch?v=H8GptHQ0W2U", controls: true };
     }
 
-    handleControls = (value) => {
+    handleControls = (action) => {
         console.log("CLICK");
-        let video = this.props.video;
+        let { video, socket } = this.props;
+
         if (!video) return;
 
         this.setState({ controls: false });
@@ -24,7 +32,27 @@ class Room extends React.Component {
             this.setState({ controls: true });
         }, 1000);
 
-        video.player.seekTo(50);
+        let actionObj = null;
+        switch (action) {
+            case PLAY:
+                actionObj = { isPlaying: true };
+                break;
+            case PAUSE:
+                actionObj = { isPlaying: false };
+                break;
+            case SEEK_BACK_10:
+                break;
+            case SEEK_BACK_30:
+                break;
+            case SEEK_FORWARD_10:
+                break;
+            case SEEK_FORWARD_30:
+                break;
+            default:
+                return;
+        }
+        if (actionObj) this.props.stateUpdate(socket, actionObj);
+        //video.player.seekTo(50);
     };
 
     handleInput = (event) => {
@@ -44,32 +72,32 @@ class Room extends React.Component {
 
     getControls = () => {
         let { controls } = this.state;
-        console.log(controls);
+        let { video } = this.props;
+        if (!video) return;
+        //console.log(controls);
         return (
             <div className={"controls" + (controls ? "" : " disabled")}>
-                <div onClick={this.handleControls}>
+                <div onClick={() => this.handleControls(SEEK_BACK_30)}>
                     <IconContext.Provider value={{ color: "whitesmoke", size: "30px" }}>
                         <MdReplay30 />
                     </IconContext.Provider>
                 </div>
-                <div onClick={this.handleControls}>
+                <div onClick={() => this.handleControls(SEEK_BACK_10)}>
                     <IconContext.Provider value={{ color: "whitesmoke", size: "40px" }}>
                         <MdReplay10 />
                     </IconContext.Provider>
                 </div>
-                <div onClick={this.handleControls}>
+                <div onClick={() => this.handleControls(video.isPlaying ? PAUSE : PLAY)}>
                     <IconContext.Provider value={{ color: "whitesmoke", size: "40px" }}>
-                        <div className="play">
-                            <FaPlay />
-                        </div>
+                        <div className={!video.isPlaying && "play"}>{video.isPlaying ? <FaPause /> : <FaPlay />}</div>
                     </IconContext.Provider>
                 </div>
-                <div onClick={this.handleControls}>
+                <div onClick={() => this.handleControls(SEEK_FORWARD_10)}>
                     <IconContext.Provider value={{ color: "whitesmoke", size: "40px" }}>
                         <MdForward10 />
                     </IconContext.Provider>
                 </div>
-                <div onClick={this.handleControls}>
+                <div onClick={() => this.handleControls(SEEK_FORWARD_30)}>
                     <IconContext.Provider value={{ color: "whitesmoke", size: "30px" }}>
                         <MdForward30 />
                     </IconContext.Provider>
@@ -82,7 +110,7 @@ class Room extends React.Component {
         let { url } = this.state;
         let { socket, room, video } = this.props;
 
-        console.log(video);
+        //console.log(video);
 
         let button;
         if (video) {
@@ -133,6 +161,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     removeVideo: (socket) => {
         dispatch(removeVideo(socket));
+    },
+    stateUpdate: (socket, state) => {
+        dispatch(stateUpdate(socket, state));
     },
 });
 
