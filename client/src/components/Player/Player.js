@@ -62,7 +62,7 @@ class Player extends React.Component {
             console.log("SEEKED");
         }
 
-        console.log(this.player);
+        console.log(state.playedSeconds);
 
         this.setState({ playedSeconds: state.playedSeconds });
     };
