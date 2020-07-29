@@ -7,6 +7,8 @@ import { setPlayer } from "store/actions";
 import { IconContext } from "react-icons";
 import { FaYoutube } from "react-icons/fa";
 
+import { isEmpty } from "helpers";
+
 import "./Player.scss";
 
 class Player extends React.Component {
@@ -16,18 +18,17 @@ class Player extends React.Component {
         this.state = {
             playedSeconds: 0,
         };
-
-        this.player = null;
     }
 
     ref = (player) => {
-        this.player = player;
+        let { video } = this.props;
+        if (isEmpty(video)) return;
+        this.props.setPlayer(player);
     };
 
     getPlayer = (playerWidth, playerHeight) => {
         let { video } = this.props;
-        console.log(video);
-        console.log(video.isPlaying);
+
         return (
             <>
                 <div style={{ width: playerWidth, height: playerHeight }} className="player-wrapper">
@@ -59,23 +60,12 @@ class Player extends React.Component {
     };
 
     handleProgress = (state) => {
-        /*
-        let { playedSeconds } = this.state;
-
-        if (Math.abs(playedSeconds - state.playedSeconds) > 2.5) {
-            console.log("SEEKED");
-        }
-
-        console.log(state.playedSeconds);
-
-        this.setState({ playedSeconds: state.playedSeconds });
-        */
+        // custom slider
     };
     _onStart = () => {
         console.log("ON START");
-
-        //console.log(this.player.seekTo(parseFloat(50)));
-        //this.player.seekTo(50);
+        // set inital time
+        // enable controls
     };
 
     _onEnd = () => {
@@ -84,7 +74,6 @@ class Player extends React.Component {
 
     _onPlayerReady = () => {
         console.log("PLAYER READY");
-        this.props.setPlayer(this.player);
     };
 
     _onBuffer = () => {
@@ -99,13 +88,9 @@ class Player extends React.Component {
         console.log("PAUSED");
     };
 
-    _onStateChange = (event) => {
-        console.log(`STATE CHANGE: ${event.target.getPlayerState()}`);
-    };
-
     render() {
         let { width, height, video } = this.props;
-        //console.log(video);
+
         let playerWidth = 0;
         let playerHeight = 0;
 
@@ -121,7 +106,7 @@ class Player extends React.Component {
             }
         }
 
-        if (video) return this.getPlayer(playerWidth, playerHeight - 10);
+        if (!isEmpty(video)) return this.getPlayer(playerWidth, playerHeight - 10);
 
         return (
             <div>

@@ -2,7 +2,7 @@ import { combineReducers } from "redux";
 
 const SET_USERNAME = "SET_USERNAME";
 
-const usernameReducer = (state = "User", action) => {
+const usernameReducer = (state = Math.random().toString(36).substring(7), action) => {
     switch (action.type) {
         case SET_USERNAME:
             return action.username;
@@ -12,14 +12,11 @@ const usernameReducer = (state = "User", action) => {
 };
 
 const SET_SOCKET = "SET_SOCKET";
-const CLEAR_SOCKET = "CLEAR_SOCKET";
 
 const socketReducer = (state = null, action) => {
     switch (action.type) {
         case SET_SOCKET:
             return action.socket;
-        case CLEAR_SOCKET:
-            return null;
         default:
             return state;
     }
@@ -42,12 +39,12 @@ const roomsReducer = (state = [], action) => {
 const SET_ROOM = "SET_ROOM";
 const CLEAR_ROOM = "CLEAR_ROOM";
 
-const roomReducer = (state = null, action) => {
+const roomReducer = (state = {}, action) => {
     switch (action.type) {
         case SET_ROOM:
-            return action.room;
+            return { ...state, ...action.room };
         case CLEAR_ROOM:
-            return null;
+            return {};
         default:
             return state;
     }
@@ -100,19 +97,16 @@ const messagesReducer = (state = messages, action) => {
 
 const SET_VIDEO = "SET_VIDEO";
 const SET_PLAYER = "SET_PLAYER";
-const UPDATE_PLAYER = "UPDATE_PLAYER";
 const CLEAR_VIDEO = "CLEAR_VIDEO";
 
-const videoReducer = (state = null, action) => {
+const videoReducer = (state = {}, action) => {
     switch (action.type) {
         case SET_VIDEO:
-            return { ...action.video };
+            return { ...state, ...action.video };
         case SET_PLAYER:
             return { ...state, player: action.player };
-        case UPDATE_PLAYER:
-            return { ...state, ...action.updatedState };
         case CLEAR_VIDEO:
-            return null;
+            return {};
         default:
             return state;
     }

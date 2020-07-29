@@ -1,11 +1,12 @@
 import React from "react";
 import Player from "./Player/Player";
-import { debounce } from "lodash";
 
 import { connect } from "react-redux";
 import { connectSocket, setUsername } from "store/actions";
 
 import "./App.scss";
+
+import { isEmpty } from "helpers";
 
 import Chat from "./Chat/Chat";
 import Room from "./Room/Room";
@@ -36,7 +37,6 @@ class App extends React.Component {
     }
 
     updateDimensions = () => {
-        console.log("updateDimensions");
         this.setState({ width: window.innerWidth, height: window.innerHeight });
     };
 
@@ -45,9 +45,20 @@ class App extends React.Component {
         this.props.setUsername(username);
     };
 
+    printState = () => {
+        let { room, rooms, video, messages } = this.props;
+        console.log("!!!!!!!!!!!!!!!!!!!!!!");
+        console.log(rooms);
+        console.log(room);
+        console.log(video);
+        console.log(messages);
+        console.log("......................");
+    };
+
     render() {
         let { width, height, showUsernamePrompt } = this.state;
         let { room } = this.props;
+        this.printState();
         return (
             <>
                 {showUsernamePrompt && <UsernamePrompt confirmUsername={this.confirmUsername} />}
@@ -57,7 +68,7 @@ class App extends React.Component {
                             <Player width={width} height={height} />
                         </div>
                     </div>
-                    <div className="options">{room ? <Room /> : <Rooms />}</div>
+                    <div className="options">{isEmpty(room) ? <Rooms /> : <Room />}</div>
                     <Chat />
                 </div>
             </>
@@ -68,6 +79,9 @@ class App extends React.Component {
 const mapStateToProps = (state) => {
     return {
         room: state.room,
+        rooms: state.rooms,
+        video: state.video,
+        messages: state.messages,
     };
 };
 

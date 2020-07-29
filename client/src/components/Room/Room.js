@@ -6,6 +6,8 @@ import { FaPlay, FaPause } from "react-icons/fa";
 import { MdReplay10, MdReplay30, MdForward10, MdForward30 } from "react-icons/md";
 import { leaveRoom, loadVideo, removeVideo, stateUpdate } from "store/actions";
 
+import { isEmpty } from "helpers";
+
 import "./Room.scss";
 
 const PLAY = "PLAY";
@@ -22,7 +24,6 @@ class Room extends React.Component {
     }
 
     handleControls = (action) => {
-        console.log("CLICK");
         let { video, socket } = this.props;
 
         if (!video) return;
@@ -41,12 +42,16 @@ class Room extends React.Component {
                 actionObj = { isPlaying: false };
                 break;
             case SEEK_BACK_10:
+                video.player.seekTo(video.player.getCurrentTime() - 10);
                 break;
             case SEEK_BACK_30:
+                video.player.seekTo(video.player.getCurrentTime() - 30);
                 break;
             case SEEK_FORWARD_10:
+                video.player.seekTo(video.player.getCurrentTime() + 10);
                 break;
             case SEEK_FORWARD_30:
+                video.player.seekTo(video.player.getCurrentTime() + 30);
                 break;
             default:
                 return;
@@ -56,7 +61,6 @@ class Room extends React.Component {
     };
 
     handleInput = (event) => {
-        console.log(event.target.value);
         this.setState({ url: event.target.value });
     };
 
@@ -65,7 +69,6 @@ class Room extends React.Component {
     };
 
     removeVideo = () => {
-        console.log("REMOVE");
         this.setState({ url: "https://www.youtube.com/watch?v=H8GptHQ0W2U" });
         this.props.removeVideo(this.props.socket);
     };
@@ -74,7 +77,6 @@ class Room extends React.Component {
         let { controls } = this.state;
         let { video } = this.props;
         if (!video) return;
-        //console.log(controls);
         return (
             <div className={"controls" + (controls ? "" : " disabled")}>
                 <div onClick={() => this.handleControls(SEEK_BACK_30)}>
@@ -87,9 +89,11 @@ class Room extends React.Component {
                         <MdReplay10 />
                     </IconContext.Provider>
                 </div>
-                <div onClick={() => this.handleControls(video.isPlaying ? PAUSE : PLAY)}>
+                <div onClick={() => this.handleControls(video.isPlaying ? PAUSE : PLAY)} style={{ width: "50px" }}>
                     <IconContext.Provider value={{ color: "whitesmoke", size: "40px" }}>
-                        <div className={!video.isPlaying && "play"}>{video.isPlaying ? <FaPause /> : <FaPlay />}</div>
+                        <div className={!video.isPlaying ? "play" : ""}>
+                            {video.isPlaying ? <FaPause /> : <FaPlay />}
+                        </div>
                     </IconContext.Provider>
                 </div>
                 <div onClick={() => this.handleControls(SEEK_FORWARD_10)}>
@@ -110,13 +114,11 @@ class Room extends React.Component {
         let { url } = this.state;
         let { socket, room, video } = this.props;
 
-        //console.log(video);
-
         let button;
-        if (video) {
-            button = <button onClick={this.removeVideo}>CLEAR</button>;
-        } else {
+        if (isEmpty(video)) {
             button = <button onClick={this.loadVideo}>LOAD</button>;
+        } else {
+            button = <button onClick={this.removeVideo}>CLEAR</button>;
         }
 
         return (
@@ -136,6 +138,11 @@ class Room extends React.Component {
                             autoFocus={false}
                         />
                         {button}
+                    </div>
+                    <div>
+                        {room.users.map((user) => (
+                            <p>{user}</p>
+                        ))}
                     </div>
                     {this.getControls()}
                 </div>

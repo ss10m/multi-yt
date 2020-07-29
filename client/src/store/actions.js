@@ -3,7 +3,7 @@ import socketIO from "socket.io-client";
 //=====================================
 //          SOCKET ACTIONS
 //=====================================
-export const connectSocket = () => async (dispatch) => {
+export const connectSocket = () => async (dispatch, getState) => {
     let socket = socketIO.connect();
     dispatch(setSocket(socket));
     socket.on("rooms", (rooms) => {
@@ -11,15 +11,17 @@ export const connectSocket = () => async (dispatch) => {
         dispatch(setRooms(rooms));
     });
 
-    socket.on("joined-room", (room) => {
+    socket.on("joined-room", (room, video) => {
         console.log("RESPONSE: joined-room");
         dispatch(setRoom(room));
+        dispatch(setVideo(video));
         dispatch(clearRooms());
     });
 
     socket.on("left-room", (rooms) => {
         console.log("RESPONSE: left-room");
         dispatch(clearRoom());
+        dispatch(clearVideo());
         dispatch(clearMessages());
         dispatch(setRooms(rooms));
     });
@@ -27,6 +29,17 @@ export const connectSocket = () => async (dispatch) => {
     socket.on("receive-message", (message) => {
         console.log("RESPONSE: receive-message");
         dispatch(addMessage(message));
+        let { video } = getState();
+        console.log(video);
+
+        if (video.player) {
+            console.log("=============-------------==============");
+            console.log(video.player.getCurrentTime());
+            let currentTime = video.player.getCurrentTime() + 80;
+            video.player.seekTo(currentTime);
+
+            console.log("=============-------------==============");
+        }
     });
 
     socket.on("load-video", (video) => {
@@ -41,17 +54,26 @@ export const connectSocket = () => async (dispatch) => {
     });
 
     socket.on("updated-state", (updatedState) => {
-        console.log("RESPONSE: updated-state");
         console.log(updatedState);
-        dispatch(updatePlayer(updatedState));
+        let keys = Object.keys(updatedState);
+        for (let key of keys) {
+            switch (key) {
+                case "room":
+                    dispatch(setRoom(updatedState[key]));
+                    break;
+                case "video":
+                    dispatch(setVideo(updatedState[key]));
+                    break;
+                default:
+                    return;
+            }
+        }
+        //dispatch(updatePlayer(updatedState));
     });
 };
 export const setSocket = (socket) => ({
     type: "SET_SOCKET",
     socket,
-});
-export const clearSocket = () => ({
-    type: "CLEAR_SOCKET",
 });
 
 //=====================================
@@ -147,8 +169,4 @@ export const setVideo = (video) => ({
 });
 export const clearVideo = () => ({
     type: "CLEAR_VIDEO",
-});
-export const updatePlayer = (updatedState) => ({
-    type: "UPDATE_PLAYER",
-    updatedState,
 });

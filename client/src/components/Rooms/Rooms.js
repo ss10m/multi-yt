@@ -22,9 +22,9 @@ class Rooms extends React.Component {
     getRooms = () => {
         let { username, socket, rooms } = this.props;
 
-        return rooms.map((room) => {
+        return rooms.map((room, idx) => {
             return (
-                <div className="room">
+                <div className="room" key={idx}>
                     <p>{room}</p>
                     <button onClick={() => this.props.joinRoom(socket, room, username)}>JOIN</button>
                 </div>

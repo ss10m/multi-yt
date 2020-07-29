@@ -27,7 +27,6 @@ class Chat extends React.Component {
     }
 
     handleInput = (event) => {
-        console.log(event.target.value);
         this.setState({ message: event.target.value });
     };
 
@@ -50,8 +49,8 @@ class Chat extends React.Component {
                 <div className="header">CHAT</div>
                 <div className="body">
                     <div className="msgs" ref={this.messages}>
-                        {messages.map((message) => (
-                            <p>
+                        {messages.map((message, idx) => (
+                            <p key={idx}>
                                 <span>{message.username}</span>
                                 {`: ${message.msg}`}
                             </p>
