@@ -21,8 +21,10 @@ class Player extends React.Component {
         };
     }
 
-    componentDidMount() {
-        console.log("PLAYER componentDidMount");
+    componentDidUpdate(prevProps, prevState) {
+        if (!isEmpty(prevProps.video) && isEmpty(this.props.video)) {
+            this.setState({ initalLoading: true });
+        }
     }
 
     ref = (player) => {
@@ -32,6 +34,7 @@ class Player extends React.Component {
     };
 
     getPlayer = (playerWidth, playerHeight) => {
+        let { initalLoading } = this.state;
         let { video } = this.props;
 
         return (
@@ -45,7 +48,7 @@ class Player extends React.Component {
                         url={video.url}
                         width="100%"
                         height="100%"
-                        playing={video.isPlaying}
+                        playing={video.isPlaying || initalLoading}
                         playbackRate={1}
                         controls={false}
                         muted={true}
@@ -70,6 +73,7 @@ class Player extends React.Component {
     _onStart = () => {
         console.log("ON START");
         this.props.setPlayerReady();
+        this.setState({ initalLoading: false });
         // set inital time
         // enable controls
     };

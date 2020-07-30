@@ -59,6 +59,9 @@ export const connectSocket = () => async (dispatch, getState) => {
                     if (isEmpty(video) || isEmpty(video.player)) return;
                     video.player.seekTo(updatedState[key]);
                     break;
+                case "message":
+                    dispatch(addMessage(updatedState[key]));
+                    break;
                 default:
                     return;
             }

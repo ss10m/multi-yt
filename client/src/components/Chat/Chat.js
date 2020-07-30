@@ -51,12 +51,22 @@ class Chat extends React.Component {
                 <div className="header">CHAT</div>
                 <div className="body">
                     <div className="msgs" ref={this.messages}>
-                        {messages.map((message, idx) => (
-                            <p key={idx}>
-                                <span>{message.username}</span>
-                                {`: ${message.msg}`}
-                            </p>
-                        ))}
+                        {messages.map((message, idx) => {
+                            if (message.type) {
+                                return (
+                                    <p key={idx} style={{ color: "red" }}>
+                                        <span>{message.username}</span>
+                                        {` ${message.msg}`}
+                                    </p>
+                                );
+                            }
+                            return (
+                                <p key={idx}>
+                                    <span>{message.username}</span>
+                                    {`: ${message.msg}`}
+                                </p>
+                            );
+                        })}
                     </div>
                     <div className="input">
                         {isEmpty(room) ? (

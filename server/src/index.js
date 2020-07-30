@@ -53,6 +53,7 @@ io.on("connection", (socket) => {
         socket.to(roomId).emit("updated-state", {
             room: { users: Object.values(room.users) },
             video: room.video,
+            message: { username, msg: "has joined the chat", type: "status" },
         });
     });
 
@@ -60,11 +61,16 @@ io.on("connection", (socket) => {
         console.log("------------------leave-room------------------");
         let roomId = userToRoom[socket.id];
         if (!roomId) return;
+        let username = rooms[roomId].users[socket.id];
+
         let room = leaveRoom(socket.id);
         socket.leave(roomId, printRooms);
         socket.emit("left-room", getRoomNames());
         if (room) {
-            socket.to(room).emit("updated-state", { room: { users: Object.values(rooms[room].users) } });
+            socket.to(room).emit("updated-state", {
+                room: { users: Object.values(rooms[room].users) },
+                message: { username, msg: "has left the chat", type: "status" },
+            });
         }
     });
 
@@ -113,9 +119,18 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
         console.log("------------------disconnect------------------");
+        let roomId = userToRoom[socket.id];
+        let username;
+        if (roomId) {
+            username = rooms[roomId].users[socket.id];
+        }
         let room = leaveRoom(socket.id);
+
         if (room) {
-            socket.to(room).emit("updated-state", { room: { users: Object.values(rooms[room].users) } });
+            socket.to(room).emit("updated-state", {
+                room: { users: Object.values(rooms[room].users) },
+                message: { username, msg: "has left the chat", type: "status" },
+            });
         }
         printRooms();
     });
