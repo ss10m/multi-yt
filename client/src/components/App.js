@@ -47,12 +47,12 @@ class App extends React.Component {
 
     printState = () => {
         let { room, rooms, video, messages } = this.props;
-        console.log("!!!!!!!!!!!!!!!!!!!!!!");
+        console.log("=======================");
         console.log(rooms);
         console.log(room);
         console.log(video);
         console.log(messages);
-        console.log("......................");
+        console.log("------------------------");
     };
 
     render() {

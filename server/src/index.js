@@ -24,28 +24,8 @@ io.on("connection", (socket) => {
     console.log("------------------connection------------------");
     socket.emit("rooms", getRoomNames());
 
-    socket.on("join-room", (roomId, username) => {
-        console.log("------------------join-room------------------");
-        console.log(roomId, username);
-
-        let currentRooms = getRoomNames();
-        if (!currentRooms.includes(roomId)) return socket.emit("rooms", currentRooms);
-
-        socket.join(roomId, printRooms);
-        let room = rooms[roomId];
-        room.users[socket.id] = username;
-        userToRoom[socket.id] = roomId;
-        //room.video.isPlaying = true;
-        socket.emit("joined-room", { name: roomId, users: Object.values(room.users) }, room.video);
-        socket.to(roomId).emit("updated-state", {
-            room: { users: Object.values(room.users) },
-            video: room.video,
-        });
-    });
-
     socket.on("create-room", (username) => {
         console.log("------------------create-room------------------");
-        console.log(username);
 
         roomsId += 1;
         let room = "room" + roomsId;
@@ -58,13 +38,32 @@ io.on("connection", (socket) => {
         socket.emit("joined-room", { name: room, users: Object.values(rooms[room].users) });
     });
 
+    socket.on("join-room", (roomId, username) => {
+        console.log("------------------join-room------------------");
+
+        let currentRooms = getRoomNames();
+        if (!currentRooms.includes(roomId)) return socket.emit("rooms", currentRooms);
+
+        socket.join(roomId, printRooms);
+        let room = rooms[roomId];
+        room.users[socket.id] = username;
+        userToRoom[socket.id] = roomId;
+        if (room.video && room.video.isPlaying) room.video.isPlaying = false;
+        socket.emit("joined-room", { name: roomId, users: Object.values(room.users) }, room.video);
+        socket.to(roomId).emit("updated-state", {
+            room: { users: Object.values(room.users) },
+            video: room.video,
+        });
+    });
+
     socket.on("leave-room", () => {
         console.log("------------------leave-room------------------");
+        let roomId = userToRoom[socket.id];
+        if (!roomId) return;
         let room = leaveRoom(socket.id);
-        if (!room) return;
-        socket.leave(room, printRooms);
+        socket.leave(roomId, printRooms);
         socket.emit("left-room", getRoomNames());
-        if (rooms[room]) {
+        if (room) {
             socket.to(room).emit("updated-state", { room: { users: Object.values(rooms[room].users) } });
         }
     });
@@ -76,29 +75,40 @@ io.on("connection", (socket) => {
 
     socket.on("send-message", (message) => {
         console.log("------------------send-message------------------");
-        console.log(message);
-        socket.to(userToRoom[socket.id]).emit("receive-message", message);
+        let room = userToRoom[socket.id];
+        if (!room) return;
+        socket.to(room).emit("receive-message", message);
     });
 
     socket.on("load-video", (url) => {
         console.log("------------------load-video------------------");
-        console.log(url);
-
         let room = userToRoom[socket.id];
+        if (!room) return;
         rooms[room].video = { url, isPlaying: true };
-        io.to(room).emit("load-video", { url, isPlaying: true });
+        io.in(room).emit("load-video", { url, isPlaying: true });
     });
 
     socket.on("remove-video", () => {
         console.log("------------------remove-video------------------");
         let room = userToRoom[socket.id];
+        if (!room) return;
         rooms[room].video = {};
-        io.to(room).emit("remove-video");
+        io.in(room).emit("remove-video");
     });
 
-    socket.on("update-state", (state) => {
-        console.log("------------------update-state------------------");
-        io.to(userToRoom[socket.id]).emit("updated-state", state);
+    socket.on("update-video", (state) => {
+        console.log("------------------update-video------------------");
+        let roomId = userToRoom[socket.id];
+        if (!roomId) return;
+
+        if (state.hasOwnProperty("isPlaying")) {
+            let room = rooms[roomId];
+            room.video.isPlaying = state.isPlaying;
+            return io.in(roomId).emit("updated-state", { video: state });
+        }
+        if (state.hasOwnProperty("seek")) {
+            return io.in(roomId).emit("updated-state", state);
+        }
     });
 
     socket.on("disconnect", () => {
@@ -124,7 +134,7 @@ const leaveRoom = (socketId) => {
 };
 
 const getRoomNames = () => {
-    return Object.keys(io.sockets.adapter.rooms).filter((room) => room.startsWith("room"));
+    return Object.keys(rooms);
 };
 
 const printRooms = () => {

@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { IconContext } from "react-icons";
 import { FaPlay, FaPause } from "react-icons/fa";
 import { MdReplay10, MdReplay30, MdForward10, MdForward30 } from "react-icons/md";
-import { leaveRoom, loadVideo, removeVideo, stateUpdate } from "store/actions";
+import { leaveRoom, loadVideo, removeVideo, updateVideo } from "store/actions";
 
 import { isEmpty } from "helpers";
 
@@ -20,17 +20,15 @@ const SEEK_FORWARD_30 = "SEEK_FORWARD_30";
 class Room extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { url: "https://www.youtube.com/watch?v=H8GptHQ0W2U", controls: true };
+        this.state = { url: "https://www.youtube.com/watch?v=H8GptHQ0W2U", controlsEnabled: true };
     }
 
     handleControls = (action) => {
         let { video, socket } = this.props;
 
-        if (!video) return;
-
-        this.setState({ controls: false });
+        this.setState({ controlsEnabled: false });
         setTimeout(() => {
-            this.setState({ controls: true });
+            this.setState({ controlsEnabled: true });
         }, 1000);
 
         let actionObj = null;
@@ -42,22 +40,21 @@ class Room extends React.Component {
                 actionObj = { isPlaying: false };
                 break;
             case SEEK_BACK_10:
-                video.player.seekTo(video.player.getCurrentTime() - 10);
+                actionObj = { seek: Math.max(video.player.getCurrentTime() - 10, 0) };
                 break;
             case SEEK_BACK_30:
-                video.player.seekTo(video.player.getCurrentTime() - 30);
+                actionObj = { seek: Math.max(video.player.getCurrentTime() - 30, 0) };
                 break;
             case SEEK_FORWARD_10:
-                video.player.seekTo(video.player.getCurrentTime() + 10);
+                actionObj = { seek: Math.max(video.player.getCurrentTime() + 10, 0) };
                 break;
             case SEEK_FORWARD_30:
-                video.player.seekTo(video.player.getCurrentTime() + 30);
+                actionObj = { seek: Math.max(video.player.getCurrentTime() + 30, 0) };
                 break;
             default:
                 return;
         }
-        if (actionObj) this.props.stateUpdate(socket, actionObj);
-        //video.player.seekTo(50);
+        if (actionObj) this.props.updateVideo(socket, actionObj);
     };
 
     handleInput = (event) => {
@@ -74,11 +71,12 @@ class Room extends React.Component {
     };
 
     getControls = () => {
-        let { controls } = this.state;
+        let { controlsEnabled } = this.state;
         let { video } = this.props;
-        if (!video) return;
+        let isPlayerDisabled = isEmpty(video) || !video.isPlayerReady;
+        let isDisabled = isPlayerDisabled || !controlsEnabled;
         return (
-            <div className={"controls" + (controls ? "" : " disabled")}>
+            <div className={"controls" + (isDisabled ? " disabled" : "")}>
                 <div onClick={() => this.handleControls(SEEK_BACK_30)}>
                     <IconContext.Provider value={{ color: "whitesmoke", size: "30px" }}>
                         <MdReplay30 />
@@ -169,8 +167,8 @@ const mapDispatchToProps = (dispatch) => ({
     removeVideo: (socket) => {
         dispatch(removeVideo(socket));
     },
-    stateUpdate: (socket, state) => {
-        dispatch(stateUpdate(socket, state));
+    updateVideo: (socket, state) => {
+        dispatch(updateVideo(socket, state));
     },
 });
 

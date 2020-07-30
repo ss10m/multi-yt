@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 
 import { sendMessage } from "store/actions";
 
+import { isEmpty } from "helpers";
+
 import "./Chat.scss";
 
 class Chat extends React.Component {
@@ -57,7 +59,9 @@ class Chat extends React.Component {
                         ))}
                     </div>
                     <div className="input">
-                        {room ? (
+                        {isEmpty(room) ? (
+                            <p>You must first join a room</p>
+                        ) : (
                             <input
                                 type={"text"}
                                 value={message}
@@ -67,8 +71,6 @@ class Chat extends React.Component {
                                 spellCheck={false}
                                 autoFocus={false}
                             />
-                        ) : (
-                            <p>You must first join a room</p>
                         )}
                     </div>
                 </div>

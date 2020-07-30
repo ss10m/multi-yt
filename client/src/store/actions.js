@@ -1,4 +1,5 @@
 import socketIO from "socket.io-client";
+import { isEmpty } from "helpers";
 
 //=====================================
 //          SOCKET ACTIONS
@@ -29,22 +30,11 @@ export const connectSocket = () => async (dispatch, getState) => {
     socket.on("receive-message", (message) => {
         console.log("RESPONSE: receive-message");
         dispatch(addMessage(message));
-        let { video } = getState();
-        console.log(video);
-
-        if (video.player) {
-            console.log("=============-------------==============");
-            console.log(video.player.getCurrentTime());
-            let currentTime = video.player.getCurrentTime() + 80;
-            video.player.seekTo(currentTime);
-
-            console.log("=============-------------==============");
-        }
     });
 
     socket.on("load-video", (video) => {
         console.log("RESPONSE: load-video");
-        console.log(video);
+        video.isPlayerReady = false;
         dispatch(setVideo(video));
     });
 
@@ -64,11 +54,15 @@ export const connectSocket = () => async (dispatch, getState) => {
                 case "video":
                     dispatch(setVideo(updatedState[key]));
                     break;
+                case "seek":
+                    let { video } = getState();
+                    if (isEmpty(video) || isEmpty(video.player)) return;
+                    video.player.seekTo(updatedState[key]);
+                    break;
                 default:
                     return;
             }
         }
-        //dispatch(updatePlayer(updatedState));
     });
 };
 export const setSocket = (socket) => ({
@@ -122,11 +116,6 @@ export const clearRooms = () => ({
     type: "CLEAR_ROOMS",
 });
 
-export const setPlayer = (player) => ({
-    type: "SET_PLAYER",
-    player,
-});
-
 //=====================================
 //          MESSAGE ACTIONS
 //=====================================
@@ -158,11 +147,17 @@ export const removeVideo = (socket) => async (dispatch) => {
     console.log("ACTION: remove-video");
     socket.emit("remove-video");
 };
-export const stateUpdate = (socket, state) => async (dispatch) => {
-    console.log("ACTION: update-state");
-    console.log(state);
-    socket.emit("update-state", state);
+export const updateVideo = (socket, state) => async (dispatch) => {
+    console.log("ACTION: update-video");
+    socket.emit("update-video", state);
 };
+export const setPlayer = (player) => ({
+    type: "SET_PLAYER",
+    player,
+});
+export const setPlayerReady = () => ({
+    type: "SET_PLAYER_READY",
+});
 export const setVideo = (video) => ({
     type: "SET_VIDEO",
     video,

@@ -3,7 +3,7 @@ import React from "react";
 import ReactPlayer from "react-player/youtube";
 import { connect } from "react-redux";
 
-import { setPlayer } from "store/actions";
+import { setPlayer, setPlayerReady } from "store/actions";
 import { IconContext } from "react-icons";
 import { FaYoutube } from "react-icons/fa";
 
@@ -17,7 +17,12 @@ class Player extends React.Component {
 
         this.state = {
             playedSeconds: 0,
+            initalLoading: true,
         };
+    }
+
+    componentDidMount() {
+        console.log("PLAYER componentDidMount");
     }
 
     ref = (player) => {
@@ -64,6 +69,7 @@ class Player extends React.Component {
     };
     _onStart = () => {
         console.log("ON START");
+        this.props.setPlayerReady();
         // set inital time
         // enable controls
     };
@@ -131,6 +137,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
     setPlayer: (player) => {
         dispatch(setPlayer(player));
+    },
+    setPlayerReady: () => {
+        dispatch(setPlayerReady());
     },
 });
 
