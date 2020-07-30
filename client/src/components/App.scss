@@ -11,6 +11,8 @@ body {
     &::-webkit-scrollbar {
         display: none;
     }
+
+    color: whitesmoke;
 }
 
 * {
@@ -28,6 +30,12 @@ body {
     grid-template-rows: 50% 50%;
     grid-template-columns: 1fr 400px;
 
+    .options,
+    .chat {
+        position: relative;
+        min-height: 300px;
+        overflow: hidden;
+    }
     @media (max-width: 1100px) {
         grid-template-areas:
             "player player"
@@ -35,15 +43,9 @@ body {
         grid-template-rows: min-content 1fr;
         grid-template-columns: repeat(2, 1fr);
         min-height: 0;
-
-        .options {
-            border-right: 1px solid black;
-            min-height: 300px;
-        }
-
+        .options,
         .chat {
-            border-left: 1px solid black;
-            min-height: 300px;
+            border-right: 1px solid black;
         }
     }
 
@@ -58,14 +60,13 @@ body {
         .options,
         .chat {
             border: none;
-            min-height: 300px;
         }
     }
 }
 
 .player {
-    background: black;
     grid-area: player;
+    background: black;
 }
 
 .chat {
@@ -74,5 +75,4 @@ body {
 
 .options {
     grid-area: options;
-    //height: 100%;
 }

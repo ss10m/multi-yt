@@ -54,9 +54,8 @@ class Chat extends React.Component {
                         {messages.map((message, idx) => {
                             if (message.type) {
                                 return (
-                                    <p key={idx} style={{ color: "red" }}>
-                                        <span>{message.username}</span>
-                                        {` ${message.msg}`}
+                                    <p key={idx} style={{ color: "grey" }}>
+                                        {`${message.username} ${message.msg}`}
                                     </p>
                                 );
                             }

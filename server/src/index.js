@@ -22,28 +22,32 @@ let userToRoom = {};
 
 io.on("connection", (socket) => {
     console.log("------------------connection------------------");
-    socket.emit("rooms", getRoomNames());
+    socket.emit("rooms", getRooms());
+    socket.join("lobby", printRooms);
 
     socket.on("create-room", (username) => {
         console.log("------------------create-room------------------");
 
         roomsId += 1;
-        let room = "room" + roomsId;
+        let room = "room-" + roomsId;
 
-        socket.join(room, printRooms);
+        socket.leave("lobby");
+        socket.join(room);
 
         rooms[room] = { users: {}, video: {} };
         rooms[room].users[socket.id] = username;
         userToRoom[socket.id] = room;
         socket.emit("joined-room", { name: room, users: Object.values(rooms[room].users) });
+        updateLobby();
     });
 
     socket.on("join-room", (roomId, username) => {
         console.log("------------------join-room------------------");
 
-        let currentRooms = getRoomNames();
-        if (!currentRooms.includes(roomId)) return socket.emit("rooms", currentRooms);
+        let currentRooms = Object.keys(rooms);
+        if (!currentRooms.includes(roomId)) return socket.emit("rooms", getRooms());
 
+        socket.leave("lobby");
         socket.join(roomId, printRooms);
         let room = rooms[roomId];
         room.users[socket.id] = username;
@@ -55,28 +59,32 @@ io.on("connection", (socket) => {
             video: room.video,
             message: { username, msg: "has joined the chat", type: "status" },
         });
+        updateLobby();
+        getRooms();
     });
 
     socket.on("leave-room", () => {
         console.log("------------------leave-room------------------");
         let roomId = userToRoom[socket.id];
-        if (!roomId) return;
+        if (!roomId) return socket.emit("left-room", getRooms());
         let username = rooms[roomId].users[socket.id];
 
         let room = leaveRoom(socket.id);
-        socket.leave(roomId, printRooms);
-        socket.emit("left-room", getRoomNames());
+        socket.leave(roomId);
+        socket.join("lobby", printRooms);
+        socket.emit("left-room", getRooms());
         if (room) {
             socket.to(room).emit("updated-state", {
                 room: { users: Object.values(rooms[room].users) },
                 message: { username, msg: "has left the chat", type: "status" },
             });
         }
+        updateLobby();
     });
 
     socket.on("rooms", () => {
         console.log("------------------rooms------------------");
-        socket.emit("rooms", getRoomNames());
+        socket.emit("rooms", getRooms());
     });
 
     socket.on("send-message", (message) => {
@@ -132,7 +140,10 @@ io.on("connection", (socket) => {
                 message: { username, msg: "has left the chat", type: "status" },
             });
         }
-        printRooms();
+        if (roomId) {
+            updateLobby();
+        }
+        socket.leave("lobby", printRooms);
     });
 });
 
@@ -148,14 +159,25 @@ const leaveRoom = (socketId) => {
     return room;
 };
 
-const getRoomNames = () => {
-    return Object.keys(rooms);
+const getRooms = () => {
+    let currentRooms = Object.keys(rooms).map((room) => ({
+        name: room,
+        users: Object.keys(rooms[room].users).length,
+        status: rooms[room].video,
+    }));
+    return currentRooms;
+};
+
+const updateLobby = () => {
+    console.log("UPDATING LOBBY");
+    io.in("lobby").emit("rooms", getRooms());
 };
 
 const printRooms = () => {
     console.log(io.sockets.adapter.rooms);
     console.log(rooms);
     console.log(userToRoom);
+    console.log("--------------------");
 };
 
 app.get("*", (request, response) => {
