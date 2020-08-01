@@ -3,7 +3,7 @@ import React from "react";
 import ReactPlayer from "react-player/youtube";
 import { connect } from "react-redux";
 
-import { setPlayer, setPlayerReady } from "store/actions";
+import { setPlayer, setPlayerReady, updateVideo } from "store/actions";
 import { IconContext } from "react-icons";
 import { FaYoutube } from "react-icons/fa";
 
@@ -69,6 +69,7 @@ class Player extends React.Component {
 
     handleProgress = (state) => {
         // custom slider
+        //console.log(state.playedSeconds);
     };
     _onStart = () => {
         console.log("ON START");
@@ -80,6 +81,7 @@ class Player extends React.Component {
 
     _onEnd = () => {
         console.log("ON END");
+        this.props.updateVideo(this.props.socket, { isPlaying: false });
     };
 
     _onPlayerReady = () => {
@@ -134,6 +136,7 @@ class Player extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        socket: state.socket,
         video: state.video,
     };
 };
@@ -144,6 +147,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     setPlayerReady: () => {
         dispatch(setPlayerReady());
+    },
+    updateVideo: (socket, state) => {
+        dispatch(updateVideo(socket, state));
     },
 });
 

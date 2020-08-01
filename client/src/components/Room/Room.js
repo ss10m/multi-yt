@@ -1,4 +1,6 @@
 import React from "react";
+
+import { debounce } from "lodash";
 import { connect } from "react-redux";
 
 import { IconContext } from "react-icons";
@@ -20,7 +22,27 @@ const SEEK_FORWARD_30 = "SEEK_FORWARD_30";
 class Room extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { url: "" };
+        this.state = { url: "", slider: 0, timePlayed: 0 };
+
+        this.updateServer = debounce(this.updateServer, 200);
+    }
+
+    componentDidMount() {
+        this.timePlayed = setInterval(() => {
+            let { video } = this.props;
+            if (isEmpty(video) || !video.isPlayerReady) return;
+            this.setState({ timePlayed: video.player.getCurrentTime() });
+        }, 1000);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (!isEmpty(prevProps.video) && isEmpty(this.props.video)) {
+            this.setState({ timePlayed: 0 });
+        }
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timePlayed);
     }
 
     handleControls = (action) => {
@@ -69,50 +91,72 @@ class Room extends React.Component {
         this.props.removeVideo(this.props.socket);
     };
 
+    handleSeek = (event) => {
+        this.updateServer(event.target.value);
+    };
+
+    updateServer = (value) => {
+        this.setState({ timePlayed: value });
+        this.props.updateVideo(this.props.socket, { seek: value });
+    };
+
     getControls = () => {
         let { video } = this.props;
         let isDisabled = isEmpty(video) || !video.isPlayerReady;
         let isPlaying = video.isPlaying;
 
         return (
-            <div className={"controls" + (isDisabled ? " disabled" : "")}>
-                <div className="inner"></div>
-                <div className="btn" onClick={() => this.handleControls(SEEK_BACK_30)}>
-                    <IconContext.Provider value={{ size: "28px" }}>
-                        <MdReplay30 />
-                    </IconContext.Provider>
-                </div>
-                <div className="btn" onClick={() => this.handleControls(SEEK_BACK_10)}>
-                    <IconContext.Provider value={{ size: "35px" }}>
-                        <MdReplay10 />
-                    </IconContext.Provider>
-                </div>
-                <div className="btn-wrapper">
-                    <div
-                        className={"btn large" + (isPlaying ? " pause" : " play")}
-                        onClick={() => this.handleControls(isPlaying ? PAUSE : PLAY)}
-                    >
-                        <IconContext.Provider value={{ size: "30px" }}>
-                            {isPlaying ? <FaPause /> : <FaPlay />}
+            <div className="controls-wrapper">
+                <div className={"controls" + (isDisabled ? " disabled" : "")}>
+                    <div className="inner"></div>
+                    <div className="btn" onClick={() => this.handleControls(SEEK_BACK_30)}>
+                        <IconContext.Provider value={{ size: "28px" }}>
+                            <MdReplay30 />
+                        </IconContext.Provider>
+                    </div>
+                    <div className="btn" onClick={() => this.handleControls(SEEK_BACK_10)}>
+                        <IconContext.Provider value={{ size: "35px" }}>
+                            <MdReplay10 />
+                        </IconContext.Provider>
+                    </div>
+                    <div className="btn-wrapper">
+                        <div
+                            className={"btn large" + (isPlaying ? " pause" : " play")}
+                            onClick={() => this.handleControls(isPlaying ? PAUSE : PLAY)}
+                        >
+                            <IconContext.Provider value={{ size: "30px" }}>
+                                {isPlaying ? <FaPause /> : <FaPlay />}
+                            </IconContext.Provider>
+                        </div>
+                    </div>
+                    <div className="btn" onClick={() => this.handleControls(SEEK_FORWARD_10)}>
+                        <IconContext.Provider value={{ size: "35px" }}>
+                            <MdForward10 />
+                        </IconContext.Provider>
+                    </div>
+                    <div className="btn" onClick={() => this.handleControls(SEEK_FORWARD_30)}>
+                        <IconContext.Provider value={{ size: "28px" }}>
+                            <MdForward30 />
                         </IconContext.Provider>
                     </div>
                 </div>
-                <div className="btn" onClick={() => this.handleControls(SEEK_FORWARD_10)}>
-                    <IconContext.Provider value={{ size: "35px" }}>
-                        <MdForward10 />
-                    </IconContext.Provider>
-                </div>
-                <div className="btn" onClick={() => this.handleControls(SEEK_FORWARD_30)}>
-                    <IconContext.Provider value={{ size: "28px" }}>
-                        <MdForward30 />
-                    </IconContext.Provider>
-                </div>
+
+                <input
+                    className="slider"
+                    type="range"
+                    value={isDisabled ? 0 : this.state.timePlayed}
+                    min={0}
+                    max={isDisabled ? 1 : Math.floor(video.player.getDuration())}
+                    onInput={this.handleSeek}
+                    step={1}
+                    disabled={isDisabled}
+                />
             </div>
         );
     };
 
     render() {
-        let { url } = this.state;
+        let { url, timePlayed } = this.state;
         let { socket, room, video } = this.props;
 
         let loadedVideo = !isEmpty(video);

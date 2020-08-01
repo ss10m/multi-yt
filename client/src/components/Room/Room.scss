@@ -86,9 +86,12 @@ $button-hover-color: #46464a;
             }
         }
 
+        .controls-wrapper {
+            width: 280px;
+            margin: 10px auto;
+        }
         .controls {
             height: 75px;
-            width: 280px;
             display: flex;
             align-items: center;
             justify-content: space-evenly;
@@ -136,7 +139,7 @@ $button-hover-color: #46464a;
                 &.large {
                     width: 73px;
                     height: 73px;
-                    box-shadow: 0 0 5px black;
+                    //box-shadow: 0 0 5px black;
                     box-shadow: 0px 0px 3px 1px black;
                     background-color: #212121;
                     color: whitesmoke;
@@ -158,9 +161,13 @@ $button-hover-color: #46464a;
                 }
             }
         }
-    }
-}
 
-.global-class-name {
-    background-color: red;
+        .slider {
+            width: 100%;
+
+            &:hover:enabled {
+                cursor: pointer;
+            }
+        }
+    }
 }
