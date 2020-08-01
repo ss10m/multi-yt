@@ -71,7 +71,7 @@ class Room extends React.Component {
 
     getControls = () => {
         let { video } = this.props;
-        let isDisabled = isEmpty(video);
+        let isDisabled = isEmpty(video) || !video.isPlayerReady;
         let isPlaying = video.isPlaying;
 
         return (
