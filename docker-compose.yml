@@ -6,8 +6,8 @@ services:
         restart: always
         environment:
             VIRTUAL_PORT: 8080
-            VIRTUAL_HOST: streamify.ssprojects.ca
-            LETSENCRYPT_HOST: streamify.ssprojects.ca
+            VIRTUAL_HOST: sync.ssprojects.ca
+            LETSENCRYPT_HOST: sync.ssprojects.ca
             LETSENCRYPT_EMAIL: "fastf20@gmail.com"
         networks:
             - service-network
