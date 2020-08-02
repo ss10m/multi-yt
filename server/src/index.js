@@ -2,6 +2,7 @@ import express from "express";
 import http from "http";
 import path from "path";
 import ioClient from "socket.io";
+import { nanoid } from "nanoid";
 
 const PORT = 8080;
 const HOST = "0.0.0.0";
@@ -19,6 +20,7 @@ const io = ioClient(server);
 let roomsId = 0;
 let rooms = {};
 let userToRoom = {};
+let roomIdToRoom = {};
 
 io.on("connection", (socket) => {
     console.log("------------------connection------------------");
@@ -30,19 +32,36 @@ io.on("connection", (socket) => {
 
         roomsId += 1;
         let room = "room-" + roomsId;
+        let roomId = nanoid(7);
+        roomIdToRoom[roomId] = room;
 
         socket.leave("lobby");
         socket.join(room);
 
-        rooms[room] = { users: {}, video: {} };
+        rooms[room] = {
+            users: {},
+            video: {},
+            roomId,
+        };
         rooms[room].users[socket.id] = username;
         userToRoom[socket.id] = room;
-        socket.emit("joined-room", { name: room, users: Object.values(rooms[room].users) });
+        socket.emit("joined-room", {
+            name: room,
+            users: Object.values(rooms[room].users),
+            roomId,
+        });
         updateLobby();
     });
 
-    socket.on("join-room", (roomId, username) => {
+    socket.on("join-room", (roomDetails, username) => {
         console.log("------------------join-room------------------");
+
+        let roomId;
+        if (roomDetails.id) {
+            roomId = roomIdToRoom[roomDetails.id];
+        } else {
+            roomId = roomDetails.name;
+        }
 
         let currentRooms = Object.keys(rooms);
         if (!currentRooms.includes(roomId)) return socket.emit("rooms", getRooms());
@@ -53,7 +72,7 @@ io.on("connection", (socket) => {
         room.users[socket.id] = username;
         userToRoom[socket.id] = roomId;
         if (room.video && room.video.isPlaying) room.video.isPlaying = false;
-        socket.emit("joined-room", { name: roomId, users: Object.values(room.users) }, room.video);
+        socket.emit("joined-room", { name: roomId, users: Object.values(room.users), roomId: room.roomId }, room.video);
         socket.to(roomId).emit("updated-state", {
             room: { users: Object.values(room.users) },
             video: room.video,
@@ -150,9 +169,11 @@ io.on("connection", (socket) => {
 const leaveRoom = (socketId) => {
     let room = userToRoom[socketId];
     if (!room) return null;
+    let roomId = rooms[room].roomId;
     delete rooms[room].users[socketId];
     delete userToRoom[socketId];
     if (!Object.keys(rooms[room].users).length) {
+        delete roomIdToRoom[roomId];
         delete rooms[room];
         return null;
     }
@@ -177,6 +198,7 @@ const printRooms = () => {
     console.log(io.sockets.adapter.rooms);
     console.log(rooms);
     console.log(userToRoom);
+    console.log(roomIdToRoom);
     console.log("--------------------");
 };
 

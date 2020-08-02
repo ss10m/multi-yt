@@ -2,7 +2,7 @@ import React from "react";
 import Player from "./Player/Player";
 
 import { connect } from "react-redux";
-import { connectSocket, setUsername } from "store/actions";
+import { connectSocket, setUsername, joinRoom } from "store/actions";
 
 import "./App.scss";
 
@@ -18,13 +18,12 @@ class App extends React.Component {
         super(props);
 
         this.state = {
-            showUsernamePrompt: false,
+            showUsernamePrompt: true,
             width: window.innerWidth,
             height: window.innerHeight,
             loaded: false,
             socket: null,
         };
-        //this.updateDimensions = debounce(this.updateDimensions, 500);
     }
 
     componentDidMount() {
@@ -43,6 +42,14 @@ class App extends React.Component {
     confirmUsername = (username) => {
         this.setState({ showUsernamePrompt: false });
         this.props.setUsername(username);
+
+        let path = window.location.pathname.split("/");
+        let result = path.filter((word) => word);
+
+        if (result.length === 2 && result[0] === "invite" && result[1].length === 7) {
+            this.props.joinRoom(this.props.socket, { id: result[1] }, username);
+        }
+        this.props.history.push("/");
     };
 
     printState = () => {
@@ -82,6 +89,7 @@ const mapStateToProps = (state) => {
         rooms: state.rooms,
         video: state.video,
         messages: state.messages,
+        socket: state.socket,
     };
 };
 
@@ -91,6 +99,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     setUsername: (username) => {
         dispatch(setUsername(username));
+    },
+    joinRoom: (socket, room, username) => {
+        dispatch(joinRoom(socket, room, username));
     },
 });
 

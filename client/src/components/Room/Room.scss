@@ -41,24 +41,44 @@ $button-hover-color: #46464a;
         flex-direction: column;
         justify-content: space-between;
 
+        input[type="text"] {
+            min-width: 0;
+            flex: 1;
+            height: 100%;
+            padding: 0 10px;
+            margin-right: 10px;
+            outline: none;
+            border: none;
+            border-radius: 3px;
+            color: whitesmoke;
+            border: 2px solid #3a3a3d;
+            box-sizing: border-box;
+            background-color: #3a3a3d;
+        }
+
+        .link-btn {
+            //width: 60px;
+            margin: 0 10px;
+            height: 100%;
+            background-color: $button-color;
+
+            outline: none;
+            border: none;
+            color: whitesmoke;
+            border-radius: 3px;
+
+            &:hover {
+                cursor: pointer;
+                background-color: $button-hover-color;
+            }
+        }
+
         .input {
             height: 35px;
             margin: 20px 20px;
             display: flex;
 
             input {
-                flex: 1;
-                height: 100%;
-                padding: 0 10px;
-                margin-right: 10px;
-                outline: none;
-                border: none;
-                border-radius: 3px;
-                color: whitesmoke;
-                border: 2px solid #3a3a3d;
-                box-sizing: border-box;
-                background-color: #3a3a3d;
-
                 &::placeholder {
                     color: grey;
                 }
@@ -68,22 +88,12 @@ $button-hover-color: #46464a;
                     opacity: 0.3;
                 }
             }
+        }
 
-            button {
-                width: 60px;
-                height: 100%;
-                background-color: $button-color;
-
-                outline: none;
-                border: none;
-                color: whitesmoke;
-                border-radius: 3px;
-
-                &:hover {
-                    cursor: pointer;
-                    background-color: $button-hover-color;
-                }
-            }
+        .invite {
+            height: 35px;
+            margin: 20px 20px;
+            display: flex;
         }
 
         .controls-wrapper {
@@ -95,7 +105,7 @@ $button-hover-color: #46464a;
             display: flex;
             align-items: center;
             justify-content: space-evenly;
-            margin: 10px auto;
+            margin: 0px auto;
             position: relative;
 
             &.disabled {
@@ -164,6 +174,7 @@ $button-hover-color: #46464a;
 
         .slider {
             width: 100%;
+            margin: 5px 0;
 
             &:hover:enabled {
                 cursor: pointer;

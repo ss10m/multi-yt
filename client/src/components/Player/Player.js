@@ -43,7 +43,10 @@ class Player extends React.Component {
                     <ReactPlayer
                         ref={this.ref}
                         config={{
-                            playerVars: { disablekb: 1 },
+                            playerVars: {
+                                disablekb: 1,
+                                iv_load_policy: 3,
+                            },
                         }}
                         url={video.url}
                         width="100%"

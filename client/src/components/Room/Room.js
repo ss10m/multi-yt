@@ -1,4 +1,5 @@
 import React from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import { debounce } from "lodash";
 import { connect } from "react-redux";
@@ -156,16 +157,26 @@ class Room extends React.Component {
     };
 
     render() {
-        let { url, timePlayed } = this.state;
+        let { url } = this.state;
         let { socket, room, video } = this.props;
 
         let loadedVideo = !isEmpty(video);
         let button;
         if (loadedVideo) {
-            button = <button onClick={this.removeVideo}>CLEAR</button>;
+            button = (
+                <button className="link-btn" onClick={this.removeVideo}>
+                    CLEAR
+                </button>
+            );
         } else {
-            button = <button onClick={this.loadVideo}>PLAY</button>;
+            button = (
+                <button className="link-btn" onClick={this.loadVideo}>
+                    PLAY
+                </button>
+            );
         }
+
+        let inviteUrl = window.location.href + "invite/" + room.roomId;
 
         return (
             <div className="room-info">
@@ -174,17 +185,32 @@ class Room extends React.Component {
                     <p>{room.name}</p>
                 </div>
                 <div className="body">
-                    <div className="input">
-                        <input
-                            type={"text"}
-                            value={loadedVideo ? video.url : url}
-                            placeholder={"Youtube URL"}
-                            onChange={this.handleInput}
-                            spellCheck={false}
-                            autoFocus={false}
-                            disabled={loadedVideo}
-                        />
-                        {button}
+                    <div>
+                        <div className="input">
+                            <input
+                                type={"text"}
+                                value={loadedVideo ? video.url : url}
+                                placeholder={"Youtube URL"}
+                                onChange={this.handleInput}
+                                spellCheck={false}
+                                autoFocus={false}
+                                disabled={loadedVideo}
+                            />
+                            {button}
+                        </div>
+                        <div className="invite">
+                            <input
+                                type={"text"}
+                                value={inviteUrl}
+                                placeholder={"Invite"}
+                                spellCheck={false}
+                                autoFocus={false}
+                                onFocus={(event) => event.target.select()}
+                            />
+                            <CopyToClipboard text={inviteUrl}>
+                                <button className="link-btn invite-btn">COPY INVITE LINK</button>
+                            </CopyToClipboard>
+                        </div>
                     </div>
                     <div>
                         {room.users.map((user) => (
