@@ -96,6 +96,7 @@ const messagesReducer = (state = messages, action) => {
 };
 
 const SET_VIDEO = "SET_VIDEO";
+const SET_VIDEO_STATE = "SET_VIDEO_STATE";
 const SET_PLAYER = "SET_PLAYER";
 const SET_PLAYER_READY = "SET_PLAYER_READY";
 const CLEAR_VIDEO = "CLEAR_VIDEO";
@@ -104,6 +105,8 @@ const videoReducer = (state = {}, action) => {
     switch (action.type) {
         case SET_VIDEO:
             return { ...state, ...action.video };
+        case SET_VIDEO_STATE:
+            return { ...state, ...action.state };
         case SET_PLAYER:
             return { ...state, player: action.player };
         case SET_PLAYER_READY:

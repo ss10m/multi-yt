@@ -3,7 +3,7 @@ import React from "react";
 import ReactPlayer from "react-player/youtube";
 import { connect } from "react-redux";
 
-import { setPlayer, setPlayerReady, updateVideo } from "store/actions";
+import { setPlayer, setPlayerReady, updateVideo, updatePlayerState, setVideoState } from "store/actions";
 import { IconContext } from "react-icons";
 import { FaYoutube } from "react-icons/fa";
 
@@ -16,16 +16,17 @@ class Player extends React.Component {
         super(props);
 
         this.state = {
-            playedSeconds: 0,
-            initalLoading: true,
+            isBuffering: true,
         };
     }
 
+    /*
     componentDidUpdate(prevProps, prevState) {
         if (!isEmpty(prevProps.video) && isEmpty(this.props.video)) {
-            this.setState({ initalLoading: true });
+            this.setState({ initalLoading: true, isBuffering: false });
         }
     }
+    */
 
     ref = (player) => {
         let { video } = this.props;
@@ -34,7 +35,6 @@ class Player extends React.Component {
     };
 
     getPlayer = (playerWidth, playerHeight) => {
-        let { initalLoading } = this.state;
         let { video } = this.props;
 
         return (
@@ -51,7 +51,8 @@ class Player extends React.Component {
                         url={video.url}
                         width="100%"
                         height="100%"
-                        playing={video.isPlaying || initalLoading}
+                        playing={video.isPlaying}
+                        //playing={video.isPlaying}
                         playbackRate={1}
                         controls={false}
                         muted={true}
@@ -72,12 +73,10 @@ class Player extends React.Component {
 
     handleProgress = (state) => {
         // custom slider
-        //console.log(state.playedSeconds);
     };
     _onStart = () => {
         console.log("ON START");
         this.props.setPlayerReady();
-        this.setState({ initalLoading: false });
         // set inital time
         // enable controls
     };
@@ -93,10 +92,23 @@ class Player extends React.Component {
 
     _onBuffer = () => {
         console.log("BUFFERING");
+        let { socket } = this.props;
+        this.setState({ isBuffering: true });
+        this.props.updatePlayerState(socket, { isBuffering: true });
     };
 
     _onBufferEnd = () => {
         console.log("BUFFERING ENDED");
+        this.props.setVideoState({ isPlaying: false });
+        let { socket } = this.props;
+        this.props.updatePlayerState(socket, { isBuffering: false });
+        this.setState({ isBuffering: false });
+        /*
+        if (this.state.isBuffering) {
+            this.props.updatePlayerState(socket, { isBuffering: false });
+            this.setState({ isBuffering: false });
+        }
+        */
     };
 
     _onPause = () => {
@@ -139,6 +151,7 @@ class Player extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        username: state.username,
         socket: state.socket,
         video: state.video,
     };
@@ -153,6 +166,12 @@ const mapDispatchToProps = (dispatch) => ({
     },
     updateVideo: (socket, state) => {
         dispatch(updateVideo(socket, state));
+    },
+    setVideoState: (state) => {
+        dispatch(setVideoState(state));
+    },
+    updatePlayerState: (socket, state) => {
+        dispatch(updatePlayerState(socket, state));
     },
 });
 

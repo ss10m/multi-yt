@@ -214,7 +214,9 @@ class Room extends React.Component {
                     </div>
                     <div>
                         {room.users.map((user) => (
-                            <p>{user}</p>
+                            <p style={{ marginLeft: "10px" }}>
+                                {`${user.username}: isBuffering - ${user.isBuffering}`}
+                            </p>
                         ))}
                     </div>
                     {this.getControls()}

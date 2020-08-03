@@ -44,6 +44,7 @@ export const connectSocket = () => async (dispatch, getState) => {
     });
 
     socket.on("updated-state", (updatedState) => {
+        console.log("RESPONSE: updated-state");
         console.log(updatedState);
         let keys = Object.keys(updatedState);
         for (let key of keys) {
@@ -154,6 +155,10 @@ export const updateVideo = (socket, state) => async (dispatch) => {
     console.log("ACTION: update-video");
     socket.emit("update-video", state);
 };
+export const updatePlayerState = (socket, state) => async (dispatch) => {
+    console.log("ACTION: update-player-state");
+    socket.emit("update-player-state", state);
+};
 export const setPlayer = (player) => ({
     type: "SET_PLAYER",
     player,
@@ -164,6 +169,10 @@ export const setPlayerReady = () => ({
 export const setVideo = (video) => ({
     type: "SET_VIDEO",
     video,
+});
+export const setVideoState = (state) => ({
+    type: "SET_VIDEO_STATE",
+    state,
 });
 export const clearVideo = () => ({
     type: "CLEAR_VIDEO",
