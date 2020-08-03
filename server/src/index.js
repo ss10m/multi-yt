@@ -118,7 +118,7 @@ io.on("connection", (socket) => {
         let room = userToRoom[socket.id];
         if (!room) return;
         rooms[room].video = { url, isPlaying: true, isBuffering: true };
-        io.in(room).emit("load-video", { url, isPlaying: true });
+        io.in(room).emit("load-video", { url, isPlaying: false });
     });
 
     socket.on("remove-video", () => {
@@ -148,33 +148,66 @@ io.on("connection", (socket) => {
         console.log("-----------update-player-state--------------");
         console.log(state);
 
+        /*
+        let roomId = userToRoom[socket.id];
+        let room = rooms[roomId];
+        let updatedState = { video: { isPlaying: true } };
+        console.log(updatedState);
+        io.in(roomId).emit("updated-state", updatedState);
+        */
+
+        /*
+        room.users[socket.id].isBuffering = state.isBuffering;
+
+        let updatedState = {
+            room: { users: Object.values(room.users) },
+        };
+
+        
+        let isBuffering = Object.values(room.users).some((user) => user.isBuffering);
+        let video = room.video;
+        console.log("isBuffering: " + isBuffering);
+     
+        if (video.isBuffering != isBuffering) {
+            video.isBuffering = isBuffering;
+            updatedState["video"] = { isPlaying: video.isPlaying && !isBuffering };
+        }
+       
+
+
+        console.log(updatedState);
+        */
+
         let roomId = userToRoom[socket.id];
         let room = rooms[roomId];
         room.users[socket.id].isBuffering = state.isBuffering;
-        console.log(Object.values(room.users));
-
         let updatedState = {
             room: { users: Object.values(room.users) },
         };
 
         let isBuffering = Object.values(room.users).some((user) => user.isBuffering);
         let video = room.video;
-        console.log("isBuffering: " + isBuffering);
-        /*
         if (video.isBuffering != isBuffering) {
             video.isBuffering = isBuffering;
             updatedState["video"] = { isPlaying: video.isPlaying && !isBuffering };
+            console.log("1");
+            console.log(updatedState);
+
+            switch (isBuffering) {
+                case true:
+                    socket.to(roomId).emit("updated-state", updatedState);
+                    break;
+                case false:
+                    io.in(roomId).emit("updated-state", updatedState);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            console.log("2");
+            console.log(updatedState);
+            socket.to(roomId).emit("updated-state", updatedState);
         }
-        */
-
-        video.isBuffering = isBuffering;
-        updatedState["video"] = { isPlaying: video.isPlaying && !isBuffering };
-
-        console.log(updatedState);
-
-        setTimeout(() => {
-            io.in(roomId).emit("updated-state", updatedState);
-        }, 500);
     });
 
     socket.on("disconnect", () => {

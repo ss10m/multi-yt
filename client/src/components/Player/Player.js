@@ -17,16 +17,71 @@ class Player extends React.Component {
 
         this.state = {
             isBuffering: true,
+            initalLoading: true,
         };
     }
 
     /*
-    componentDidUpdate(prevProps, prevState) {
-        if (!isEmpty(prevProps.video) && isEmpty(this.props.video)) {
-            this.setState({ initalLoading: true, isBuffering: false });
-        }
+    componentDidMount() {
+        this.timePlayed = setInterval(() => {
+            let { video } = this.props;
+            if (isEmpty(video) || !video.isPlayerReady) return;
+            console.log(video.player.getInternalPlayer().getPlayerState());
+            let playerState = video.player.getInternalPlayer().getPlayerState();
+            if (video.isPlaying && playerState !== 1) {
+                console.log("RESTARTING PLAYER STATE");
+                this.props.setVideoState({ isPlaying: false });
+                this.props.setVideoState({ isPlaying: true });
+            }
+        }, 200);
     }
     */
+
+    componentDidUpdate(prevProps) {
+        let { video } = this.props;
+        let prevVideo = prevProps.video;
+
+        if (isEmpty(video) || !video.isPlayerReady) return;
+        if (isEmpty(prevVideo) || !prevVideo.isPlayerReady) return;
+
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        console.log(prevVideo);
+        console.log(video);
+
+        if (prevVideo.isPlaying !== video.isPlaying) {
+            setTimeout(() => this.checkPlayerState(), 200);
+        }
+
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+
+    checkPlayerState = () => {
+        console.log("checkPlayerState");
+        let { video } = this.props;
+        if (isEmpty(video) || !video.isPlayerReady) return;
+
+        let playerState = video.player.getInternalPlayer().getPlayerState();
+
+        switch (video.isPlaying) {
+            case true:
+                console.log("RESTARTING PLAYER STATE: " + playerState);
+                if (playerState !== 1) {
+                    this.props.setVideoState({ isPlaying: false });
+                    this.props.setVideoState({ isPlaying: true });
+                }
+                break;
+            /*
+            case false:
+                console.log("RESTARTING PLAYER STATE: " + playerState);
+                if (playerState == 1) {
+                    this.props.setVideoState({ isPlaying: false });
+                }
+                break;
+                */
+            default:
+                return;
+        }
+    };
 
     ref = (player) => {
         let { video } = this.props;
@@ -35,8 +90,8 @@ class Player extends React.Component {
     };
 
     getPlayer = (playerWidth, playerHeight) => {
+        let { initalLoading, isBuffering } = this.state;
         let { video } = this.props;
-
         return (
             <>
                 <div style={{ width: playerWidth, height: playerHeight }} className="player-wrapper">
@@ -51,10 +106,9 @@ class Player extends React.Component {
                         url={video.url}
                         width="100%"
                         height="100%"
-                        playing={video.isPlaying}
-                        //playing={video.isPlaying}
+                        playing={video.isPlaying || initalLoading || isBuffering}
                         playbackRate={1}
-                        controls={false}
+                        controls={true}
                         muted={true}
                         onReady={this._onPlayerReady}
                         onBuffer={this._onBuffer}
@@ -65,11 +119,12 @@ class Player extends React.Component {
                         onProgress={this.handleProgress}
                         style={{ position: "absolute" }}
                     />
-                    <div className="overlay"></div>
                 </div>
             </>
         );
     };
+
+    //<div className="overlay"></div>
 
     handleProgress = (state) => {
         // custom slider
@@ -77,6 +132,8 @@ class Player extends React.Component {
     _onStart = () => {
         console.log("ON START");
         this.props.setPlayerReady();
+        this.setState({ initalLoading: false });
+
         // set inital time
         // enable controls
     };
@@ -92,22 +149,31 @@ class Player extends React.Component {
 
     _onBuffer = () => {
         console.log("BUFFERING");
+
         let { socket } = this.props;
-        this.setState({ isBuffering: true });
-        this.props.updatePlayerState(socket, { isBuffering: true });
+        if (!this.state.isBuffering) {
+            this.setState({ isBuffering: true });
+            this.props.updatePlayerState(socket, { isBuffering: true });
+        }
     };
 
     _onBufferEnd = () => {
         console.log("BUFFERING ENDED");
-        this.props.setVideoState({ isPlaying: false });
+
         let { socket } = this.props;
-        this.props.updatePlayerState(socket, { isBuffering: false });
-        this.setState({ isBuffering: false });
-        /*
         if (this.state.isBuffering) {
-            this.props.updatePlayerState(socket, { isBuffering: false });
             this.setState({ isBuffering: false });
+            this.props.setVideoState({ isPlaying: false });
+            // set user indicator to loading
+            this.props.updatePlayerState(socket, { isBuffering: false });
         }
+
+        /*
+        //if (this.state.isBuffering) {
+        this.props.updatePlayerState(socket, { isBuffering: false });
+        //this.setState({ isBuffering: false });
+        //this.props.setVideoState({ isPlaying: false });
+        //}
         */
     };
 
