@@ -118,7 +118,7 @@ io.on("connection", (socket) => {
         let room = userToRoom[socket.id];
         if (!room) return;
         rooms[room].video = { url, isPlaying: true, isBuffering: true };
-        io.in(room).emit("load-video", { url, isPlaying: false });
+        io.in(room).emit("load-video", rooms[room].video);
     });
 
     socket.on("remove-video", () => {
@@ -136,8 +136,10 @@ io.on("connection", (socket) => {
 
         if (state.hasOwnProperty("isPlaying")) {
             let room = rooms[roomId];
-            room.video.isPlaying = state.isPlaying;
-            return io.in(roomId).emit("updated-state", { video: state });
+            if (room.video.isPlaying !== state.isPlaying) {
+                room.video.isPlaying = state.isPlaying;
+                return io.in(roomId).emit("updated-state", { video: state });
+            }
         }
         if (state.hasOwnProperty("seek")) {
             return io.in(roomId).emit("updated-state", state);
@@ -148,42 +150,24 @@ io.on("connection", (socket) => {
         console.log("-----------update-player-state--------------");
         console.log(state);
 
-        /*
         let roomId = userToRoom[socket.id];
         let room = rooms[roomId];
-        let updatedState = { video: { isPlaying: true } };
-        console.log(updatedState);
-        io.in(roomId).emit("updated-state", updatedState);
-        */
-
-        /*
         room.users[socket.id].isBuffering = state.isBuffering;
-
         let updatedState = {
             room: { users: Object.values(room.users) },
         };
 
-        
         let isBuffering = Object.values(room.users).some((user) => user.isBuffering);
         let video = room.video;
-        console.log("isBuffering: " + isBuffering);
-     
         if (video.isBuffering != isBuffering) {
             video.isBuffering = isBuffering;
-            updatedState["video"] = { isPlaying: video.isPlaying && !isBuffering };
+            updatedState["video"] = { isBuffering };
         }
-       
 
+        io.in(roomId).emit("updated-state", updatedState);
+        console.log(updatedState.room);
 
-        console.log(updatedState);
-        */
-
-        let roomId = userToRoom[socket.id];
-        let room = rooms[roomId];
-        room.users[socket.id].isBuffering = state.isBuffering;
-        let updatedState = {
-            room: { users: Object.values(room.users) },
-        };
+        /*
 
         let isBuffering = Object.values(room.users).some((user) => user.isBuffering);
         let video = room.video;
@@ -208,6 +192,7 @@ io.on("connection", (socket) => {
             console.log(updatedState);
             socket.to(roomId).emit("updated-state", updatedState);
         }
+        */
     });
 
     socket.on("disconnect", () => {

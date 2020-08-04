@@ -50,6 +50,7 @@ export const connectSocket = () => async (dispatch, getState) => {
         for (let key of keys) {
             switch (key) {
                 case "room":
+                    console.log(updatedState[key]);
                     dispatch(setRoom(updatedState[key]));
                     break;
                 case "video":
