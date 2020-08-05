@@ -65,7 +65,7 @@ class App extends React.Component {
     render() {
         let { width, height, showUsernamePrompt } = this.state;
         let { room } = this.props;
-        this.printState();
+        //this.printState();
         return (
             <>
                 {showUsernamePrompt && <UsernamePrompt confirmUsername={this.confirmUsername} />}

@@ -97,8 +97,6 @@ const messagesReducer = (state = messages, action) => {
 
 const SET_VIDEO = "SET_VIDEO";
 const SET_VIDEO_STATE = "SET_VIDEO_STATE";
-const SET_PLAYER = "SET_PLAYER";
-const SET_PLAYER_READY = "SET_PLAYER_READY";
 const CLEAR_VIDEO = "CLEAR_VIDEO";
 
 const videoReducer = (state = {}, action) => {
@@ -107,11 +105,24 @@ const videoReducer = (state = {}, action) => {
             return { ...state, ...action.video };
         case SET_VIDEO_STATE:
             return { ...state, ...action.state };
-        case SET_PLAYER:
-            return { ...state, player: action.player };
-        case SET_PLAYER_READY:
-            return { ...state, isPlayerReady: true };
         case CLEAR_VIDEO:
+            return {};
+        default:
+            return state;
+    }
+};
+
+const SET_PLAYER = "SET_PLAYER";
+const SET_PLAYER_STATE = "SET_PLAYER_STATE";
+const CLEAR_PLAYER = "CLEAR_PLAYER";
+
+const playerReducer = (state = {}, action) => {
+    switch (action.type) {
+        case SET_PLAYER:
+            return { embed: action.embed, state: -1 };
+        case SET_PLAYER_STATE:
+            return { ...state, state: action.state };
+        case CLEAR_PLAYER:
             return {};
         default:
             return state;
@@ -125,4 +136,5 @@ export default combineReducers({
     rooms: roomsReducer,
     messages: messagesReducer,
     video: videoReducer,
+    player: playerReducer,
 });

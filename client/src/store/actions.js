@@ -40,6 +40,7 @@ export const connectSocket = () => async (dispatch, getState) => {
 
     socket.on("remove-video", () => {
         console.log("RESPONSE: remove-video");
+        dispatch(clearPlayer());
         dispatch(clearVideo());
     });
 
@@ -47,6 +48,7 @@ export const connectSocket = () => async (dispatch, getState) => {
         console.log("RESPONSE: updated-state");
         console.log(updatedState);
         let keys = Object.keys(updatedState);
+        let { player } = getState();
         for (let key of keys) {
             switch (key) {
                 case "room":
@@ -54,12 +56,34 @@ export const connectSocket = () => async (dispatch, getState) => {
                     dispatch(setRoom(updatedState[key]));
                     break;
                 case "video":
-                    dispatch(setVideo(updatedState[key]));
+                    //dispatch(setVideo(updatedState[key]));
+
+                    if (updatedState[key].hasOwnProperty("isPlaying")) {
+                        switch (updatedState[key].isPlaying) {
+                            case true:
+                                return player.embed.playVideo();
+                            case false:
+                                return player.embed.pauseVideo();
+                            default:
+                                break;
+                        }
+                    }
+                    if (updatedState[key].hasOwnProperty("isBuffering")) {
+                        switch (updatedState[key].isBuffering) {
+                            case true:
+                                return player.embed.pauseVideo();
+
+                            case false:
+                                return player.embed.playVideo();
+                            default:
+                                break;
+                        }
+                    }
+
                     break;
                 case "seek":
-                    let { video } = getState();
-                    if (isEmpty(video) || isEmpty(video.player)) return;
-                    video.player.seekTo(updatedState[key]);
+                    if (isEmpty(player) || isEmpty(player.embed)) return;
+                    player.embed.seekTo(updatedState[key]);
                     break;
                 case "message":
                     dispatch(addMessage(updatedState[key]));
@@ -156,17 +180,7 @@ export const updateVideo = (socket, state) => async (dispatch) => {
     console.log("ACTION: update-video");
     socket.emit("update-video", state);
 };
-export const updatePlayerState = (socket, state) => async (dispatch) => {
-    console.log("ACTION: update-player-state");
-    socket.emit("update-player-state", state);
-};
-export const setPlayer = (player) => ({
-    type: "SET_PLAYER",
-    player,
-});
-export const setPlayerReady = () => ({
-    type: "SET_PLAYER_READY",
-});
+
 export const setVideo = (video) => ({
     type: "SET_VIDEO",
     video,
@@ -177,4 +191,23 @@ export const setVideoState = (state) => ({
 });
 export const clearVideo = () => ({
     type: "CLEAR_VIDEO",
+});
+
+//=====================================
+//           PLAYER ACTIONS
+//=====================================
+export const updatePlayerState = (socket, state) => async (dispatch) => {
+    console.log("ACTION: update-player-state");
+    socket.emit("update-player-state", state);
+};
+export const setPlayer = (embed) => ({
+    type: "SET_PLAYER",
+    embed,
+});
+export const setPlayerState = (state) => ({
+    type: "SET_PLAYER_STATE",
+    state,
+});
+export const clearPlayer = () => ({
+    type: "CLEAR_PLAYER",
 });

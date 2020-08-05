@@ -136,10 +136,14 @@ io.on("connection", (socket) => {
 
         if (state.hasOwnProperty("isPlaying")) {
             let room = rooms[roomId];
+            /*
             if (room.video.isPlaying !== state.isPlaying) {
                 room.video.isPlaying = state.isPlaying;
                 return io.in(roomId).emit("updated-state", { video: state });
             }
+            */
+            room.video.isPlaying = state.isPlaying;
+            return io.in(roomId).emit("updated-state", { video: state });
         }
         if (state.hasOwnProperty("seek")) {
             return io.in(roomId).emit("updated-state", state);
@@ -162,37 +166,13 @@ io.on("connection", (socket) => {
         if (video.isBuffering != isBuffering) {
             video.isBuffering = isBuffering;
             updatedState["video"] = { isBuffering };
+
+            // emit to everyone
         }
 
+        // emit to everyone execpt sender
         io.in(roomId).emit("updated-state", updatedState);
         console.log(updatedState.room);
-
-        /*
-
-        let isBuffering = Object.values(room.users).some((user) => user.isBuffering);
-        let video = room.video;
-        if (video.isBuffering != isBuffering) {
-            video.isBuffering = isBuffering;
-            updatedState["video"] = { isPlaying: video.isPlaying && !isBuffering };
-            console.log("1");
-            console.log(updatedState);
-
-            switch (isBuffering) {
-                case true:
-                    socket.to(roomId).emit("updated-state", updatedState);
-                    break;
-                case false:
-                    io.in(roomId).emit("updated-state", updatedState);
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            console.log("2");
-            console.log(updatedState);
-            socket.to(roomId).emit("updated-state", updatedState);
-        }
-        */
     });
 
     socket.on("disconnect", () => {

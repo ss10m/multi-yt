@@ -23,31 +23,11 @@ const SEEK_FORWARD_30 = "SEEK_FORWARD_30";
 class Room extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { url: "", slider: 0, timePlayed: 0 };
-
-        this.updateServer = debounce(this.updateServer, 200);
-    }
-
-    componentDidMount() {
-        this.timePlayed = setInterval(() => {
-            let { video } = this.props;
-            if (isEmpty(video) || !video.isPlayerReady) return;
-            this.setState({ timePlayed: video.player.getCurrentTime() });
-        }, 1000);
-    }
-
-    componentDidUpdate(prevProps) {
-        if (!isEmpty(prevProps.video) && isEmpty(this.props.video)) {
-            this.setState({ timePlayed: 0 });
-        }
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.timePlayed);
+        this.state = { url: "" };
     }
 
     handleControls = (action) => {
-        let { video, socket } = this.props;
+        let { socket, player } = this.props;
 
         let actionObj = null;
         switch (action) {
@@ -58,16 +38,16 @@ class Room extends React.Component {
                 actionObj = { isPlaying: false };
                 break;
             case SEEK_BACK_10:
-                actionObj = { seek: Math.max(video.player.getCurrentTime() - 10, 0) };
+                actionObj = { seek: Math.max(player.embed.getCurrentTime() - 10, 0) };
                 break;
             case SEEK_BACK_30:
-                actionObj = { seek: Math.max(video.player.getCurrentTime() - 30, 0) };
+                actionObj = { seek: Math.max(player.embed.getCurrentTime() - 30, 0) };
                 break;
             case SEEK_FORWARD_10:
-                actionObj = { seek: Math.max(video.player.getCurrentTime() + 10, 0) };
+                actionObj = { seek: Math.max(player.embed.getCurrentTime() + 10, 0) };
                 break;
             case SEEK_FORWARD_30:
-                actionObj = { seek: Math.max(video.player.getCurrentTime() + 30, 0) };
+                actionObj = { seek: Math.max(player.embed.getCurrentTime() + 30, 0) };
                 break;
             default:
                 return;
@@ -92,19 +72,11 @@ class Room extends React.Component {
         this.props.removeVideo(this.props.socket);
     };
 
-    handleSeek = (event) => {
-        this.updateServer(event.target.value);
-    };
-
-    updateServer = (value) => {
-        this.setState({ timePlayed: value });
-        this.props.updateVideo(this.props.socket, { seek: value });
-    };
-
     getControls = () => {
-        let { video } = this.props;
-        let isDisabled = isEmpty(video) || !video.isPlayerReady;
-        let isPlaying = video.isPlaying;
+        let { player } = this.props;
+        let isDisabled = isEmpty(player);
+
+        let isPlaying = player.state === 1 || player.state === -1;
 
         return (
             <div className="controls-wrapper">
@@ -141,17 +113,6 @@ class Room extends React.Component {
                         </IconContext.Provider>
                     </div>
                 </div>
-
-                <input
-                    className="slider"
-                    type="range"
-                    value={isDisabled ? 0 : this.state.timePlayed}
-                    min={0}
-                    max={isDisabled ? 1 : Math.floor(video.player.getDuration())}
-                    onInput={this.handleSeek}
-                    step={1}
-                    disabled={isDisabled}
-                />
             </div>
         );
     };
@@ -159,7 +120,6 @@ class Room extends React.Component {
     render() {
         let { url } = this.state;
         let { socket, room, video } = this.props;
-
         let loadedVideo = !isEmpty(video);
         let button;
         if (loadedVideo) {
@@ -205,6 +165,7 @@ class Room extends React.Component {
                                 placeholder={"Invite"}
                                 spellCheck={false}
                                 autoFocus={false}
+                                readOnly={true}
                                 onFocus={(event) => event.target.select()}
                             />
                             <CopyToClipboard text={inviteUrl}>
@@ -213,12 +174,13 @@ class Room extends React.Component {
                         </div>
                     </div>
                     <div>
-                        {room.users.map((user) => (
-                            <p style={{ marginLeft: "10px" }}>
+                        {room.users.map((user, idx) => (
+                            <p style={{ marginLeft: "10px" }} key={idx}>
                                 {`${user.username}: isBuffering - ${user.isBuffering}`}
                             </p>
                         ))}
                     </div>
+
                     {this.getControls()}
                 </div>
             </div>
@@ -230,6 +192,7 @@ const mapStateToProps = (state) => {
     return {
         socket: state.socket,
         video: state.video,
+        player: state.player,
         room: state.room,
     };
 };
