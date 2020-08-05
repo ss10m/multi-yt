@@ -23,7 +23,29 @@ const SEEK_FORWARD_30 = "SEEK_FORWARD_30";
 class Room extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { url: "" };
+        this.state = { url: "", timePlayed: 0 };
+
+        this.updateServer = debounce(this.updateServer, 200);
+    }
+
+    componentDidMount() {
+        this.timePlayed = setInterval(() => {
+            let { player } = this.props;
+            if (!player.embed) return;
+            let currentTime = player.embed.getCurrentTime();
+            if (currentTime === this.state.timePlayed) return;
+            this.setState({ timePlayed: currentTime });
+        }, 1000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timePlayed);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.player.embed && !this.props.player.embed) {
+            this.setState({ timePlayed: 0 });
+        }
     }
 
     handleControls = (action) => {
@@ -72,9 +94,18 @@ class Room extends React.Component {
         this.props.removeVideo(this.props.socket);
     };
 
+    handleSeek = (event) => {
+        this.updateServer(event.target.value);
+    };
+
+    updateServer = (value) => {
+        this.setState({ timePlayed: value });
+        this.props.updateVideo(this.props.socket, { seek: value });
+    };
+
     getControls = () => {
         let { player } = this.props;
-        let isDisabled = isEmpty(player);
+        let isDisabled = !player.embed;
 
         let isPlaying = player.state === 1 || player.state === -1;
 
@@ -113,6 +144,17 @@ class Room extends React.Component {
                         </IconContext.Provider>
                     </div>
                 </div>
+
+                <input
+                    className="slider"
+                    type="range"
+                    value={isDisabled ? 0 : this.state.timePlayed}
+                    min={0}
+                    max={isDisabled ? 1 : Math.floor(player.embed.getDuration())}
+                    onInput={this.handleSeek}
+                    step={1}
+                    disabled={isDisabled}
+                />
             </div>
         );
     };
@@ -137,6 +179,8 @@ class Room extends React.Component {
         }
 
         let inviteUrl = window.location.href + "invite/" + room.roomId;
+
+        console.log(this.state.timePlayed);
 
         return (
             <div className="room-info">

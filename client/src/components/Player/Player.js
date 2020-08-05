@@ -43,7 +43,7 @@ class Player extends React.Component {
                         width="100%"
                         height="100%"
                         playbackRate={1}
-                        controls={true}
+                        controls={false}
                         muted={true}
                         style={{ position: "absolute" }}
                     />
