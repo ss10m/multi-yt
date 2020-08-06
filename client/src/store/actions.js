@@ -38,6 +38,13 @@ export const connectSocket = () => async (dispatch, getState) => {
         dispatch(setVideo(video));
     });
 
+    socket.on("get-video-time", (roomId) => {
+        let { player } = getState();
+        let currentTime = 0;
+        if (!isEmpty(player)) currentTime = player.embed.getCurrentTime();
+        socket.emit("current-video-time", roomId, currentTime);
+    });
+
     socket.on("remove-video", () => {
         console.log("RESPONSE: remove-video");
         dispatch(clearPlayer());

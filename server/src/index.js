@@ -41,6 +41,7 @@ io.on("connection", (socket) => {
         rooms[room] = {
             users: {},
             video: {},
+            action: null,
             roomId,
         };
         rooms[room].users[socket.id] = { username, isBuffering: true };
@@ -66,20 +67,31 @@ io.on("connection", (socket) => {
         let currentRooms = Object.keys(rooms);
         if (!currentRooms.includes(roomId)) return socket.emit("rooms", getRooms());
 
+        let updatedState = {};
+
         socket.leave("lobby");
         socket.join(roomId, printRooms);
         let room = rooms[roomId];
+        let timeSource = Object.keys(room.users)[0];
         room.users[socket.id] = { username, isBuffering: true };
         userToRoom[socket.id] = roomId;
-        //if (room.video && room.video.isPlaying) room.video.isPlaying = false;
+        updatedState["room"] = { users: Object.values(room.users) };
+        if (Object.keys(room.video).length !== 0) {
+            room.video.isBuffering = true;
+            updatedState["video"] = { isBuffering: true };
+        }
+
         socket.emit("joined-room", { name: roomId, users: Object.values(room.users), roomId: room.roomId }, room.video);
-        socket.to(roomId).emit("updated-state", {
-            room: { users: Object.values(room.users) },
-            video: room.video,
-            message: { username, msg: "has joined the chat", type: "status" },
-        });
+        io.to(timeSource).emit("get-video-time", roomId);
+
+        updatedState["message"] = { username, msg: "has joined the chat", type: "status" };
+        socket.to(roomId).emit("updated-state", updatedState);
         updateLobby();
-        getRooms();
+    });
+
+    socket.on("current-video-time", (roomId, currentTime) => {
+        console.log("------------current-video-time-------------");
+        rooms[roomId].action = { type: "seek", time: currentTime };
     });
 
     socket.on("leave-room", () => {
@@ -163,14 +175,19 @@ io.on("connection", (socket) => {
 
         let isBuffering = Object.values(room.users).some((user) => user.isBuffering);
         let video = room.video;
-        if (video.isBuffering != isBuffering) {
+
+        if (!isBuffering && room.action) {
+            let action = room.action;
+            updatedState["seek"] = action.time;
+            room.action = null;
+        } else if (!isBuffering && room.isPlaying) {
+            video.isBuffering = isBuffering;
+            updatedState["video"] = { isPlaying: true };
+        } else if (video.isBuffering != isBuffering) {
             video.isBuffering = isBuffering;
             updatedState["video"] = { isBuffering };
-
-            // emit to everyone
         }
 
-        // emit to everyone execpt sender
         io.in(roomId).emit("updated-state", updatedState);
         console.log(updatedState.room);
     });
