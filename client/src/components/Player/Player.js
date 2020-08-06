@@ -21,6 +21,27 @@ class Player extends React.Component {
         };
     }
 
+    componentDidMount() {
+        this.timePlayed = setInterval(() => {
+            let { player, socket } = this.props;
+            let { isBuffering } = this.state;
+            if (!player.embed) return;
+
+            let loadedBytes = player.embed.getVideoBytesLoaded();
+            let totalBytes = player.embed.getVideoBytesTotal();
+
+            if (loadedBytes === totalBytes && loadedBytes === 1 && isBuffering) {
+                console.log("STUCK");
+                this.setState({ isBuffering: false });
+                this.props.updatePlayerState(socket, { isBuffering: false });
+            }
+        }, 1000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timePlayed);
+    }
+
     getPlayer = (playerWidth, playerHeight) => {
         let { video } = this.props;
         return (

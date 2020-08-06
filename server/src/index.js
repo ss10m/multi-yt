@@ -98,7 +98,7 @@ io.on("connection", (socket) => {
         console.log("------------------leave-room------------------");
         let roomId = userToRoom[socket.id];
         if (!roomId) return socket.emit("left-room", getRooms());
-        let username = rooms[roomId].users[socket.id];
+        let username = rooms[roomId].users[socket.id].username;
 
         let room = leaveRoom(socket.id);
         socket.leave(roomId);
@@ -130,7 +130,7 @@ io.on("connection", (socket) => {
         let room = userToRoom[socket.id];
         if (!room) return;
         rooms[room].video = { url, isPlaying: true, isBuffering: true };
-        io.in(room).emit("load-video", rooms[room].video);
+        io.in(room).emit("load-video", { url });
     });
 
     socket.on("remove-video", () => {
