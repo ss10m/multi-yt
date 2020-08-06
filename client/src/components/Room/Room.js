@@ -30,11 +30,24 @@ class Room extends React.Component {
 
     componentDidMount() {
         this.timePlayed = setInterval(() => {
-            let { player } = this.props;
+            let { video, player } = this.props;
             if (!player.embed) return;
             let currentTime = player.embed.getCurrentTime();
-            if (currentTime === this.state.timePlayed) return;
-            this.setState({ timePlayed: currentTime });
+            if (currentTime !== this.state.timePlayed) {
+                this.setState({ timePlayed: currentTime });
+            }
+
+            console.log(video);
+
+            if (typeof player.embed.getPlayerState === "function") {
+                let playerState = player.embed.getPlayerState();
+                let loadedBytes = player.embed.getVideoBytesLoaded();
+                let totalBytes = player.embed.getVideoBytesTotal();
+
+                if (loadedBytes === totalBytes && playerState === 3) {
+                    console.log("STUCK");
+                }
+            }
         }, 1000);
     }
 
@@ -179,8 +192,6 @@ class Room extends React.Component {
         }
 
         let inviteUrl = window.location.href + "invite/" + room.roomId;
-
-        console.log(this.state.timePlayed);
 
         return (
             <div className="room-info">

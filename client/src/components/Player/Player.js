@@ -3,7 +3,7 @@ import React from "react";
 import ReactPlayer from "react-player/youtube";
 import { connect } from "react-redux";
 
-import { setPlayer, updateVideo, updatePlayerState, setPlayerState } from "store/actions";
+import { setPlayer, updatePlayerState, setPlayerState } from "store/actions";
 
 import "./Player.scss";
 const ENDED = 0;
@@ -136,9 +136,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
     setPlayer: (player) => {
         dispatch(setPlayer(player));
-    },
-    updateVideo: (socket, state) => {
-        dispatch(updateVideo(socket, state));
     },
     updatePlayerState: (socket, state) => {
         dispatch(updatePlayerState(socket, state));

@@ -59,38 +59,25 @@ export const connectSocket = () => async (dispatch, getState) => {
         for (let key of keys) {
             switch (key) {
                 case "room":
-                    console.log(updatedState[key]);
                     dispatch(setRoom(updatedState[key]));
                     break;
                 case "video":
-                    //dispatch(setVideo(updatedState[key]));
-
-                    if (updatedState[key].hasOwnProperty("isPlaying")) {
-                        switch (updatedState[key].isPlaying) {
-                            case true:
-                                return player.embed.playVideo();
-                            case false:
-                                return player.embed.pauseVideo();
-                            default:
-                                break;
-                        }
+                    console.log(updatedState[key]);
+                    switch (updatedState[key].action) {
+                        case "play":
+                            player.embed.playVideo();
+                            break;
+                        case "pause":
+                            player.embed.pauseVideo();
+                            break;
+                        default:
+                            break;
                     }
-                    if (updatedState[key].hasOwnProperty("isBuffering")) {
-                        switch (updatedState[key].isBuffering) {
-                            case true:
-                                return player.embed.pauseVideo();
-
-                            case false:
-                                return player.embed.playVideo();
-                            default:
-                                break;
-                        }
-                    }
-
                     break;
                 case "seek":
                     if (isEmpty(player) || isEmpty(player.embed)) return;
                     player.embed.seekTo(updatedState[key]);
+                    player.embed.playVideo();
                     break;
                 case "message":
                     dispatch(addMessage(updatedState[key]));

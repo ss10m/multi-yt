@@ -78,7 +78,7 @@ io.on("connection", (socket) => {
         updatedState["room"] = { users: Object.values(room.users) };
         if (Object.keys(room.video).length !== 0) {
             room.video.isBuffering = true;
-            updatedState["video"] = { isBuffering: true };
+            updatedState["video"] = { action: "pause" };
         }
 
         socket.emit("joined-room", { name: roomId, users: Object.values(room.users), roomId: room.roomId }, room.video);
@@ -148,14 +148,10 @@ io.on("connection", (socket) => {
 
         if (state.hasOwnProperty("isPlaying")) {
             let room = rooms[roomId];
-            /*
-            if (room.video.isPlaying !== state.isPlaying) {
-                room.video.isPlaying = state.isPlaying;
-                return io.in(roomId).emit("updated-state", { video: state });
-            }
-            */
             room.video.isPlaying = state.isPlaying;
-            return io.in(roomId).emit("updated-state", { video: state });
+
+            let action = { action: room.video.isPlaying && !room.video.isBuffering ? "play" : "pause" };
+            return io.in(roomId).emit("updated-state", { video: action });
         }
         if (state.hasOwnProperty("seek")) {
             return io.in(roomId).emit("updated-state", state);
@@ -177,15 +173,21 @@ io.on("connection", (socket) => {
         let video = room.video;
 
         if (!isBuffering && room.action) {
+            console.log("1");
             let action = room.action;
             updatedState["seek"] = action.time;
+            updatedState["video"] = { action: room.video.isPlaying && !room.video.isBuffering ? "play" : "pause" };
             room.action = null;
         } else if (!isBuffering && room.isPlaying) {
+            console.log("2");
             video.isBuffering = isBuffering;
-            updatedState["video"] = { isPlaying: true };
+            updatedState["video"] = { action: "play" };
         } else if (video.isBuffering != isBuffering) {
+            console.log("3");
             video.isBuffering = isBuffering;
-            updatedState["video"] = { isBuffering };
+            updatedState["video"] = { action: room.video.isPlaying && !room.video.isBuffering ? "play" : "pause" };
+        } else {
+            console.log("4");
         }
 
         io.in(roomId).emit("updated-state", updatedState);
