@@ -185,5 +185,26 @@ $button-hover-color: #46464a;
                 cursor: pointer;
             }
         }
+
+        .status {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+
+            .user {
+                height: 30px;
+                display: flex;
+                align-items: center;
+                margin: 10px;
+                padding: 3px 8px;
+                background-color: $button-color;
+                border-radius: 7px;
+
+                p {
+                    margin: 0;
+                    margin-right: 10px;
+                }
+            }
+        }
     }
 }

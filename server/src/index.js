@@ -21,9 +21,25 @@ let roomsId = 0;
 let rooms = {};
 let userToRoom = {};
 let roomIdToRoom = {};
+let connectedIps = {};
 
 io.on("connection", (socket) => {
     console.log("------------------connection------------------");
+
+    let ip = socket.request.connection.remoteAddress;
+    if (connectedIps.hasOwnProperty(ip)) {
+        if (connectedIps[ip] > 3) {
+            socket.emit("connection-error");
+            socket.disconnect();
+            return;
+        }
+        connectedIps[ip] = connectedIps[ip] + 1;
+    } else {
+        connectedIps[ip] = 1;
+    }
+
+    console.log(connectedIps);
+
     socket.emit("rooms", getRooms());
     socket.join("lobby", printRooms);
 
@@ -213,6 +229,11 @@ io.on("connection", (socket) => {
             updateLobby();
         }
         socket.leave("lobby", printRooms);
+
+        let ip = socket.request.connection.remoteAddress;
+        connectedIps[ip] = connectedIps[ip] - 1;
+        if (connectedIps[ip] === 0) delete connectedIps[ip];
+        console.log(connectedIps);
     });
 });
 

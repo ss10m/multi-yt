@@ -4,8 +4,10 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { debounce } from "lodash";
 import { connect } from "react-redux";
 
+import Spinner from "../Spinner/Spinner";
+
 import { IconContext } from "react-icons";
-import { FaPlay, FaPause } from "react-icons/fa";
+import { FaPlay, FaPause, FaCheckCircle } from "react-icons/fa";
 import { MdReplay10, MdReplay30, MdForward10, MdForward30 } from "react-icons/md";
 import { leaveRoom, loadVideo, removeVideo, updateVideo } from "store/actions";
 
@@ -102,6 +104,33 @@ class Room extends React.Component {
     updateServer = (value) => {
         this.setState({ timePlayed: value });
         this.props.updateVideo(this.props.socket, { seek: value });
+    };
+
+    getStatus = () => {
+        let { room, video } = this.props;
+
+        let checkbox = (
+            <IconContext.Provider value={{ size: "20px", color: "green" }}>
+                <FaCheckCircle />
+            </IconContext.Provider>
+        );
+        let loading = <Spinner size="20px" />;
+
+        let status = (user) => {
+            if (!video.url || !user.isBuffering) return checkbox;
+            return loading;
+        };
+
+        return (
+            <div className="status">
+                {room.users.map((user, idx) => (
+                    <div className="user" key={idx}>
+                        <p>{user.username}</p>
+                        {status(user)}
+                    </div>
+                ))}
+            </div>
+        );
     };
 
     getControls = () => {
@@ -216,13 +245,7 @@ class Room extends React.Component {
                             </CopyToClipboard>
                         </div>
                     </div>
-                    <div>
-                        {room.users.map((user, idx) => (
-                            <p style={{ marginLeft: "10px" }} key={idx}>
-                                {`${user.username}: isBuffering - ${user.isBuffering}`}
-                            </p>
-                        ))}
-                    </div>
+                    {this.getStatus()}
 
                     {this.getControls()}
                 </div>

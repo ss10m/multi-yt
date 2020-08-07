@@ -87,6 +87,10 @@ export const connectSocket = () => async (dispatch, getState) => {
             }
         }
     });
+
+    socket.on("connection-error", () => {
+        console.log("RESPONSE: connection-error");
+    });
 };
 export const setSocket = (socket) => ({
     type: "SET_SOCKET",
