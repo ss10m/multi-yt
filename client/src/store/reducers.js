@@ -2,10 +2,21 @@ import { combineReducers } from "redux";
 
 const SET_USERNAME = "SET_USERNAME";
 
-const usernameReducer = (state = Math.random().toString(36).substring(7), action) => {
+const usernameReducer = (state = "", action) => {
     switch (action.type) {
         case SET_USERNAME:
             return action.username;
+        default:
+            return state;
+    }
+};
+
+const SET_ERROR = "SET_ERROR";
+
+const errorReducer = (state = null, action) => {
+    switch (action.type) {
+        case SET_ERROR:
+            return action.error;
         default:
             return state;
     }
@@ -131,6 +142,7 @@ const playerReducer = (state = {}, action) => {
 
 export default combineReducers({
     username: usernameReducer,
+    error: errorReducer,
     socket: socketReducer,
     room: roomReducer,
     rooms: roomsReducer,

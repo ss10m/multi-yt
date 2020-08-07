@@ -26,9 +26,45 @@ class App extends React.Component {
         };
     }
 
-    componentDidMount() {
+    /*
+    registerTab = () => {
+        //localStorage.clear();
+        let numberOfTabs = JSON.parse(sessionStorage.getItem("tabs"));
+        if (numberOfTabs === null) {
+            sessionStorage.setItem("tabs", 1);
+        } else {
+            if (numberOfTabs >= 4) return;
+            sessionStorage.setItem("tabs", numberOfTabs + 1);
+        }
+        console.log(sessionStorage.getItem("tabs"));
+
         window.addEventListener("resize", this.updateDimensions);
+        window.addEventListener("beforeunload", this.unregisterTab);
         this.props.connectSocket();
+        this.setState({ allowedTab: true });
+    };
+
+    unregisterTab = () => {
+        window.alert("closed window");
+        let numberOfTabs = JSON.parse(sessionStorage.getItem("tabs"));
+        if (numberOfTabs !== null) {
+            if (numberOfTabs <= 1) sessionStorage.clear();
+            else sessionStorage.setItem("tabs", numberOfTabs - 1);
+        }
+        console.log(sessionStorage.getItem("tabs"));
+    };
+    */
+
+    componentDidMount() {
+        let id = localStorage.getItem("sync-id");
+        if (!id) {
+            id = Math.random().toString(36).substr(2, 9);
+            localStorage.setItem("sync-id", id);
+        }
+
+        console.log(id);
+        window.addEventListener("resize", this.updateDimensions);
+        this.props.connectSocket(id);
     }
 
     componentWillUnmount() {
@@ -64,8 +100,10 @@ class App extends React.Component {
 
     render() {
         let { width, height, showUsernamePrompt } = this.state;
-        let { room } = this.props;
+        let { room, error } = this.props;
         //this.printState();
+        if (error) return <div className="error">{error}</div>;
+
         return (
             <>
                 {showUsernamePrompt && <UsernamePrompt confirmUsername={this.confirmUsername} />}
@@ -86,6 +124,7 @@ class App extends React.Component {
 const mapStateToProps = (state) => {
     return {
         room: state.room,
+        error: state.error,
         rooms: state.rooms,
         video: state.video,
         messages: state.messages,
@@ -94,8 +133,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    connectSocket: () => {
-        dispatch(connectSocket());
+    connectSocket: (id) => {
+        dispatch(connectSocket(id));
     },
     setUsername: (username) => {
         dispatch(setUsername(username));

@@ -21,24 +21,27 @@ let roomsId = 0;
 let rooms = {};
 let userToRoom = {};
 let roomIdToRoom = {};
-let connectedIps = {};
+let browserIds = {};
+let socketIdtoBrowserId = {};
 
 io.on("connection", (socket) => {
     console.log("------------------connection------------------");
 
-    let ip = socket.request.connection.remoteAddress;
-    if (connectedIps.hasOwnProperty(ip)) {
-        if (connectedIps[ip] > 3) {
-            socket.emit("connection-error");
-            socket.disconnect();
-            return;
+    let browserId = socket.handshake.query.id;
+    if (browserIds.hasOwnProperty(browserId)) {
+        let connectedUsers = browserIds[browserId];
+        if (connectedUsers >= 4) {
+            socket.emit("handle-error");
+            return socket.disconnect();
         }
-        connectedIps[ip] = connectedIps[ip] + 1;
+        browserIds[browserId] += 1;
     } else {
-        connectedIps[ip] = 1;
+        browserIds[browserId] = 1;
     }
+    socketIdtoBrowserId[socket.id] = browserId;
 
-    console.log(connectedIps);
+    console.log(socketIdtoBrowserId);
+    console.log(browserIds);
 
     socket.emit("rooms", getRooms());
     socket.join("lobby", printRooms);
@@ -215,7 +218,7 @@ io.on("connection", (socket) => {
         let roomId = userToRoom[socket.id];
         let username;
         if (roomId) {
-            username = rooms[roomId].users[socket.id];
+            username = rooms[roomId].users[socket.id].username;
         }
         let room = leaveRoom(socket.id);
 
@@ -230,10 +233,18 @@ io.on("connection", (socket) => {
         }
         socket.leave("lobby", printRooms);
 
-        let ip = socket.request.connection.remoteAddress;
-        connectedIps[ip] = connectedIps[ip] - 1;
-        if (connectedIps[ip] === 0) delete connectedIps[ip];
-        console.log(connectedIps);
+        let browserId = socketIdtoBrowserId[socket.id];
+        if (!browserId) return;
+        let connectecUsers = browserIds[browserId];
+        if (connectecUsers <= 1) {
+            delete browserIds[browserId];
+        } else {
+            browserIds[browserId] -= 1;
+        }
+        delete socketIdtoBrowserId[socket.id];
+
+        console.log(socketIdtoBrowserId);
+        console.log(browserIds);
     });
 });
 

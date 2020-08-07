@@ -15,8 +15,10 @@ class UsernamePrompt extends Component {
 
     handleInput = (inputType) => {
         return (event) => {
+            let username = event.target.value;
+            //if (username.length > 12) return;
             this.setState({
-                [inputType]: event.target.value,
+                [inputType]: username,
             });
         };
     };

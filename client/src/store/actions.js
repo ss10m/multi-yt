@@ -4,9 +4,15 @@ import { isEmpty } from "helpers";
 //=====================================
 //          SOCKET ACTIONS
 //=====================================
-export const connectSocket = () => async (dispatch, getState) => {
-    let socket = socketIO.connect();
+export const connectSocket = (id) => async (dispatch, getState) => {
+    let socket = socketIO.connect({ query: `id=${id}` });
     dispatch(setSocket(socket));
+
+    socket.on("handle-error", () => {
+        console.log("RESPONSE: handle-error");
+        dispatch(setError("Reached maximum number of allowed tabs in a single browser"));
+    });
+
     socket.on("rooms", (rooms) => {
         console.log("RESPONSE: rooms");
         dispatch(setRooms(rooms));
@@ -87,10 +93,6 @@ export const connectSocket = () => async (dispatch, getState) => {
             }
         }
     });
-
-    socket.on("connection-error", () => {
-        console.log("RESPONSE: connection-error");
-    });
 };
 export const setSocket = (socket) => ({
     type: "SET_SOCKET",
@@ -103,6 +105,14 @@ export const setSocket = (socket) => ({
 export const setUsername = (username) => ({
     type: "SET_USERNAME",
     username,
+});
+
+//=====================================
+//          ERROR ACTIONS
+//=====================================
+export const setError = (error) => ({
+    type: "SET_ERROR",
+    error,
 });
 
 //=====================================
