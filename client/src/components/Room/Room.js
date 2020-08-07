@@ -87,9 +87,12 @@ class Room extends React.Component {
     loadVideo = () => {
         let url = this.state.url;
         if (!url) return;
-        // check if valid link
-        this.props.loadVideo(this.props.socket, url);
-        this.setState({ url: "" });
+        let idRegEx = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|\?v=)([^#&?]*).*/;
+        let match = url.match(idRegEx);
+        if (match && match[2].length === 11) {
+            this.props.loadVideo(this.props.socket, "https://www.youtube.com/watch?v=" + match[2]);
+            this.setState({ url: "" });
+        }
     };
 
     removeVideo = () => {

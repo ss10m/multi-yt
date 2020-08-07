@@ -68,7 +68,7 @@ export const connectSocket = (id) => async (dispatch, getState) => {
                     dispatch(setRoom(updatedState[key]));
                     break;
                 case "video":
-                    console.log(updatedState[key]);
+                    if (isEmpty(player) || isEmpty(player.embed)) return;
                     switch (updatedState[key].action) {
                         case "play":
                             player.embed.playVideo();
