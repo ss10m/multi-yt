@@ -83,7 +83,7 @@ class App extends React.Component {
         let result = path.filter((word) => word);
 
         if (result.length === 2 && result[0] === "invite" && result[1].length === 7) {
-            this.props.joinRoom(this.props.socket, { id: result[1] }, username);
+            this.props.joinRoom(this.props.socket, result[1], username);
         }
         this.props.history.push("/");
     };

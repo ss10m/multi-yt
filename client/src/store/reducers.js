@@ -109,7 +109,8 @@ const messagesReducer = (state = messages, action) => {
 const SET_VIDEO = "SET_VIDEO";
 const SET_VIDEO_STATE = "SET_VIDEO_STATE";
 const CLEAR_VIDEO = "CLEAR_VIDEO";
-
+// add isPlaying state consistent with the server to display the correct play/pause btn
+// if video ended display play btn instead of pause (change in server code ??)
 const videoReducer = (state = {}, action) => {
     switch (action.type) {
         case SET_VIDEO:

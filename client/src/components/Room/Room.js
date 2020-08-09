@@ -211,7 +211,7 @@ class Room extends React.Component {
             );
         }
 
-        let inviteUrl = window.location.href + "invite/" + room.roomId;
+        let inviteUrl = window.location.href + "invite/" + room.id;
 
         return (
             <div className="room-info">

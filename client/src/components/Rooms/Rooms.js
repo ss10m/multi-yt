@@ -59,7 +59,7 @@ class Rooms extends React.Component {
                 <td width="25%">{room.name}</td>
                 <td width="15%">{room.users}</td>
                 <td className="btn">
-                    <button onClick={() => this.props.joinRoom(socket, { name: room.name }, username)}>JOIN</button>
+                    <button onClick={() => this.props.joinRoom(socket, room.id, username)}>JOIN</button>
                 </td>
             </tr>
         ));

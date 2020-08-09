@@ -17,6 +17,8 @@ app.use(express.static(CLIENT_BUILD_PATH));
 const server = http.Server(app);
 const io = ioClient(server);
 
+import Room from "./room.js";
+
 let roomsId = 0;
 let rooms = {};
 let userToRoom = {};
@@ -43,86 +45,86 @@ io.on("connection", (socket) => {
     console.log(socketIdtoBrowserId);
     console.log(browserIds);
 
-    socket.emit("rooms", getRooms());
+    socket.emit("rooms", Room.getRooms());
     socket.join("lobby", printRooms);
 
     socket.on("create-room", (username) => {
         console.log("------------------create-room------------------");
-
-        roomsId += 1;
-        let room = "room-" + roomsId;
-        let roomId = nanoid(7);
-        roomIdToRoom[roomId] = room;
-
+        let room = new Room(socket.id);
+        room.addUser(socket.id, username);
         socket.leave("lobby");
-        socket.join(room);
-
-        rooms[room] = {
-            users: {},
-            video: {},
-            action: null,
-            roomId,
-        };
-        rooms[room].users[socket.id] = { username, isBuffering: true };
-        userToRoom[socket.id] = room;
-        socket.emit("joined-room", {
-            name: room,
-            users: Object.values(rooms[room].users),
-            roomId,
-        });
+        socket.join(room.id);
+        socket.emit("joined-room", room.getInfo());
         updateLobby();
+        console.log(Room.getRooms());
     });
 
-    socket.on("join-room", (roomDetails, username) => {
+    socket.on("join-room", (id, username) => {
         console.log("------------------join-room------------------");
 
-        let roomId;
-        if (roomDetails.hasOwnProperty("id")) {
-            roomId = roomIdToRoom[roomDetails.id];
-        } else {
-            roomId = roomDetails.name;
-        }
-
-        let currentRooms = Object.keys(rooms);
-        if (!currentRooms.includes(roomId)) return socket.emit("rooms", getRooms());
-
-        let updatedState = {};
+        let room = Room.getRoomById(id);
+        if (!room) return socket.emit("rooms", Room.getRooms());
 
         socket.leave("lobby");
-        socket.join(roomId, printRooms);
-        let room = rooms[roomId];
-        let timeSource = Object.keys(room.users)[0];
-        room.users[socket.id] = { username, isBuffering: true };
-        userToRoom[socket.id] = roomId;
-        updatedState["room"] = { users: Object.values(room.users) };
-        if (Object.keys(room.video).length !== 0) {
-            room.video.isBuffering = true;
+        socket.join(room.id, printRooms);
+
+        let updatedState = {};
+        if (room.video.url) {
+            room.update("video", { isBuffering: true });
             updatedState["video"] = { action: "pause" };
+            io.to(Object.keys(room.users)[0]).emit("get-video-time", room.id);
         }
 
-        socket.emit("joined-room", { name: roomId, users: Object.values(room.users), roomId: room.roomId }, room.video);
-        io.to(timeSource).emit("get-video-time", roomId);
+        room.addUser(socket.id, username);
 
+        let users = { users: Object.values(room.users) };
+        updatedState["room"] = users;
         updatedState["message"] = { username, msg: "has joined the chat", type: "status" };
-        socket.to(roomId).emit("updated-state", updatedState);
+
+        socket.emit("joined-room", { name: room.name, ...users, id: room.id }, room.video);
+        socket.to(room.id).emit("updated-state", updatedState);
         updateLobby();
     });
 
     socket.on("current-video-time", (roomId, currentTime) => {
         console.log("------------current-video-time-------------");
-        rooms[roomId].action = { type: "seek", time: currentTime };
+        let room = Room.getRoomById(id);
+        if (!room) return;
+        room.update("action", { type: "seek", time: currentTime });
     });
 
     socket.on("leave-room", () => {
         console.log("------------------leave-room------------------");
+
+        let room = Room.getRoomBySocketId(socket.id);
+        if (!room) return;
+
+        let removed = room.leave(socket.id);
+        socket.join("lobby", printRooms);
+        socket.emit("left-room", Room.getRooms());
+
+        if (!removed.isEmpty) {
+            socket.to(room.id).emit("updated-state", {
+                room: { users: room.getUsers() },
+                message: { username: removed.username, msg: "has left the chat", type: "status" },
+            });
+        }
+
+        updateLobby();
+
+        console.log(removed);
+        //let room = Room.leaveRoom(socket.id);
+        //console.log(Room);
+        /*
+        
         let roomId = userToRoom[socket.id];
-        if (!roomId) return socket.emit("left-room", getRooms());
+        if (!roomId) return socket.emit("left-room", Room.getRooms());
         let username = rooms[roomId].users[socket.id].username;
 
         let room = leaveRoom(socket.id);
         socket.leave(roomId);
         socket.join("lobby", printRooms);
-        socket.emit("left-room", getRooms());
+        socket.emit("left-room", Room.getRooms());
         if (room) {
             socket.to(room).emit("updated-state", {
                 room: { users: Object.values(rooms[room].users) },
@@ -130,56 +132,59 @@ io.on("connection", (socket) => {
             });
         }
         updateLobby();
+        */
     });
 
     socket.on("rooms", () => {
         console.log("------------------rooms------------------");
-        socket.emit("rooms", getRooms());
+        socket.emit("rooms", Room.getRooms());
     });
 
     socket.on("send-message", (message) => {
         console.log("------------------send-message------------------");
-        let room = userToRoom[socket.id];
+        let room = Room.getRoomBySocketId(socket.id);
         if (!room) return;
-        socket.to(room).emit("receive-message", message);
+        socket.to(room.id).emit("receive-message", message);
     });
 
     socket.on("load-video", (url) => {
         console.log("------------------load-video------------------");
-        let room = userToRoom[socket.id];
+        let room = Room.getRoomBySocketId(socket.id);
         if (!room) return;
-        rooms[room].video = { url, isPlaying: true, isBuffering: true };
-        io.in(room).emit("load-video", { url });
+        room.loadVideo(url);
+        io.in(room.id).emit("load-video", { url });
     });
 
     socket.on("remove-video", () => {
         console.log("------------------remove-video------------------");
-        let room = userToRoom[socket.id];
+        let room = Room.getRoomBySocketId(socket.id);
         if (!room) return;
-        rooms[room].video = {};
-        io.in(room).emit("remove-video");
+        room.removeVideo();
+        io.in(room.id).emit("remove-video");
     });
 
     socket.on("update-video", (state) => {
         console.log("------------------update-video------------------");
-        let roomId = userToRoom[socket.id];
-        if (!roomId) return;
+
+        let room = Room.getRoomBySocketId(socket.id);
+        if (!room) return;
 
         if (state.hasOwnProperty("isPlaying")) {
-            let room = rooms[roomId];
-            room.video.isPlaying = state.isPlaying;
+            room.update(video, state);
 
-            let action = { action: room.video.isPlaying && !room.video.isBuffering ? "play" : "pause" };
-            return io.in(roomId).emit("updated-state", { video: action });
+            if (!room.video.isBuffering) {
+                let action = { action: room.video.isPlaying && !room.video.isBuffering ? "play" : "pause" };
+                return io.in(room.id).emit("updated-state", { video: action });
+            }
         }
         if (state.hasOwnProperty("seek")) {
-            return io.in(roomId).emit("updated-state", state);
+            return io.in(room.id).emit("updated-state", state);
         }
     });
 
     socket.on("update-player-state", (state) => {
         console.log("-----------update-player-state--------------");
-        console.log(state);
+        /*
 
         let roomId = userToRoom[socket.id];
         let room = rooms[roomId];
@@ -211,10 +216,12 @@ io.on("connection", (socket) => {
 
         io.in(roomId).emit("updated-state", updatedState);
         console.log(updatedState.room);
+        */
     });
 
     socket.on("disconnect", () => {
         console.log("------------------disconnect------------------");
+        /*
         let roomId = userToRoom[socket.id];
         let username;
         if (roomId) {
@@ -245,6 +252,7 @@ io.on("connection", (socket) => {
 
         console.log(socketIdtoBrowserId);
         console.log(browserIds);
+        */
     });
 });
 
@@ -262,17 +270,8 @@ const leaveRoom = (socketId) => {
     return room;
 };
 
-const getRooms = () => {
-    let currentRooms = Object.keys(rooms).map((room) => ({
-        name: room,
-        users: Object.keys(rooms[room].users).length,
-        status: rooms[room].video,
-    }));
-    return currentRooms;
-};
-
 const updateLobby = () => {
-    io.in("lobby").emit("rooms", getRooms());
+    io.in("lobby").emit("rooms", Room.getRooms());
 };
 
 const printRooms = () => {
