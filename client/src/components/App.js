@@ -21,39 +21,8 @@ class App extends React.Component {
             showUsernamePrompt: true,
             width: window.innerWidth,
             height: window.innerHeight,
-            loaded: false,
-            socket: null,
         };
     }
-
-    /*
-    registerTab = () => {
-        //localStorage.clear();
-        let numberOfTabs = JSON.parse(sessionStorage.getItem("tabs"));
-        if (numberOfTabs === null) {
-            sessionStorage.setItem("tabs", 1);
-        } else {
-            if (numberOfTabs >= 4) return;
-            sessionStorage.setItem("tabs", numberOfTabs + 1);
-        }
-        console.log(sessionStorage.getItem("tabs"));
-
-        window.addEventListener("resize", this.updateDimensions);
-        window.addEventListener("beforeunload", this.unregisterTab);
-        this.props.connectSocket();
-        this.setState({ allowedTab: true });
-    };
-
-    unregisterTab = () => {
-        window.alert("closed window");
-        let numberOfTabs = JSON.parse(sessionStorage.getItem("tabs"));
-        if (numberOfTabs !== null) {
-            if (numberOfTabs <= 1) sessionStorage.clear();
-            else sessionStorage.setItem("tabs", numberOfTabs - 1);
-        }
-        console.log(sessionStorage.getItem("tabs"));
-    };
-    */
 
     componentDidMount() {
         let id = localStorage.getItem("sync-id");
@@ -62,7 +31,6 @@ class App extends React.Component {
             localStorage.setItem("sync-id", id);
         }
 
-        console.log(id);
         window.addEventListener("resize", this.updateDimensions);
         this.props.connectSocket(id);
     }
@@ -88,20 +56,9 @@ class App extends React.Component {
         this.props.history.push("/");
     };
 
-    printState = () => {
-        let { room, rooms, video, messages } = this.props;
-        console.log("=======================");
-        console.log(rooms);
-        console.log(room);
-        console.log(video);
-        console.log(messages);
-        console.log("------------------------");
-    };
-
     render() {
         let { width, height, showUsernamePrompt } = this.state;
         let { room, error } = this.props;
-        //this.printState();
         if (error) return <div className="error">{error}</div>;
 
         return (
@@ -129,6 +86,7 @@ const mapStateToProps = (state) => {
         video: state.video,
         messages: state.messages,
         socket: state.socket,
+        player: state.player,
     };
 };
 

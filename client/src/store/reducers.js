@@ -61,41 +61,10 @@ const roomReducer = (state = {}, action) => {
     }
 };
 
-let messages = [
-    { username: "WittehMate", msg: "3.0 is never coming out" },
-    {
-        username: "bogahey",
-        msg: "no point for w to do this he would have to add all this on the new phone at some point",
-    },
-    { username: "xIAlexanderIx", msg: "dud you leaked the 3.0 release" },
-    {
-        username: "Koil",
-        msg: "currently when people sign on as cops the radio is on 1.0 and extremely loud for everyone... yeah",
-    },
-    { username: "xIAlexanderIx", msg: "brah" },
-    {
-        username: "StreamElements",
-        msg: "rHighrise_ went all in and lost every single one of their 90 points",
-    },
-    {
-        username: "bogahey",
-        msg: "no point for w to do this he would have to add all this on the new phone at some point",
-    },
-
-    {
-        username: "xIAlexanderIx",
-        msg: "there a few empty tabs right? you could move some of the missing elements to a new tab haha",
-    },
-    {
-        username: "Koil",
-        msg: "currently when people sign on as cops the radio is on 1.0 and extremely loud for everyone... yeah",
-    },
-];
-
 const ADD_MESSAGE = "ADD_MESSAGE";
 const CLEAR_MESSAGES = "CLEAR_MESSAGES";
 
-const messagesReducer = (state = messages, action) => {
+const messagesReducer = (state = [], action) => {
     switch (action.type) {
         case ADD_MESSAGE:
             return [...state, action.message];

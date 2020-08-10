@@ -25,13 +25,12 @@ class Room {
         let isEmpty = false;
         let username = this.users[socketId].username;
         delete Room.socketIdToRoom[socketId];
-        if (Object.keys(this.users).length === 1) {
+        delete this.users[socketId];
+        if (!Object.keys(this.users).length) {
             delete Room.idToRoom[this.id];
             isEmpty = true;
-        } else {
-            delete this.users[socketId];
         }
-        if (!Object.keys(Room.idToRoom).length) Room.lastId = 0;
+        if (!Object.keys(Room.idToRoom).length) Room.count = 0;
         return { isEmpty, username: username };
     }
 
@@ -40,12 +39,20 @@ class Room {
         Room.socketIdToRoom[socketId] = this;
     }
 
+    setUserState(socketId, key, value) {
+        this.users[socketId][key] = value;
+    }
+
     getUser(socketId) {
         return this.users[socketId];
     }
 
     getUsers() {
         return Object.values(this.users);
+    }
+
+    setAction(value) {
+        this.action = value;
     }
 
     update(key, value) {
@@ -60,12 +67,8 @@ class Room {
         this.video = {};
     }
 
-    getInfo() {
-        return {
-            id: this.id,
-            name: this.name,
-            users: Object.values(this.users),
-        };
+    isVideoBuffering() {
+        return Object.values(this.users).some((user) => user.isBuffering);
     }
 
     static getRoomById(id) {

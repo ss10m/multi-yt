@@ -28,6 +28,7 @@ class Room extends React.Component {
         this.state = { url: "", timePlayed: 0 };
 
         this.updateServer = debounce(this.updateServer, 200);
+        this.sendWithDelay = debounce(this.sendWithDelay, 200);
     }
 
     componentDidMount() {
@@ -46,13 +47,13 @@ class Room extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.player.embed && !this.props.player.embed) {
-            this.setState({ timePlayed: 0 });
+        if (!isEmpty(prevProps.player) && isEmpty(this.props.player)) {
+            this.setState({ url: "", timePlayed: 0 });
         }
     }
 
     handleControls = (action) => {
-        let { socket, player } = this.props;
+        let { player } = this.props;
 
         let actionObj = null;
         switch (action) {
@@ -77,7 +78,12 @@ class Room extends React.Component {
             default:
                 return;
         }
-        if (actionObj) this.props.updateVideo(socket, actionObj);
+        if (actionObj) this.sendWithDelay(actionObj);
+    };
+
+    sendWithDelay = (action) => {
+        let { socket } = this.props;
+        this.props.updateVideo(socket, action);
     };
 
     handleInput = (event) => {
@@ -137,10 +143,10 @@ class Room extends React.Component {
     };
 
     getControls = () => {
-        let { player } = this.props;
+        let { player, video } = this.props;
         let isDisabled = !player.embed;
 
-        let isPlaying = player.state === 1 || player.state === -1;
+        let isPlaying = video.isPlaying;
 
         return (
             <div className="controls-wrapper">

@@ -3,7 +3,7 @@ import React from "react";
 import ReactPlayer from "react-player/youtube";
 import { connect } from "react-redux";
 
-import { setPlayer, updatePlayerState, setPlayerState } from "store/actions";
+import { setPlayer, updatePlayerState, setPlayerState, setVideoState } from "store/actions";
 
 import "./Player.scss";
 const ENDED = 0;
@@ -31,7 +31,6 @@ class Player extends React.Component {
             let totalBytes = player.embed.getVideoBytesTotal();
 
             if (loadedBytes === totalBytes && loadedBytes === 1 && isBuffering) {
-                console.log("STUCK");
                 this.setState({ isBuffering: false });
                 this.props.updatePlayerState(socket, { isBuffering: false });
             }
@@ -75,7 +74,6 @@ class Player extends React.Component {
     };
 
     onPlayerReady = (state) => {
-        console.log("onPlayerReady");
         this.props.setPlayer(state.target);
         this.setState({ initalLoading: true });
         state.target.playVideo();
@@ -84,7 +82,6 @@ class Player extends React.Component {
     onPlayerStateChange = (state) => {
         let { socket } = this.props;
         let playerState = state.data;
-        console.log("onPlayerStateChange: " + playerState);
         if (this.state.initalLoading && playerState === PLAYING) {
             this.setState({ initalLoading: false });
             return state.target.pauseVideo();
@@ -92,7 +89,7 @@ class Player extends React.Component {
         }
 
         if (this.state.isBuffering && playerState !== BUFFERING) {
-            console.log("buffering ended");
+            console.log("BUFFERING ENDED");
             this.setState({ isBuffering: false });
             this.props.updatePlayerState(socket, { isBuffering: false });
         }
@@ -100,7 +97,7 @@ class Player extends React.Component {
         switch (playerState) {
             case ENDED:
                 console.log("ENDED");
-
+                this.props.setVideoState({ isPlaying: false });
                 break;
             case PLAYING:
                 console.log("PLAYING");
@@ -163,6 +160,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     setPlayerState: (state) => {
         dispatch(setPlayerState(state));
+    },
+    setVideoState: (state) => {
+        dispatch(setVideoState(state));
     },
 });
 

@@ -21,14 +21,15 @@ export const connectSocket = (id) => async (dispatch, getState) => {
     socket.on("joined-room", (room, video) => {
         console.log("RESPONSE: joined-room");
         dispatch(setRoom(room));
-        dispatch(setVideo(video));
         dispatch(clearRooms());
+        if (video) dispatch(setVideo(video));
     });
 
     socket.on("left-room", (rooms) => {
         console.log("RESPONSE: left-room");
         dispatch(clearRoom());
         dispatch(clearVideo());
+        dispatch(clearPlayer());
         dispatch(clearMessages());
         dispatch(setRooms(rooms));
     });
@@ -40,7 +41,6 @@ export const connectSocket = (id) => async (dispatch, getState) => {
 
     socket.on("load-video", (video) => {
         console.log("RESPONSE: load-video");
-        video.isPlayerReady = false;
         dispatch(setVideo(video));
     });
 
@@ -59,7 +59,6 @@ export const connectSocket = (id) => async (dispatch, getState) => {
 
     socket.on("updated-state", (updatedState) => {
         console.log("RESPONSE: updated-state");
-        console.log(updatedState);
         let keys = Object.keys(updatedState);
         let { player } = getState();
         for (let key of keys) {
@@ -79,6 +78,8 @@ export const connectSocket = (id) => async (dispatch, getState) => {
                         default:
                             break;
                     }
+                    dispatch(setVideoState({ isPlaying: updatedState[key].isPlaying }));
+
                     break;
                 case "seek":
                     if (isEmpty(player) || isEmpty(player.embed)) return;
@@ -159,7 +160,6 @@ export const clearRooms = () => ({
 export const sendMessage = (socket, username, msg) => async (dispatch) => {
     console.log("ACTION: send-message");
     let message = { username, msg };
-    console.log(message);
     dispatch(addMessage(message));
     socket.emit("send-message", message);
 };
