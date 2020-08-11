@@ -29,6 +29,7 @@ let socketIdtoBrowserId = {};
 io.on("connection", (socket) => {
     console.log("------------------connection------------------");
 
+    /*
     let browserId = socket.handshake.query.id;
     if (browserIds.hasOwnProperty(browserId)) {
         let connectedUsers = browserIds[browserId];
@@ -41,6 +42,7 @@ io.on("connection", (socket) => {
         browserIds[browserId] = 1;
     }
     socketIdtoBrowserId[socket.id] = browserId;
+    */
 
     socket.emit("rooms", Room.getRooms());
     socket.join("lobby", printRooms);

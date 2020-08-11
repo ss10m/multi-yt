@@ -1,3 +1,4 @@
+import { batch } from "react-redux";
 import socketIO from "socket.io-client";
 import { isEmpty } from "helpers";
 
@@ -20,18 +21,22 @@ export const connectSocket = (id) => async (dispatch, getState) => {
 
     socket.on("joined-room", (room, video) => {
         console.log("RESPONSE: joined-room");
-        dispatch(setRoom(room));
-        dispatch(clearRooms());
-        if (video) dispatch(setVideo(video));
+        batch(() => {
+            dispatch(setRoom(room));
+            dispatch(clearRooms());
+            if (video) dispatch(setVideo(video));
+        });
     });
 
     socket.on("left-room", (rooms) => {
         console.log("RESPONSE: left-room");
-        dispatch(clearRoom());
-        dispatch(clearVideo());
-        dispatch(clearPlayer());
-        dispatch(clearMessages());
-        dispatch(setRooms(rooms));
+        batch(() => {
+            dispatch(clearRoom());
+            dispatch(clearVideo());
+            dispatch(clearPlayer());
+            dispatch(clearMessages());
+            dispatch(setRooms(rooms));
+        });
     });
 
     socket.on("receive-message", (message) => {
@@ -47,52 +52,61 @@ export const connectSocket = (id) => async (dispatch, getState) => {
     socket.on("get-video-time", (roomId) => {
         let { player } = getState();
         let currentTime = 0;
-        if (!isEmpty(player)) currentTime = player.embed.getCurrentTime();
+        if (!isEmpty(player)) {
+            let playerTime = player.embed.getCurrentTime();
+            if (playerTime) {
+                currentTime = playerTime;
+            }
+        }
         socket.emit("current-video-time", roomId, currentTime);
     });
 
     socket.on("remove-video", () => {
         console.log("RESPONSE: remove-video");
-        dispatch(clearPlayer());
-        dispatch(clearVideo());
+        batch(() => {
+            dispatch(clearPlayer());
+            dispatch(clearVideo());
+        });
     });
 
     socket.on("updated-state", (updatedState) => {
         console.log("RESPONSE: updated-state");
         let keys = Object.keys(updatedState);
         let { player } = getState();
-        for (let key of keys) {
-            switch (key) {
-                case "room":
-                    dispatch(setRoom(updatedState[key]));
-                    break;
-                case "video":
-                    if (isEmpty(player) || isEmpty(player.embed)) return;
-                    switch (updatedState[key].action) {
-                        case "play":
-                            player.embed.playVideo();
-                            break;
-                        case "pause":
-                            player.embed.pauseVideo();
-                            break;
-                        default:
-                            break;
-                    }
-                    dispatch(setVideoState({ isPlaying: updatedState[key].isPlaying }));
+        batch(() => {
+            for (let key of keys) {
+                switch (key) {
+                    case "room":
+                        dispatch(setRoom(updatedState[key]));
+                        break;
+                    case "video":
+                        if (isEmpty(player) || isEmpty(player.embed)) return;
+                        switch (updatedState[key].action) {
+                            case "play":
+                                player.embed.playVideo();
+                                break;
+                            case "pause":
+                                player.embed.pauseVideo();
+                                break;
+                            default:
+                                break;
+                        }
+                        dispatch(setVideoState({ isPlaying: updatedState[key].isPlaying }));
 
-                    break;
-                case "seek":
-                    if (isEmpty(player) || isEmpty(player.embed)) return;
-                    player.embed.seekTo(updatedState[key]);
-                    player.embed.playVideo();
-                    break;
-                case "message":
-                    dispatch(addMessage(updatedState[key]));
-                    break;
-                default:
-                    return;
+                        break;
+                    case "seek":
+                        if (isEmpty(player) || isEmpty(player.embed)) return;
+                        player.embed.seekTo(updatedState[key]);
+                        player.embed.playVideo();
+                        break;
+                    case "message":
+                        dispatch(addMessage(updatedState[key]));
+                        break;
+                    default:
+                        return;
+                }
             }
-        }
+        });
     });
 };
 export const setSocket = (socket) => ({
@@ -119,12 +133,14 @@ export const setError = (error) => ({
 //=====================================
 //           ROOM ACTIONS
 //=====================================
-export const createRoom = (socket, username) => async (dispatch) => {
+export const createRoom = () => async (dispatch, getState) => {
     console.log("ACTION: create-room");
+    let { socket, username } = getState();
     socket.emit("create-room", username);
 };
-export const joinRoom = (socket, room, username) => async (dispatch) => {
+export const joinRoom = (room) => async (dispatch, getState) => {
     console.log("ACTION: join-room");
+    let { socket, username } = getState();
     socket.emit("join-room", room, username);
 };
 export const leaveRoom = (socket) => async (dispatch) => {
@@ -142,8 +158,9 @@ export const clearRoom = () => ({
 //=====================================
 //           ROOMS ACTIONS
 //=====================================
-export const refreshRooms = (socket) => async (dispatch) => {
+export const refreshRooms = () => async (dispatch, getState) => {
     console.log("ACTION: rooms");
+    let { socket } = getState();
     socket.emit("rooms");
 };
 export const setRooms = (rooms) => ({

@@ -1,135 +1,120 @@
+// Libraries & utils
 import React from "react";
-import { connect } from "react-redux";
 
-import { joinRoom, createRoom, refreshRooms } from "store/actions";
-import { IconContext } from "react-icons";
-import { FaPlay, FaPause, FaStop, FaUser, FaPlusCircle } from "react-icons/fa";
-
-import { isEmpty } from "helpers";
-
+// SCSS
 import "./Rooms.scss";
 
-class Rooms extends React.Component {
-    constructor(props) {
-        super(props);
+// Icons
+import { IconContext } from "react-icons";
+import { FaPlay, FaPause, FaStop, FaUser, FaPlusCircle, FaRedo, FaPlus } from "react-icons/fa";
 
-        this.state = { refreshDisabled: false };
-    }
+export default (props) => {
+    return (
+        <div className="rooms">
+            <RoomsHeader {...props} />
+            <div className="rooms-body">
+                <RoomList {...props} />
+            </div>
+        </div>
+    );
+};
 
-    refreshRooms = () => {
-        let { socket } = this.props;
-        this.props.refreshRooms(socket);
-        this.setState({ refreshDisabled: true });
-        setTimeout(() => this.setState({ refreshDisabled: false }), 1000);
-    };
+/*
+<button className={refreshDisabled ? "disabled" : ""} onClick={refreshRooms} disabled={refreshDisabled}>
+                REFRESH
+            </button>
+*/
 
-    getIndicator = (status) => {
-        console.log(status);
+const RoomsHeader = (props) => {
+    let { refreshRooms, createRoom } = props;
+    return (
+        <div className="rooms-header">
+            <IconContext.Provider value={{ size: "20px", className: "header-icon" }}>
+                <FaRedo onClick={refreshRooms} />
+            </IconContext.Provider>
+            <p>ROOMS</p>
+            <IconContext.Provider value={{ size: "20px", className: "header-icon" }}>
+                <FaPlus onClick={createRoom} />
+            </IconContext.Provider>
+        </div>
+    );
+};
 
-        if (isEmpty(status)) {
-            return (
-                <IconContext.Provider value={{ color: "red", size: "20px" }}>
-                    <FaStop />
-                </IconContext.Provider>
-            );
-        }
-        if (status.isPlaying) {
-            return (
-                <IconContext.Provider value={{ color: "green", size: "20px" }}>
-                    <FaPlay />
-                </IconContext.Provider>
-            );
-        } else {
-            return (
-                <IconContext.Provider value={{ color: "orange", size: "20px" }}>
-                    <FaPause />
-                </IconContext.Provider>
-            );
-        }
-    };
+const RoomList = (props) => {
+    let { rooms, isEmpty, createRoom, joinRoom } = props;
 
-    getRooms = () => {
-        let { username, socket, rooms } = this.props;
-
-        return rooms.map((room) => (
-            <tr>
-                <td width="20%">
-                    <div className="indicator">{this.getIndicator(room.status)}</div>
-                </td>
-                <td width="25%">{room.name}</td>
-                <td width="15%">{room.users}</td>
-                <td className="btn">
-                    <button onClick={() => this.props.joinRoom(socket, room.id, username)}>JOIN</button>
-                </td>
-            </tr>
-        ));
-    };
-
-    render() {
-        let { username, socket, rooms } = this.props;
-        let { refreshDisabled } = this.state;
+    if (isEmpty(rooms)) {
         return (
-            <div className="rooms">
-                <div className="header">
-                    <button
-                        className={refreshDisabled ? "disabled" : ""}
-                        onClick={this.refreshRooms}
-                        disabled={refreshDisabled}
-                    >
-                        REFRESH
-                    </button>
-                    <p>ROOMS</p>
-                    <button onClick={() => this.props.createRoom(socket, username)}>CREATE</button>
-                </div>
-                <div className="body">
-                    {isEmpty(rooms) ? (
-                        <div className="empty">
-                            <div className="icon" onClick={() => this.props.createRoom(socket, username)}>
-                                <IconContext.Provider value={{ size: "100px" }}>
-                                    <FaPlusCircle />
-                                </IconContext.Provider>
-                            </div>
-                        </div>
-                    ) : (
-                        <table>
-                            <tr style={{ height: "40px" }}>
-                                <th>Status</th>
-                                <th>Name</th>
-                                <th>
-                                    <div style={{ height: "15px" }}>
-                                        <FaUser />
-                                    </div>
-                                </th>
-                                <th></th>
-                            </tr>
-                            {this.getRooms()}
-                        </table>
-                    )}
+            <div className="empty">
+                <div className="icon" onClick={createRoom}>
+                    <IconContext.Provider value={{ size: "100px" }}>
+                        <FaPlusCircle />
+                    </IconContext.Provider>
                 </div>
             </div>
         );
-    }
-}
+    } else {
+        const rows = [];
+        rooms.forEach((room, idx) => {
+            rows.push(<RoomRow key={idx} room={room} joinRoom={joinRoom} isEmpty={isEmpty} />);
+        });
 
-const mapStateToProps = (state) => {
-    return {
-        username: state.username,
-        socket: state.socket,
-        player: state.player,
-        rooms: state.rooms,
-    };
+        return (
+            <table className="rooms-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Name</th>
+                        <th>
+                            <div style={{ height: "15px" }}>
+                                <FaUser />
+                            </div>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>{rows}</tbody>
+            </table>
+        );
+    }
 };
 
-const mapDispatchToProps = (dispatch) => ({
-    joinRoom: (socket, room, username) => {
-        dispatch(joinRoom(socket, room, username));
-    },
-    createRoom: (socket, username) => {
-        dispatch(createRoom(socket, username));
-    },
-    refreshRooms: (socket) => {
-        dispatch(refreshRooms(socket));
-    },
-});
+const RoomRow = ({ room, joinRoom, isEmpty }) => {
+    return (
+        <tr>
+            <td width="20%">
+                <div className="indicator">
+                    <RoomIndicator status={room.status} isEmpty={isEmpty} />
+                </div>
+            </td>
+            <td width="25%">{room.name}</td>
+            <td width="15%">{room.users}</td>
+            <td className="btn">
+                <button onClick={() => joinRoom(room.id)}>JOIN</button>
+            </td>
+        </tr>
+    );
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Rooms);
+const RoomIndicator = ({ status, isEmpty }) => {
+    if (isEmpty(status)) {
+        return (
+            <IconContext.Provider value={{ color: "red", size: "20px" }}>
+                <FaStop />
+            </IconContext.Provider>
+        );
+    }
+    if (status.isPlaying) {
+        return (
+            <IconContext.Provider value={{ color: "green", size: "20px" }}>
+                <FaPlay />
+            </IconContext.Provider>
+        );
+    } else {
+        return (
+            <IconContext.Provider value={{ color: "orange", size: "20px" }}>
+                <FaPause />
+            </IconContext.Provider>
+        );
+    }
+};

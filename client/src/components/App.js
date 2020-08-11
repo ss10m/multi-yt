@@ -10,7 +10,7 @@ import { isEmpty } from "helpers";
 
 import Chat from "./Chat/Chat";
 import Room from "./Room/Room";
-import Rooms from "./Rooms/Rooms";
+import Rooms from "./Rooms/RoomsContainer";
 import UsernamePrompt from "./UsernamePrompt/UsernamePrompt";
 
 class App extends React.Component {
