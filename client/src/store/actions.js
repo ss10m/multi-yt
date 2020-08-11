@@ -221,8 +221,9 @@ export const clearVideo = () => ({
 //=====================================
 //           PLAYER ACTIONS
 //=====================================
-export const updatePlayerState = (socket, state) => async (dispatch) => {
+export const updatePlayerState = (state) => async (dispatch, getState) => {
     console.log("ACTION: update-player-state");
+    let { socket } = getState();
     socket.emit("update-player-state", state);
 };
 export const setPlayer = (embed) => ({
