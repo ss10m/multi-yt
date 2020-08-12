@@ -3,7 +3,7 @@ import React from "react";
 
 // Redux
 import { connect } from "react-redux";
-import { setPlayer, updatePlayerState, setPlayerState, setVideoState } from "store/actions";
+import { setPlayer, updatePlayerState, setPlayerState, setVideoState, updateVideo } from "store/actions";
 
 // Components
 import Player from "./Player";
@@ -24,9 +24,15 @@ class PlayerContainer extends React.Component {
         this.timePlayed = setInterval(() => {
             let { player } = this.props;
             if (!player.embed) return;
+
             let loadedBytes = player.embed.getVideoBytesLoaded();
             let totalBytes = player.embed.getVideoBytesTotal();
-            if (loadedBytes === totalBytes && loadedBytes === 1 && this.state.isBuffering) {
+
+            let isVideoBuffered = loadedBytes === totalBytes && this.state.isBuffering;
+            let isStuckBuffering = player.state !== BUFFERING && this.state.isBuffering;
+
+            if (isVideoBuffered || isStuckBuffering) {
+                console.log("SENDING UPDATE: NOT BUFFERING");
                 this.setState({ isBuffering: false });
                 this.props.updatePlayerState({ isBuffering: false });
             }
@@ -52,7 +58,7 @@ class PlayerContainer extends React.Component {
 
         switch (playerState) {
             case ENDED:
-                this.props.setVideoState({ isPlaying: false });
+                this.props.updateVideo(this.props.socket, { ended: true });
                 break;
             case BUFFERING:
                 if (!this.state.isBuffering) {
@@ -102,6 +108,7 @@ const mapStateToProps = (state) => {
     return {
         video: state.video,
         player: state.player,
+        socket: state.socket,
     };
 };
 
@@ -117,6 +124,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     setVideoState: (state) => {
         dispatch(setVideoState(state));
+    },
+    updateVideo: (socket, state) => {
+        dispatch(updateVideo(socket, state));
     },
 });
 

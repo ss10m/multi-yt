@@ -71,6 +71,7 @@ export const connectSocket = (id) => async (dispatch, getState) => {
 
     socket.on("updated-state", (updatedState) => {
         console.log("RESPONSE: updated-state");
+        console.log(updatedState);
         let keys = Object.keys(updatedState);
         let { player } = getState();
         batch(() => {
@@ -78,6 +79,11 @@ export const connectSocket = (id) => async (dispatch, getState) => {
                 switch (key) {
                     case "room":
                         dispatch(setRoom(updatedState[key]));
+                        break;
+                    case "seek":
+                        if (isEmpty(player) || isEmpty(player.embed)) return;
+                        player.embed.seekTo(updatedState[key]);
+                        player.embed.playVideo();
                         break;
                     case "video":
                         if (isEmpty(player) || isEmpty(player.embed)) return;
@@ -92,15 +98,15 @@ export const connectSocket = (id) => async (dispatch, getState) => {
                                 break;
                         }
                         dispatch(setVideoState({ isPlaying: updatedState[key].isPlaying }));
-
-                        break;
-                    case "seek":
-                        if (isEmpty(player) || isEmpty(player.embed)) return;
-                        player.embed.seekTo(updatedState[key]);
-                        player.embed.playVideo();
                         break;
                     case "message":
                         dispatch(addMessage(updatedState[key]));
+                        break;
+                    case "ended":
+                        if (isEmpty(player) || isEmpty(player.embed)) return;
+                        player.embed.seekTo(0);
+                        player.embed.pauseVideo();
+                        dispatch(setVideoState({ isPlaying: false }));
                         break;
                     default:
                         return;
