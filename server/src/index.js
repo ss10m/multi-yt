@@ -161,15 +161,11 @@ io.on("connection", (socket) => {
         if (!room) return;
 
         if (state.hasOwnProperty("isPlaying")) {
-            console.log(state);
             room.update("video", state);
-            console.log(room.video);
-
             let video = {
                 isPlaying: room.video.isPlaying,
                 action: room.video.isPlaying && !room.video.isBuffering ? "play" : "pause",
             };
-            console.log(video);
             return io.in(room.id).emit("updated-state", { video });
         }
         if (state.hasOwnProperty("seek")) {
@@ -222,7 +218,7 @@ io.on("connection", (socket) => {
 
         let room = Room.getRoomBySocketId(socket.id);
         if (!room) {
-            return socket.leave("lobby", printRooms);
+            return socket.leave("lobby");
         }
 
         socket.leave(room.id);
@@ -261,10 +257,6 @@ io.on("connection", (socket) => {
 
 const updateLobby = () => {
     io.in("lobby").emit("rooms", Room.getRooms());
-};
-
-const printRooms = () => {
-    console.log(Room);
 };
 
 app.get("*", (request, response) => {

@@ -19,12 +19,6 @@ export default (props) => {
     );
 };
 
-/*
-<button className={refreshDisabled ? "disabled" : ""} onClick={refreshRooms} disabled={refreshDisabled}>
-                REFRESH
-            </button>
-*/
-
 const RoomsHeader = (props) => {
     let { refreshRooms, createRoom } = props;
     return (

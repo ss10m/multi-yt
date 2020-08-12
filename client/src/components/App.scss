@@ -60,15 +60,13 @@ body {
         grid-template-areas:
             "player player"
             "options chat";
-        grid-template-rows: min-content 1fr;
+        grid-template-rows: min-content min-content;
         grid-template-columns: repeat(2, 1fr);
-        min-height: 0;
         .options,
         .chat {
             border-right: 1px solid black;
-            min-height: 300px;
-        }
-        .chat {
+            border-bottom: 1px solid black;
+
             max-height: 600px;
         }
     }

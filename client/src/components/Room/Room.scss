@@ -4,7 +4,9 @@ $button-hover-color: #46464a;
 .room-info {
     display: flex;
     flex-direction: column;
+    flex: 1;
     color: whitesmoke;
+    min-height: 50vh;
 
     .header {
         height: 50px;
@@ -39,6 +41,7 @@ $button-hover-color: #46464a;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        min-height: 0;
 
         input[type="text"] {
             min-width: 0;
@@ -99,6 +102,42 @@ $button-hover-color: #46464a;
             width: 280px;
             margin: 10px auto;
         }
+
+        .volume-bar {
+            height: 20px;
+            position: relative;
+            top: 5px;
+            //background-color: red;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 10px;
+            color: grey;
+
+            .volume-controls {
+                width: 80px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                &[disabled] {
+                    opacity: 0.4;
+                    pointer-events: none;
+                }
+
+                .volume-icon {
+                    &:hover {
+                        color: whitesmoke;
+                        cursor: pointer;
+                    }
+
+                    &.active {
+                        color: whitesmoke;
+                    }
+                }
+            }
+        }
+
         .controls {
             height: 75px;
             display: flex;

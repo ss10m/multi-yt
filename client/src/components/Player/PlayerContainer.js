@@ -9,7 +9,7 @@ import { setPlayer, updatePlayerState, setPlayerState, setVideoState, updateVide
 import Player from "./Player";
 
 // Constants
-import { BUFFERING, ENDED } from "helpers/constants";
+import { BUFFERING, ENDED } from "helpers";
 
 class PlayerContainer extends React.Component {
     constructor(props) {

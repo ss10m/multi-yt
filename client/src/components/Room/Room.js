@@ -1,17 +1,20 @@
 import React from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import classNames from "classnames";
 
 import { debounce } from "lodash";
 import { connect } from "react-redux";
 
 import Spinner from "../Spinner/Spinner";
 
+import { sprintf } from "sprintf-js";
+
 import { IconContext } from "react-icons";
-import { FaPlay, FaPause, FaCheckCircle } from "react-icons/fa";
+import { FaPlay, FaPause, FaCheckCircle, FaVolumeMute, FaVolumeUp, FaVolumeDown } from "react-icons/fa";
 import { MdReplay10, MdReplay30, MdForward10, MdForward30 } from "react-icons/md";
 import { leaveRoom, loadVideo, removeVideo, updateVideo } from "store/actions";
 
-import { isEmpty } from "helpers";
+import { isEmpty, VOLUME_MUTED, VOLUME_HALF, VOLUME_FULL } from "helpers";
 
 import "./Room.scss";
 
@@ -25,7 +28,7 @@ const SEEK_FORWARD_30 = "SEEK_FORWARD_30";
 class Room extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { url: "", timePlayed: 0 };
+        this.state = { url: "", timePlayed: 0, totalTime: 0, volume: VOLUME_MUTED };
 
         this.updateServer = debounce(this.updateServer, 200);
         this.sendWithDelay = debounce(this.sendWithDelay, 200);
@@ -36,8 +39,12 @@ class Room extends React.Component {
             let { player } = this.props;
             if (!player.embed) return;
             let currentTime = player.embed.getCurrentTime();
+            let totalTime = player.embed.getDuration();
             if (currentTime !== this.state.timePlayed) {
                 this.setState({ timePlayed: currentTime });
+            }
+            if (!this.state.totalTime) {
+                this.setState({ totalTime });
             }
         }, 1000);
     }
@@ -48,7 +55,7 @@ class Room extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (!isEmpty(prevProps.player) && isEmpty(this.props.player)) {
-            this.setState({ url: "", timePlayed: 0 });
+            this.setState({ url: "", timePlayed: 0, totalTime: 0, volume: VOLUME_MUTED });
         }
     }
 
@@ -142,14 +149,114 @@ class Room extends React.Component {
         );
     };
 
+    handleVolume = (action) => {
+        console.log(action);
+        let { player } = this.props;
+        if (!player.embed) return;
+
+        let volume = player.embed.getVolume();
+        let isMuted = player.embed.isMuted();
+        console.log(volume, isMuted);
+
+        let newVolume;
+        switch (action) {
+            case VOLUME_FULL:
+                console.log("VOLUME_FULL");
+                if (isMuted) player.embed.unMute();
+                player.embed.setVolume(100);
+                newVolume = VOLUME_FULL;
+                break;
+            case VOLUME_HALF:
+                console.log("VOLUME_HALF");
+                if (isMuted) player.embed.unMute();
+                player.embed.setVolume(50);
+                newVolume = VOLUME_HALF;
+                break;
+            case VOLUME_MUTED:
+                console.log("VOLUME_MUTED");
+                if (!isMuted) {
+                    player.embed.mute();
+                    newVolume = VOLUME_MUTED;
+                } else {
+                    player.embed.unMute();
+                    player.embed.setVolume(100);
+                    newVolume = VOLUME_FULL;
+                }
+                break;
+        }
+        if (newVolume) this.setState({ volume: newVolume });
+    };
+
     getControls = () => {
+        let { timePlayed, totalTime } = this.state;
         let { player, video } = this.props;
         let isDisabled = !player.embed;
 
         let isPlaying = video.isPlaying;
 
+        timePlayed = Math.floor(timePlayed);
+        totalTime = Math.floor(totalTime);
+
+        //console.log(sprintf("%01d:%02d", playedMinutes, playedSeconds));
+
+        let playedHours = Math.floor(timePlayed / 3600);
+        let playedMinutes = Math.floor((timePlayed % 3600) / 60);
+        let playedSeconds = Math.floor((timePlayed % 3600) % 60);
+
+        let playedTimer;
+        if (playedHours > 0) {
+            playedTimer = sprintf("%01d:%02d:%02d", playedHours, playedMinutes, playedSeconds);
+        } else {
+            playedTimer = sprintf("%01d:%02d", playedMinutes, playedSeconds);
+        }
+
+        let totalHours = Math.floor(totalTime / 3600);
+        let totalMinutes = Math.floor((totalTime % 3600) / 60);
+        let totalSeconds = Math.floor((totalTime % 3600) % 60);
+
+        let totalTimer;
+        if (totalHours > 0) {
+            totalTimer = sprintf("%01d:%02d:%02d", totalHours, totalMinutes, totalSeconds);
+        } else {
+            totalTimer = sprintf("%01d:%02d", totalMinutes, totalSeconds);
+        }
+
+        let { volume } = this.state;
+        console.log(volume);
+
         return (
             <div className="controls-wrapper">
+                <div className="volume-bar">
+                    <div className="timer">{`${playedTimer} / ${totalTimer}`}</div>
+                    <div className="volume-controls" disabled={isDisabled}>
+                        <IconContext.Provider
+                            value={{
+                                size: "20px",
+                                className: classNames("volume-icon", {
+                                    active: !isDisabled && volume === VOLUME_MUTED,
+                                }),
+                            }}
+                        >
+                            <FaVolumeMute onClick={() => this.handleVolume(VOLUME_MUTED)} />
+                        </IconContext.Provider>
+                        <IconContext.Provider
+                            value={{
+                                size: "20px",
+                                className: classNames("volume-icon", { active: !isDisabled && volume === VOLUME_HALF }),
+                            }}
+                        >
+                            <FaVolumeDown onClick={() => this.handleVolume(VOLUME_HALF)} />
+                        </IconContext.Provider>
+                        <IconContext.Provider
+                            value={{
+                                size: "20px",
+                                className: classNames("volume-icon", { active: !isDisabled && volume === VOLUME_FULL }),
+                            }}
+                        >
+                            <FaVolumeUp onClick={() => this.handleVolume(VOLUME_FULL)} />
+                        </IconContext.Provider>
+                    </div>
+                </div>
                 <div className={"controls" + (isDisabled ? " disabled" : "")}>
                     <div className="inner"></div>
                     <div className="btn" onClick={() => this.handleControls(SEEK_BACK_30)}>

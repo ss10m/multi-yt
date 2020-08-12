@@ -31,6 +31,5 @@ export default (props) => {
                 style={{ position: "absolute" }}
             />
         </div>
-    );
+    ); //<div className="overlay"></div>
 };
-// <div className="overlay"></div>
