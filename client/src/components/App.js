@@ -8,7 +8,7 @@ import "./App.scss";
 import { isEmpty } from "helpers";
 
 import Player from "./Player/PlayerContainer";
-import Chat from "./Chat/Chat";
+import Chat from "./Chat/ChatContainer";
 import Room from "./Room/Room";
 import Rooms from "./Rooms/RoomsContainer";
 import UsernamePrompt from "./UsernamePrompt/UsernamePrompt";

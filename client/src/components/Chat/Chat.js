@@ -1,106 +1,63 @@
+// Libraries & utils
 import React from "react";
-import { connect } from "react-redux";
 
-import { sendMessage } from "store/actions";
-
-import { isEmpty } from "helpers";
-
+// SCSS
 import "./Chat.scss";
 
-class Chat extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            message: "",
-        };
-
-        this.messages = React.createRef();
-    }
-
-    componentDidMount() {
-        this.messages.current.scrollTop = this.messages.current.scrollHeight;
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps !== this.props) {
-            this.messages.current.scrollTop = this.messages.current.scrollHeight;
-        }
-    }
-
-    handleInput = (event) => {
-        this.setState({ message: event.target.value });
-    };
-
-    sendMessage = (event) => {
-        let { socket, username } = this.props;
-        let { message } = this.state;
-        if (event.key === "Enter" && message.length) {
-            this.props.sendMessage(socket, username, message);
-            this.setState({ message: "" });
-        }
-    };
-
-    render() {
-        let { message } = this.state;
-
-        let { room, messages } = this.props;
-
-        return (
-            <div className="box chat">
-                <div className="header">CHAT</div>
-                <div className="body">
-                    <div className="msgs" ref={this.messages}>
-                        {messages.map((message, idx) => {
-                            if (message.type) {
-                                return (
-                                    <p key={idx} style={{ color: "grey" }}>
-                                        {`${message.username} ${message.msg}`}
-                                    </p>
-                                );
-                            }
-                            return (
-                                <p key={idx}>
-                                    <span>{message.username}</span>
-                                    {`: ${message.msg}`}
-                                </p>
-                            );
-                        })}
-                    </div>
-                    <div className="input">
-                        {isEmpty(room) ? (
-                            <p>You must first join a room</p>
-                        ) : (
-                            <input
-                                type={"text"}
-                                value={message}
-                                placeholder={"Send a message"}
-                                onChange={this.handleInput}
-                                onKeyPress={this.sendMessage}
-                                spellCheck={false}
-                                autoFocus={false}
-                            />
-                        )}
-                    </div>
-                </div>
+export default React.forwardRef((props, ref) => {
+    return (
+        <div className="chat">
+            <div className="chat-header">CHAT</div>
+            <div className="chat-body">
+                <Messages {...props} ref={ref} />
+                <ChatInput {...props} />
             </div>
-        );
-    }
-}
-
-const mapStateToProps = (state) => {
-    return {
-        socket: state.socket,
-        room: state.room,
-        username: state.username,
-        messages: state.messages,
-    };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-    sendMessage: (socket, username, message) => {
-        dispatch(sendMessage(socket, username, message));
-    },
+        </div>
+    );
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chat);
+const Messages = React.forwardRef(({ messages }, ref) => {
+    const rows = [];
+    messages.forEach((message, idx) => {
+        if (message.type) {
+            rows.push(
+                <p key={idx} style={{ color: "grey" }}>
+                    {`${message.username} ${message.msg}`}
+                </p>
+            );
+        } else {
+            rows.push(
+                <p key={idx}>
+                    <span>{message.username}</span>
+                    {`: ${message.msg}`}
+                </p>
+            );
+        }
+    });
+
+    return (
+        <div className="chat-msgs" ref={ref}>
+            {rows}
+        </div>
+    );
+});
+
+const ChatInput = ({ room, message, isEmpty, handleInput, sendMessage }) => {
+    let input;
+    if (isEmpty(room)) {
+        input = <p>You must first join a room</p>;
+    } else {
+        input = (
+            <input
+                type={"text"}
+                value={message}
+                placeholder={"Send a message"}
+                onChange={handleInput}
+                onKeyPress={sendMessage}
+                spellCheck={false}
+                autoFocus={false}
+            />
+        );
+    }
+    return <div className="chat-input">{input}</div>;
+};

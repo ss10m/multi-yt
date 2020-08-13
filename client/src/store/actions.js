@@ -180,8 +180,9 @@ export const clearRooms = () => ({
 //=====================================
 //          MESSAGE ACTIONS
 //=====================================
-export const sendMessage = (socket, username, msg) => async (dispatch) => {
+export const sendMessage = (msg) => async (dispatch, getState) => {
     console.log("ACTION: send-message");
+    let { username, socket } = getState();
     let message = { username, msg };
     dispatch(addMessage(message));
     socket.emit("send-message", message);

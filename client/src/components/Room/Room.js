@@ -150,30 +150,24 @@ class Room extends React.Component {
     };
 
     handleVolume = (action) => {
-        console.log(action);
         let { player } = this.props;
         if (!player.embed) return;
 
-        let volume = player.embed.getVolume();
         let isMuted = player.embed.isMuted();
-        console.log(volume, isMuted);
 
         let newVolume;
         switch (action) {
             case VOLUME_FULL:
-                console.log("VOLUME_FULL");
                 if (isMuted) player.embed.unMute();
                 player.embed.setVolume(100);
                 newVolume = VOLUME_FULL;
                 break;
             case VOLUME_HALF:
-                console.log("VOLUME_HALF");
                 if (isMuted) player.embed.unMute();
                 player.embed.setVolume(50);
                 newVolume = VOLUME_HALF;
                 break;
             case VOLUME_MUTED:
-                console.log("VOLUME_MUTED");
                 if (!isMuted) {
                     player.embed.mute();
                     newVolume = VOLUME_MUTED;
@@ -182,6 +176,8 @@ class Room extends React.Component {
                     player.embed.setVolume(100);
                     newVolume = VOLUME_FULL;
                 }
+                break;
+            default:
                 break;
         }
         if (newVolume) this.setState({ volume: newVolume });
@@ -196,8 +192,6 @@ class Room extends React.Component {
 
         timePlayed = Math.floor(timePlayed);
         totalTime = Math.floor(totalTime);
-
-        //console.log(sprintf("%01d:%02d", playedMinutes, playedSeconds));
 
         let playedHours = Math.floor(timePlayed / 3600);
         let playedMinutes = Math.floor((timePlayed % 3600) / 60);
@@ -222,7 +216,6 @@ class Room extends React.Component {
         }
 
         let { volume } = this.state;
-        console.log(volume);
 
         return (
             <div className="controls-wrapper">

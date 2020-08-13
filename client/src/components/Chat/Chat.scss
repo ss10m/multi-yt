@@ -1,16 +1,16 @@
+$header-color: #0e0e10;
+
 .chat {
     display: flex;
     flex-direction: column;
     color: whitesmoke;
 
-    //flex-grow: 0;
-
-    .header {
+    .chat-header {
         height: 50px;
         flex-shrink: 0;
         padding: 0 10px;
         font-weight: 700;
-        background-color: #0e0e10;
+        background-color: $header-color;
         box-shadow: 0px 2px 3px black;
         display: flex;
         align-items: center;
@@ -18,65 +18,67 @@
         z-index: 2;
     }
 
-    .body {
+    .chat-body {
         flex: 1;
         overflow: hidden;
         display: flex;
         flex-direction: column;
+    }
+}
 
-        .msgs {
-            padding: 0 15px;
-            flex: 1;
+.chat-msgs {
+    flex: 1;
+    padding: 0 15px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overflow: auto;
 
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 
-            overflow: auto;
-            &::-webkit-scrollbar {
-                display: none;
-            }
+    p {
+        font-size: 14px;
+        margin: 10px 0;
+        word-break: break-all;
 
-            p {
-                font-size: 14px;
-                margin: 10px 0;
+        span {
+            color: yellow;
+            font-weight: 700;
+        }
+    }
+}
 
-                word-break: break-all;
-                span {
-                    color: yellow;
-                    font-weight: 700;
-                }
-            }
+.chat-input {
+    height: 55px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    input {
+        height: 75%;
+        width: 90%;
+        padding: 0 10px;
+        margin: auto;
+        outline: none;
+        border: none;
+        border-radius: 5px;
+        color: whitesmoke;
+        border: 2px solid #18181b;
+        background-color: #3a3a3d;
+
+        &:focus {
+            border-color: #0e0e10;
         }
 
-        .input {
-            height: 55px;
-            flex-shrink: 0;
-
-            input {
-                height: 75%;
-                width: 90%;
-                padding: 0 10px;
-                margin: auto;
-                outline: none;
-                border: none;
-                border-radius: 5px;
-                color: whitesmoke;
-                border: 2px solid #18181b;
-                background-color: #3a3a3d;
-
-                &:focus {
-                    border-color: #0e0e10;
-                }
-
-                &::placeholder {
-                    color: grey;
-                }
-            }
-
-            p {
-                margin: auto;
-                font-size: 14px;
-            }
+        &::placeholder {
+            color: grey;
         }
+    }
+
+    p {
+        margin: auto;
+        font-size: 14px;
     }
 }
