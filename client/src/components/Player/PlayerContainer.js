@@ -9,7 +9,7 @@ import { setPlayer, updatePlayerState, setPlayerState, setVideoState, updateVide
 import Player from "./Player";
 
 // Constants
-import { BUFFERING, ENDED } from "helpers";
+import { PLAYING, BUFFERING, ENDED } from "helpers";
 
 class PlayerContainer extends React.Component {
     constructor(props) {
@@ -52,6 +52,7 @@ class PlayerContainer extends React.Component {
         let playerState = state.data;
 
         if (this.state.isBuffering && playerState !== BUFFERING) {
+            if (playerState == PLAYING) this.props.player.embed.pauseVideo();
             this.setState({ isBuffering: false });
             this.props.updatePlayerState({ isBuffering: false });
         }
