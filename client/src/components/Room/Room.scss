@@ -2,11 +2,15 @@ $button-color: #3a3a3d;
 $button-hover-color: #46464a;
 
 .room-info {
+    color: whitesmoke;
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
     display: flex;
     flex-direction: column;
-    flex: 1;
-    color: whitesmoke;
-    min-height: 50vh;
 
     .header {
         height: 50px;
@@ -41,7 +45,18 @@ $button-hover-color: #46464a;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        min-height: 0;
+
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        overflow: auto;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        .links {
+            margin: 20px 20px 10px 20px;
+        }
 
         input[type="text"] {
             min-width: 0;
@@ -59,11 +74,9 @@ $button-hover-color: #46464a;
         }
 
         .link-btn {
-            //width: 60px;
-            margin: 0 10px;
             height: 100%;
             background-color: $button-color;
-
+            padding: 0 10px;
             outline: none;
             border: none;
             color: whitesmoke;
@@ -77,8 +90,8 @@ $button-hover-color: #46464a;
 
         .input {
             height: 35px;
-            margin: 20px 20px;
             display: flex;
+            margin-bottom: 10px;
 
             input {
                 &::placeholder {
@@ -94,7 +107,6 @@ $button-hover-color: #46464a;
 
         .invite {
             height: 35px;
-            margin: 20px 20px;
             display: flex;
         }
 
@@ -107,7 +119,6 @@ $button-hover-color: #46464a;
             height: 20px;
             position: relative;
             top: 5px;
-            //background-color: red;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -227,13 +238,17 @@ $button-hover-color: #46464a;
         .status {
             display: flex;
             justify-content: center;
+            align-items: center;
             flex-wrap: wrap;
+            margin-bottom: 10px;
+
+            flex: 1;
 
             .user {
-                height: 30px;
+                height: 20px;
                 display: flex;
                 align-items: center;
-                margin: 10px;
+                margin: 5px;
                 padding: 3px 8px;
                 background-color: $button-color;
                 border-radius: 7px;
@@ -241,6 +256,7 @@ $button-hover-color: #46464a;
                 p {
                     margin: 0;
                     margin-right: 10px;
+                    font-size: 14px;
                 }
             }
         }

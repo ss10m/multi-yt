@@ -126,11 +126,11 @@ class Room extends React.Component {
         let { room, video } = this.props;
 
         let checkbox = (
-            <IconContext.Provider value={{ size: "20px", color: "green" }}>
+            <IconContext.Provider value={{ size: "15px", color: "green" }}>
                 <FaCheckCircle />
             </IconContext.Provider>
         );
-        let loading = <Spinner size="20px" />;
+        let loading = <Spinner size="15px" />;
 
         let status = (user) => {
             if (!video.url || !user.isBuffering) return checkbox;
@@ -326,7 +326,7 @@ class Room extends React.Component {
                     <p>{room.name}</p>
                 </div>
                 <div className="body">
-                    <div>
+                    <div className="links">
                         <div className="input">
                             <input
                                 type={"text"}
@@ -354,9 +354,9 @@ class Room extends React.Component {
                             </CopyToClipboard>
                         </div>
                     </div>
-                    {this.getStatus()}
-
                     {this.getControls()}
+
+                    {this.getStatus()}
                 </div>
             </div>
         );

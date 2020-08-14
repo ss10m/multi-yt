@@ -8,7 +8,7 @@ import "./Player.scss";
 export default (props) => {
     let { playerWidth, playerHeight, video, onPlayerReady, onPlayerStateChange } = props;
     return (
-        <div className="player-wrapper" style={{ width: playerWidth, height: playerHeight }}>
+        <div className="player" style={{ width: playerWidth, height: playerHeight }}>
             <ReactPlayer
                 config={{
                     playerVars: {
@@ -23,13 +23,14 @@ export default (props) => {
                     },
                 }}
                 url={video.url || ""}
-                width="100%"
-                height="100%"
+                width={playerWidth}
+                height={playerHeight}
                 playbackRate={1}
-                controls={true}
+                controls={false}
                 muted={true}
                 style={{ position: "absolute" }}
             />
+            <div className="overlay"></div>
         </div>
-    ); //<div className="overlay"></div>
+    );
 };

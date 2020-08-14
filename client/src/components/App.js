@@ -65,11 +65,7 @@ class App extends React.Component {
             <>
                 {showUsernamePrompt && <UsernamePrompt confirmUsername={this.confirmUsername} />}
                 <div className="main">
-                    <div className="player">
-                        <div>
-                            <Player width={width} height={height} />
-                        </div>
-                    </div>
+                    <Player width={width} height={height} />
                     <div className="options">{isEmpty(room) ? <Rooms /> : <Room />}</div>
                     <Chat />
                 </div>

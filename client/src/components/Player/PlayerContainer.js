@@ -74,23 +74,19 @@ class PlayerContainer extends React.Component {
     };
 
     render() {
-        let { width, height } = this.props;
+        let { width } = this.props;
         let playerWidth = 0;
         let playerHeight = 0;
 
-        if (width > 1100) {
-            playerWidth = width - 400;
-            playerHeight = Math.max(height, 600);
-        } else {
+        if (width <= 600) {
             playerWidth = Math.max(width, 320);
             playerHeight = (playerWidth * 9) / 16;
-
-            if (playerHeight > height * 0.6) {
-                playerHeight = height * 0.6;
-            }
         }
 
-        playerHeight = playerHeight - 10;
+        if (!playerWidth) {
+            playerWidth = "100%";
+            playerHeight = "100%";
+        }
 
         return (
             <Player
