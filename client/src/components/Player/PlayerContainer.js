@@ -31,6 +31,9 @@ class PlayerContainer extends React.Component {
             let isVideoBuffered = loadedBytes === totalBytes && this.state.isBuffering;
             let isStuckBuffering = player.state !== BUFFERING && this.state.isBuffering;
 
+            console.log(loadedBytes, totalBytes);
+            console.log(isStuckBuffering, isVideoBuffered);
+
             if (isVideoBuffered || isStuckBuffering) {
                 console.log("SENDING UPDATE: NOT BUFFERING");
                 this.setState({ isBuffering: false });
@@ -51,8 +54,10 @@ class PlayerContainer extends React.Component {
     onPlayerStateChange = (state) => {
         let playerState = state.data;
 
+        console.log(state);
+
         if (this.state.isBuffering && playerState !== BUFFERING) {
-            if (playerState == PLAYING) this.props.player.embed.pauseVideo();
+            //if (playerState === PLAYING) this.props.player.embed.pauseVideo();
             this.setState({ isBuffering: false });
             this.props.updatePlayerState({ isBuffering: false });
         }

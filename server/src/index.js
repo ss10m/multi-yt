@@ -182,11 +182,12 @@ io.on("connection", (socket) => {
 
         let room = Room.getRoomBySocketId(socket.id);
         if (!room) return;
+        console.log(room);
 
         let user = room.users[socket.id];
         if (!user) return;
 
-        if (user.isBuffering === state.isBuffering) return;
+        //if (user.isBuffering === state.isBuffering) return;
 
         let isBufferingPrev = room.isVideoBuffering();
         room.setUserState(socket.id, "isBuffering", state.isBuffering);
@@ -196,7 +197,9 @@ io.on("connection", (socket) => {
             room: { users: room.getUsers() },
         };
         if (room.action && !isBuffering) {
+            // send seek to only joining clients
             let action = room.action;
+            //room.update("video", { isBuffering });
             updatedState["seek"] = action.time;
             updatedState["video"] = {
                 isPlaying: room.video.isPlaying,
@@ -211,6 +214,7 @@ io.on("connection", (socket) => {
             };
         }
         io.in(room.id).emit("updated-state", updatedState);
+        console.log(room);
     });
 
     socket.on("disconnect", () => {

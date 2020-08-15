@@ -26,11 +26,11 @@ export default (props) => {
                 width={playerWidth}
                 height={playerHeight}
                 playbackRate={1}
-                controls={false}
+                controls={true}
                 muted={true}
                 style={{ position: "absolute" }}
             />
-            <div className="overlay"></div>
         </div>
+        //<div className="overlay"></div>
     );
 };
