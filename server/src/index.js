@@ -174,7 +174,8 @@ io.on("connection", (socket) => {
             return io.in(room.id).emit("updated-state", { video });
         }
         if (state.hasOwnProperty("seek")) {
-            return io.in(room.id).emit("updated-state", state);
+            if (!room.action) io.in(room.id).emit("updated-state", state);
+            return;
         }
         if (state.hasOwnProperty("ended")) {
             room.update("video", { isPlaying: false });

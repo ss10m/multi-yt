@@ -36,7 +36,7 @@ class Room {
     }
 
     addUser(socketId, username) {
-        this.users[socketId] = { username, isBuffering: false };
+        this.users[socketId] = { username, isBuffering: true };
         Room.socketIdToRoom[socketId] = this;
     }
 

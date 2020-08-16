@@ -82,13 +82,8 @@ export const connectSocket = (id) => async (dispatch, getState) => {
                     case "seek":
                         console.log("SEEK");
                         if (isEmpty(player) || isEmpty(player.embed)) return;
-                        let currentTime = Math.floor(player.embed.getCurrentTime());
-                        let difference = Math.abs(currentTime - updatedState[key]);
-                        console.log(currentTime, updatedState[key]);
-                        //if (difference < 2) return;
                         player.embed.playVideo();
                         player.embed.seekTo(updatedState[key]);
-
                         break;
                     case "video":
                         if (isEmpty(player) || isEmpty(player.embed)) return;
