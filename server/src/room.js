@@ -7,6 +7,7 @@ class Room {
         this.users = {};
         this.video = {};
         this.action = null;
+        this.actionClients = [];
         Room.count += 1;
         Room.idToRoom[this.id] = this;
         Room.socketIdToRoom[socketId] = this;
@@ -35,7 +36,7 @@ class Room {
     }
 
     addUser(socketId, username) {
-        this.users[socketId] = { username, isBuffering: true };
+        this.users[socketId] = { username, isBuffering: false };
         Room.socketIdToRoom[socketId] = this;
     }
 
@@ -55,12 +56,21 @@ class Room {
         this.action = value;
     }
 
+    addActionClient(socketId) {
+        this.actionClients.push(socketId);
+    }
+
+    clearAction() {
+        this.action = null;
+        this.actionClients = [];
+    }
+
     update(key, value) {
         this[key] = { ...this[key], ...value };
     }
 
     loadVideo(url) {
-        this.video = { url, isPlaying: true, isBuffering: true };
+        this.video = { url, isPlaying: true, isBuffering: false };
     }
 
     removeVideo() {

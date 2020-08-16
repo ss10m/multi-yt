@@ -54,9 +54,8 @@ export const connectSocket = (id) => async (dispatch, getState) => {
         let currentTime = 0;
         if (!isEmpty(player)) {
             let playerTime = player.embed.getCurrentTime();
-            if (playerTime) {
-                currentTime = playerTime;
-            }
+            if (playerTime) currentTime = Math.floor(playerTime);
+            //player.embed.seekTo(currentTime);
         }
         socket.emit("current-video-time", roomId, currentTime);
     });
@@ -81,12 +80,13 @@ export const connectSocket = (id) => async (dispatch, getState) => {
                         dispatch(setRoom(updatedState[key]));
                         break;
                     case "seek":
+                        console.log("SEEK");
                         if (isEmpty(player) || isEmpty(player.embed)) return;
                         let currentTime = Math.floor(player.embed.getCurrentTime());
                         let difference = Math.abs(currentTime - updatedState[key]);
                         console.log(currentTime, updatedState[key]);
-                        //player.embed.pauseVideo();
-                        if (difference < 2) return;
+                        //if (difference < 2) return;
+                        player.embed.playVideo();
                         player.embed.seekTo(updatedState[key]);
 
                         break;
@@ -102,7 +102,9 @@ export const connectSocket = (id) => async (dispatch, getState) => {
                             default:
                                 break;
                         }
-                        dispatch(setVideoState({ isPlaying: updatedState[key].isPlaying }));
+                        if ("isPlaying" in updatedState[key]) {
+                            dispatch(setVideoState({ isPlaying: updatedState[key].isPlaying }));
+                        }
                         break;
                     case "message":
                         dispatch(addMessage(updatedState[key]));

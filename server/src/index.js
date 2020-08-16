@@ -71,7 +71,10 @@ io.on("connection", (socket) => {
         if (room.video.url) {
             room.update("video", { isBuffering: true });
             updatedState["video"] = { action: "pause", isPlaying: room.video.isPlaying };
-            io.to(Object.keys(room.users)[0]).emit("get-video-time", room.id);
+
+            if (!room.actionClients.length) io.to(Object.keys(room.users)[0]).emit("get-video-time", room.id);
+            room.addActionClient(socket.id);
+            console.log(room.actionClients);
         }
 
         room.addUser(socket.id, username);
@@ -85,6 +88,8 @@ io.on("connection", (socket) => {
             isPlaying: room.video.isPlaying,
         };
         socket.emit("joined-room", { name: room.name, ...users, id: room.id }, videoStatus);
+
+        //socket.emit("joined-room", { name: room.name, ...users, id: room.id });
         socket.to(room.id).emit("updated-state", updatedState);
         updateLobby();
     });
@@ -180,41 +185,37 @@ io.on("connection", (socket) => {
     socket.on("update-player-state", (state) => {
         console.log("-----------update-player-state--------------");
 
+        console.log(state);
+
         let room = Room.getRoomBySocketId(socket.id);
         if (!room) return;
-        console.log(room);
 
         let user = room.users[socket.id];
         if (!user) return;
 
-        //if (user.isBuffering === state.isBuffering) return;
-
         let isBufferingPrev = room.isVideoBuffering();
         room.setUserState(socket.id, "isBuffering", state.isBuffering);
         let isBuffering = room.isVideoBuffering();
+        room.update("video", { isBuffering });
 
-        let updatedState = {
-            room: { users: room.getUsers() },
-        };
+        let updatedState = {};
+
         if (room.action && !isBuffering) {
-            // send seek to only joining clients
-            let action = room.action;
-            //room.update("video", { isBuffering });
-            updatedState["seek"] = action.time;
-            updatedState["video"] = {
-                isPlaying: room.video.isPlaying,
-                action: room.video.isPlaying && !room.video.isBuffering ? "play" : "pause",
-            };
-            room.setAction(null);
+            for (let clientId of room.actionClients) {
+                console.log(clientId);
+                io.to(clientId).emit("updated-state", { seek: room.action.time });
+            }
+            room.clearAction();
         } else if (isBuffering != isBufferingPrev) {
-            room.update("video", { isBuffering });
-            updatedState["video"] = {
-                isPlaying: room.video.isPlaying,
-                action: room.video.isPlaying && !room.video.isBuffering ? "play" : "pause",
-            };
+            console.log("2");
+            if (!isBuffering && room.video.isPlaying) {
+                updatedState["video"] = {
+                    action: "play",
+                };
+            }
         }
+        updatedState["room"] = { users: room.getUsers() };
         io.in(room.id).emit("updated-state", updatedState);
-        console.log(room);
     });
 
     socket.on("disconnect", () => {

@@ -11,6 +11,9 @@ import Player from "./Player";
 // Constants
 import { PLAYING, BUFFERING, ENDED } from "helpers";
 
+// Helpers
+import { isEmpty } from "helpers";
+
 class PlayerContainer extends React.Component {
     constructor(props) {
         super(props);
@@ -35,9 +38,9 @@ class PlayerContainer extends React.Component {
             console.log(isStuckBuffering, isVideoBuffered);
 
             if (isVideoBuffered || isStuckBuffering) {
-                console.log("SENDING UPDATE: NOT BUFFERING");
-                this.setState({ isBuffering: false });
-                this.props.updatePlayerState({ isBuffering: false });
+                console.log("STUCK");
+                //this.setState({ isBuffering: false });
+                //this.props.updatePlayerState({ isBuffering: false });
             }
         }, 1000);
     }
@@ -46,18 +49,49 @@ class PlayerContainer extends React.Component {
         clearInterval(this.timePlayed);
     }
 
+    componentDidUpdate(prevProps) {
+        if (!isEmpty(prevProps.player) && isEmpty(this.props.player)) {
+            this.setState({ isBuffering: false });
+            console.log("CLEARED STATE");
+        }
+    }
+
     onPlayerReady = (state) => {
         this.props.setPlayer(state.target);
         state.target.playVideo();
     };
 
     onPlayerStateChange = (state) => {
-        let playerState = state.data;
-
         console.log(state);
 
+        let playerState = state.data;
+        let isBuffering = this.state.isBuffering;
+
+        if (isBuffering && playerState !== BUFFERING) {
+            console.log("NOT BUFFERING");
+            this.setState({ isBuffering: false });
+            this.props.player.embed.pauseVideo();
+            this.props.updatePlayerState({ isBuffering: false });
+            return;
+        }
+
+        switch (playerState) {
+            case ENDED:
+                this.props.updateVideo(this.props.socket, { ended: true });
+                break;
+            case BUFFERING:
+                console.log("BUFFERING");
+                this.setState({ isBuffering: true });
+                this.props.updatePlayerState({ isBuffering: true });
+                break;
+            default:
+                break;
+        }
+
+        /*
+
         if (this.state.isBuffering && playerState !== BUFFERING) {
-            //if (playerState === PLAYING) this.props.player.embed.pauseVideo();
+            this.props.player.embed.pauseVideo();
             this.setState({ isBuffering: false });
             this.props.updatePlayerState({ isBuffering: false });
         }
@@ -77,6 +111,7 @@ class PlayerContainer extends React.Component {
         }
 
         this.props.setPlayerState(state.data);
+        */
     };
 
     render() {
