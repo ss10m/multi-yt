@@ -9,7 +9,7 @@ import { setPlayer, updatePlayerState, setPlayerState, setVideoState, updateVide
 import Player from "./Player";
 
 // Constants
-import { PLAYING, BUFFERING, ENDED } from "helpers";
+import { BUFFERING, ENDED } from "helpers";
 
 // Helpers
 import { isEmpty } from "helpers";
@@ -77,7 +77,7 @@ class PlayerContainer extends React.Component {
 
         switch (playerState) {
             case ENDED:
-                this.props.updateVideo(this.props.socket, { ended: true });
+                this.props.updateVideo({ ended: true });
                 break;
             case BUFFERING:
                 console.log("BUFFERING");
@@ -87,31 +87,6 @@ class PlayerContainer extends React.Component {
             default:
                 break;
         }
-
-        /*
-
-        if (this.state.isBuffering && playerState !== BUFFERING) {
-            this.props.player.embed.pauseVideo();
-            this.setState({ isBuffering: false });
-            this.props.updatePlayerState({ isBuffering: false });
-        }
-
-        switch (playerState) {
-            case ENDED:
-                this.props.updateVideo(this.props.socket, { ended: true });
-                break;
-            case BUFFERING:
-                if (!this.state.isBuffering) {
-                    this.setState({ isBuffering: true });
-                    this.props.updatePlayerState({ isBuffering: true });
-                }
-                break;
-            default:
-                break;
-        }
-
-        this.props.setPlayerState(state.data);
-        */
     };
 
     render() {
@@ -162,8 +137,8 @@ const mapDispatchToProps = (dispatch) => ({
     setVideoState: (state) => {
         dispatch(setVideoState(state));
     },
-    updateVideo: (socket, state) => {
-        dispatch(updateVideo(socket, state));
+    updateVideo: (state) => {
+        dispatch(updateVideo(state));
     },
 });
 

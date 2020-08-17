@@ -9,7 +9,7 @@ import { isEmpty } from "helpers";
 
 import Player from "./Player/PlayerContainer";
 import Chat from "./Chat/ChatContainer";
-import Room from "./Room/Room";
+import Room from "./Room/RoomContainer";
 import Rooms from "./Rooms/RoomsContainer";
 import UsernamePrompt from "./UsernamePrompt/UsernamePrompt";
 
@@ -51,7 +51,7 @@ class App extends React.Component {
         let result = path.filter((word) => word);
 
         if (result.length === 2 && result[0] === "invite" && result[1].length === 7) {
-            this.props.joinRoom(this.props.socket, result[1], username);
+            this.props.joinRoom(result[1]);
         }
         this.props.history.push("/");
     };
@@ -93,8 +93,8 @@ const mapDispatchToProps = (dispatch) => ({
     setUsername: (username) => {
         dispatch(setUsername(username));
     },
-    joinRoom: (socket, room, username) => {
-        dispatch(joinRoom(socket, room, username));
+    joinRoom: (room) => {
+        dispatch(joinRoom(room));
     },
 });
 

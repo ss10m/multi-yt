@@ -107,6 +107,8 @@ io.on("connection", (socket) => {
         let room = Room.getRoomBySocketId(socket.id);
         if (!room) return;
 
+        // remove action clientId is the only one
+
         let isBufferingPrev = room.isVideoBuffering();
         let removed = room.leave(socket.id);
         let isBuffering = room.isVideoBuffering();
@@ -226,6 +228,8 @@ io.on("connection", (socket) => {
         if (!room) {
             return socket.leave("lobby");
         }
+
+        // remove action clientId is the only one
 
         socket.leave(room.id);
         let isBufferingPrev = room.isVideoBuffering();

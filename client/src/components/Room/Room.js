@@ -1,390 +1,236 @@
+// Libraries & utils
 import React from "react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import classNames from "classnames";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
-import { debounce } from "lodash";
-import { connect } from "react-redux";
-
+// Components
 import Spinner from "../Spinner/Spinner";
 
-import { sprintf } from "sprintf-js";
+// SCSS
+import "./Room.scss";
 
+// Icons
 import { IconContext } from "react-icons";
 import { FaPlay, FaPause, FaCheckCircle, FaVolumeMute, FaVolumeUp, FaVolumeDown } from "react-icons/fa";
 import { MdReplay10, MdReplay30, MdForward10, MdForward30 } from "react-icons/md";
-import { leaveRoom, loadVideo, removeVideo, updateVideo } from "store/actions";
 
+// Other
 import { isEmpty, VOLUME_MUTED, VOLUME_HALF, VOLUME_FULL } from "helpers";
+import { PLAY, PAUSE, SEEK_BACK_10, SEEK_BACK_30, SEEK_FORWARD_10, SEEK_FORWARD_30 } from "helpers";
 
-import "./Room.scss";
-
-const PLAY = "PLAY";
-const PAUSE = "PAUSE";
-const SEEK_BACK_10 = "SEEK_BACK_10";
-const SEEK_BACK_30 = "SEEK_BACK_30";
-const SEEK_FORWARD_10 = "SEEK_FORWARD_10";
-const SEEK_FORWARD_30 = "SEEK_FORWARD_30";
-
-class Room extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { url: "", timePlayed: 0, totalTime: 0, volume: VOLUME_MUTED };
-
-        this.updateServer = debounce(this.updateServer, 200);
-        this.sendWithDelay = debounce(this.sendWithDelay, 200);
-    }
-
-    componentDidMount() {
-        this.timePlayed = setInterval(() => {
-            let { player } = this.props;
-            if (!player.embed) return;
-            let currentTime = player.embed.getCurrentTime();
-            let totalTime = player.embed.getDuration();
-            if (currentTime !== this.state.timePlayed) {
-                this.setState({ timePlayed: currentTime });
-            }
-            if (!this.state.totalTime) {
-                this.setState({ totalTime });
-            }
-        }, 1000);
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.timePlayed);
-    }
-
-    componentDidUpdate(prevProps) {
-        if (!isEmpty(prevProps.player) && isEmpty(this.props.player)) {
-            this.setState({ url: "", timePlayed: 0, totalTime: 0, volume: VOLUME_MUTED });
-        }
-    }
-
-    handleControls = (action) => {
-        let { player } = this.props;
-
-        let actionObj = null;
-        switch (action) {
-            case PLAY:
-                actionObj = { isPlaying: true };
-                break;
-            case PAUSE:
-                actionObj = { isPlaying: false };
-                break;
-            case SEEK_BACK_10:
-                actionObj = { seek: Math.max(player.embed.getCurrentTime() - 10, 0) };
-                break;
-            case SEEK_BACK_30:
-                actionObj = { seek: Math.max(player.embed.getCurrentTime() - 30, 0) };
-                break;
-            case SEEK_FORWARD_10:
-                actionObj = { seek: Math.max(player.embed.getCurrentTime() + 10, 0) };
-                break;
-            case SEEK_FORWARD_30:
-                actionObj = { seek: Math.max(player.embed.getCurrentTime() + 30, 0) };
-                break;
-            default:
-                return;
-        }
-        if (actionObj) this.sendWithDelay(actionObj);
-    };
-
-    sendWithDelay = (action) => {
-        let { socket } = this.props;
-        this.props.updateVideo(socket, action);
-    };
-
-    handleInput = (event) => {
-        this.setState({ url: event.target.value });
-    };
-
-    loadVideo = () => {
-        let url = this.state.url;
-        if (!url) return;
-        let idRegEx = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|\?v=)([^#&?]*).*/;
-        let match = url.match(idRegEx);
-        if (match && match[2].length === 11) {
-            this.props.loadVideo(this.props.socket, "https://www.youtube.com/watch?v=" + match[2]);
-            this.setState({ url: "" });
-        }
-    };
-
-    removeVideo = () => {
-        this.setState({ url: "" });
-        this.props.removeVideo(this.props.socket);
-    };
-
-    handleSeek = (event) => {
-        this.updateServer(event.target.value);
-    };
-
-    updateServer = (value) => {
-        this.setState({ timePlayed: value });
-        this.props.updateVideo(this.props.socket, { seek: value });
-    };
-
-    getStatus = () => {
-        let { room, video } = this.props;
-
-        let checkbox = (
-            <IconContext.Provider value={{ size: "15px", color: "green" }}>
-                <FaCheckCircle />
-            </IconContext.Provider>
-        );
-        let loading = <Spinner size="15px" />;
-
-        let status = (user) => {
-            if (!video.url || !user.isBuffering) return checkbox;
-            return loading;
-        };
-
-        return (
-            <div className="status">
-                {room.users.map((user, idx) => (
-                    <div className="user" key={idx}>
-                        <p>{user.username}</p>
-                        {status(user)}
-                    </div>
-                ))}
-            </div>
-        );
-    };
-
-    handleVolume = (action) => {
-        let { player } = this.props;
-        if (!player.embed) return;
-
-        let isMuted = player.embed.isMuted();
-
-        let newVolume;
-        switch (action) {
-            case VOLUME_FULL:
-                if (isMuted) player.embed.unMute();
-                player.embed.setVolume(100);
-                newVolume = VOLUME_FULL;
-                break;
-            case VOLUME_HALF:
-                if (isMuted) player.embed.unMute();
-                player.embed.setVolume(50);
-                newVolume = VOLUME_HALF;
-                break;
-            case VOLUME_MUTED:
-                if (!isMuted) {
-                    player.embed.mute();
-                    newVolume = VOLUME_MUTED;
-                } else {
-                    player.embed.unMute();
-                    player.embed.setVolume(100);
-                    newVolume = VOLUME_FULL;
-                }
-                break;
-            default:
-                break;
-        }
-        if (newVolume) this.setState({ volume: newVolume });
-    };
-
-    getControls = () => {
-        let { timePlayed, totalTime } = this.state;
-        let { player, video } = this.props;
-        let isDisabled = !player.embed;
-
-        let isPlaying = video.isPlaying;
-
-        timePlayed = Math.floor(timePlayed);
-        totalTime = Math.floor(totalTime);
-
-        let playedHours = Math.floor(timePlayed / 3600);
-        let playedMinutes = Math.floor((timePlayed % 3600) / 60);
-        let playedSeconds = Math.floor((timePlayed % 3600) % 60);
-
-        let playedTimer;
-        if (playedHours > 0) {
-            playedTimer = sprintf("%01d:%02d:%02d", playedHours, playedMinutes, playedSeconds);
-        } else {
-            playedTimer = sprintf("%01d:%02d", playedMinutes, playedSeconds);
-        }
-
-        let totalHours = Math.floor(totalTime / 3600);
-        let totalMinutes = Math.floor((totalTime % 3600) / 60);
-        let totalSeconds = Math.floor((totalTime % 3600) % 60);
-
-        let totalTimer;
-        if (totalHours > 0) {
-            totalTimer = sprintf("%01d:%02d:%02d", totalHours, totalMinutes, totalSeconds);
-        } else {
-            totalTimer = sprintf("%01d:%02d", totalMinutes, totalSeconds);
-        }
-
-        let { volume } = this.state;
-
-        return (
-            <div className="controls-wrapper">
-                <div className="volume-bar">
-                    <div className="timer">{`${playedTimer} / ${totalTimer}`}</div>
-                    <div className="volume-controls" disabled={isDisabled}>
-                        <IconContext.Provider
-                            value={{
-                                size: "20px",
-                                className: classNames("volume-icon", {
-                                    active: !isDisabled && volume === VOLUME_MUTED,
-                                }),
-                            }}
-                        >
-                            <FaVolumeMute onClick={() => this.handleVolume(VOLUME_MUTED)} />
-                        </IconContext.Provider>
-                        <IconContext.Provider
-                            value={{
-                                size: "20px",
-                                className: classNames("volume-icon", { active: !isDisabled && volume === VOLUME_HALF }),
-                            }}
-                        >
-                            <FaVolumeDown onClick={() => this.handleVolume(VOLUME_HALF)} />
-                        </IconContext.Provider>
-                        <IconContext.Provider
-                            value={{
-                                size: "20px",
-                                className: classNames("volume-icon", { active: !isDisabled && volume === VOLUME_FULL }),
-                            }}
-                        >
-                            <FaVolumeUp onClick={() => this.handleVolume(VOLUME_FULL)} />
-                        </IconContext.Provider>
-                    </div>
-                </div>
-                <div className={"controls" + (isDisabled ? " disabled" : "")}>
-                    <div className="inner"></div>
-                    <div className="btn" onClick={() => this.handleControls(SEEK_BACK_30)}>
-                        <IconContext.Provider value={{ size: "28px" }}>
-                            <MdReplay30 />
-                        </IconContext.Provider>
-                    </div>
-                    <div className="btn" onClick={() => this.handleControls(SEEK_BACK_10)}>
-                        <IconContext.Provider value={{ size: "35px" }}>
-                            <MdReplay10 />
-                        </IconContext.Provider>
-                    </div>
-                    <div className="btn-wrapper">
-                        <div
-                            className={"btn large" + (isPlaying ? " pause" : " play")}
-                            onClick={() => this.handleControls(isPlaying ? PAUSE : PLAY)}
-                        >
-                            <IconContext.Provider value={{ size: "30px" }}>
-                                {isPlaying ? <FaPause /> : <FaPlay />}
-                            </IconContext.Provider>
-                        </div>
-                    </div>
-                    <div className="btn" onClick={() => this.handleControls(SEEK_FORWARD_10)}>
-                        <IconContext.Provider value={{ size: "35px" }}>
-                            <MdForward10 />
-                        </IconContext.Provider>
-                    </div>
-                    <div className="btn" onClick={() => this.handleControls(SEEK_FORWARD_30)}>
-                        <IconContext.Provider value={{ size: "28px" }}>
-                            <MdForward30 />
-                        </IconContext.Provider>
-                    </div>
-                </div>
-
-                <input
-                    className="slider"
-                    type="range"
-                    value={isDisabled ? 0 : this.state.timePlayed}
-                    min={0}
-                    max={isDisabled ? 1 : Math.floor(player.embed.getDuration())}
-                    onInput={this.handleSeek}
-                    step={1}
-                    disabled={isDisabled}
+export default (props) => {
+    return (
+        <div className="room">
+            <Header room={props.room} leaveRoom={props.leaveRoom} />
+            <div className="room-body">
+                <Links
+                    url={props.url}
+                    inviteUrl={props.inviteUrl}
+                    video={props.video}
+                    loadVideo={props.loadVideo}
+                    removeVideo={props.removeVideo}
+                    handleInput={props.handleInput}
                 />
+                <PlayerStatus users={props.room.users} url={props.video.url} />
+                <Controls {...props} />
             </div>
-        );
-    };
-
-    render() {
-        let { url } = this.state;
-        let { socket, room, video } = this.props;
-        let loadedVideo = !isEmpty(video);
-        let button;
-        if (loadedVideo) {
-            button = (
-                <button className="link-btn" onClick={this.removeVideo}>
-                    CLEAR
-                </button>
-            );
-        } else {
-            button = (
-                <button className="link-btn" onClick={this.loadVideo}>
-                    PLAY
-                </button>
-            );
-        }
-
-        let inviteUrl = window.location.href + "invite/" + room.id;
-
-        return (
-            <div className="room-info">
-                <div className="header">
-                    <button onClick={() => this.props.leaveRoom(socket)}>LEAVE</button>
-                    <p>{room.name}</p>
-                </div>
-                <div className="body">
-                    <div className="links">
-                        <div className="input">
-                            <input
-                                type={"text"}
-                                value={loadedVideo ? video.url : url}
-                                placeholder={"Youtube URL"}
-                                onChange={this.handleInput}
-                                spellCheck={false}
-                                autoFocus={false}
-                                disabled={loadedVideo}
-                            />
-                            {button}
-                        </div>
-                        <div className="invite">
-                            <input
-                                type={"text"}
-                                value={inviteUrl}
-                                placeholder={"Invite"}
-                                spellCheck={false}
-                                autoFocus={false}
-                                readOnly={true}
-                                onFocus={(event) => event.target.select()}
-                            />
-                            <CopyToClipboard text={inviteUrl}>
-                                <button className="link-btn invite-btn">COPY INVITE LINK</button>
-                            </CopyToClipboard>
-                        </div>
-                    </div>
-                    {this.getControls()}
-
-                    {this.getStatus()}
-                </div>
-            </div>
-        );
-    }
-}
-
-const mapStateToProps = (state) => {
-    return {
-        socket: state.socket,
-        video: state.video,
-        player: state.player,
-        room: state.room,
-    };
+        </div>
+    );
 };
 
-const mapDispatchToProps = (dispatch) => ({
-    leaveRoom: (socket) => {
-        dispatch(leaveRoom(socket));
-    },
-    loadVideo: (socket, url) => {
-        dispatch(loadVideo(socket, url));
-    },
-    removeVideo: (socket) => {
-        dispatch(removeVideo(socket));
-    },
-    updateVideo: (socket, state) => {
-        dispatch(updateVideo(socket, state));
-    },
-});
+const Header = ({ room, leaveRoom }) => {
+    return (
+        <div className="room-header">
+            <button onClick={leaveRoom}>LEAVE</button>
+            <p>{room.name}</p>
+        </div>
+    );
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Room);
+const Links = ({ url, inviteUrl, video, loadVideo, removeVideo, handleInput }) => {
+    let isVideoLoaded = !isEmpty(video);
+    let loadVideoBtn;
+    if (isVideoLoaded) {
+        loadVideoBtn = {
+            onClick: removeVideo,
+            content: "CLEAR",
+        };
+    } else {
+        loadVideoBtn = {
+            onClick: loadVideo,
+            content: "PLAY",
+        };
+    }
+
+    return (
+        <div className="room-links">
+            <div className="url-link">
+                <input
+                    type={"text"}
+                    value={isVideoLoaded ? video.url : url}
+                    placeholder={"Youtube URL"}
+                    onChange={handleInput}
+                    spellCheck={false}
+                    autoFocus={false}
+                    disabled={isVideoLoaded}
+                />
+                <button className="link-btn" onClick={loadVideoBtn.onClick}>
+                    {loadVideoBtn.content}
+                </button>
+            </div>
+            <div className="invite">
+                <input
+                    type={"text"}
+                    value={inviteUrl}
+                    placeholder={"Invite"}
+                    spellCheck={false}
+                    autoFocus={false}
+                    readOnly={true}
+                    onFocus={(event) => event.target.select()}
+                />
+                <CopyToClipboard text={inviteUrl}>
+                    <button className="link-btn">COPY INVITE LINK</button>
+                </CopyToClipboard>
+            </div>
+        </div>
+    );
+};
+
+const Controls = (props) => {
+    return (
+        <div className="controls">
+            <VolumeBar
+                volume={props.volume}
+                controlsDisabled={props.controlsDisabled}
+                playedTimer={props.playedTimer}
+                totalTimer={props.totalTimer}
+                handleVolume={props.handleVolume}
+            />
+            <PlayerControls
+                isPlaying={props.isPlaying}
+                controlsDisabled={props.controlsDisabled}
+                handleControls={props.handleControls}
+            />
+            <VideoProgress
+                playedtime={props.playedtime}
+                totalTime={props.totalTime}
+                controlsDisabled={props.controlsDisabled}
+                handleSeek={props.handleSeek}
+            />
+        </div>
+    );
+};
+
+const VolumeBar = ({ volume, controlsDisabled, playedTimer, totalTimer, handleVolume }) => {
+    return (
+        <div className="volume-controls">
+            <div className="timer">{`${playedTimer} / ${totalTimer}`}</div>
+            <div className="volume" disabled={controlsDisabled}>
+                <IconContext.Provider
+                    value={{
+                        size: "20px",
+                        className: classNames("volume-icon", {
+                            active: !controlsDisabled && volume === VOLUME_MUTED,
+                        }),
+                    }}
+                >
+                    <FaVolumeMute onClick={() => handleVolume(VOLUME_MUTED)} />
+                </IconContext.Provider>
+                <IconContext.Provider
+                    value={{
+                        size: "20px",
+                        className: classNames("volume-icon", { active: !controlsDisabled && volume === VOLUME_HALF }),
+                    }}
+                >
+                    <FaVolumeDown onClick={() => handleVolume(VOLUME_HALF)} />
+                </IconContext.Provider>
+                <IconContext.Provider
+                    value={{
+                        size: "20px",
+                        className: classNames("volume-icon", { active: !controlsDisabled && volume === VOLUME_FULL }),
+                    }}
+                >
+                    <FaVolumeUp onClick={() => handleVolume(VOLUME_FULL)} />
+                </IconContext.Provider>
+            </div>
+        </div>
+    );
+};
+
+const PlayerControls = ({ isPlaying, controlsDisabled, handleControls }) => {
+    return (
+        <div className={"player-controls" + (controlsDisabled ? " disabled" : "")}>
+            <div className="inner-box" />
+            <div className="btn" onClick={() => handleControls(SEEK_BACK_30)}>
+                <IconContext.Provider value={{ size: "28px" }}>
+                    <MdReplay30 />
+                </IconContext.Provider>
+            </div>
+            <div className="btn" onClick={() => handleControls(SEEK_BACK_10)}>
+                <IconContext.Provider value={{ size: "35px" }}>
+                    <MdReplay10 />
+                </IconContext.Provider>
+            </div>
+            <div className="btn-wrapper">
+                <div
+                    className={"btn large" + (isPlaying ? " pause" : " play")}
+                    onClick={() => handleControls(isPlaying ? PAUSE : PLAY)}
+                >
+                    <IconContext.Provider value={{ size: "30px" }}>
+                        {isPlaying ? <FaPause /> : <FaPlay />}
+                    </IconContext.Provider>
+                </div>
+            </div>
+            <div className="btn" onClick={() => handleControls(SEEK_FORWARD_10)}>
+                <IconContext.Provider value={{ size: "35px" }}>
+                    <MdForward10 />
+                </IconContext.Provider>
+            </div>
+            <div className="btn" onClick={() => handleControls(SEEK_FORWARD_30)}>
+                <IconContext.Provider value={{ size: "28px" }}>
+                    <MdForward30 />
+                </IconContext.Provider>
+            </div>
+        </div>
+    );
+};
+
+const VideoProgress = ({ playedtime, totalTime, controlsDisabled, handleSeek }) => {
+    return (
+        <input
+            className="slider"
+            type="range"
+            value={playedtime}
+            min={0}
+            max={totalTime}
+            onInput={handleSeek}
+            step={1}
+            disabled={controlsDisabled}
+        />
+    );
+};
+
+const PlayerStatus = ({ users, url }) => {
+    let checkbox = (
+        <IconContext.Provider value={{ size: "15px", color: "green" }}>
+            <FaCheckCircle />
+        </IconContext.Provider>
+    );
+    let loading = <Spinner size="15px" />;
+
+    let status = (user) => {
+        if (!url || !user.isBuffering) return checkbox;
+        return loading;
+    };
+
+    return (
+        <div className="room-status">
+            {users.map((user, idx) => (
+                <div className="user" key={idx}>
+                    <p>{user.username}</p>
+                    {status(user)}
+                </div>
+            ))}
+        </div>
+    );
+};

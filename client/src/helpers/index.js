@@ -9,8 +9,31 @@ const VOLUME_MUTED = 1;
 const VOLUME_HALF = 2;
 const VOLUME_FULL = 3;
 
-export { PLAYING, PAUSED, BUFFERING, ENDED, VOLUME_MUTED, VOLUME_HALF, VOLUME_FULL };
+// Player Actions
+const PLAY = "PLAY";
+const PAUSE = "PAUSE";
+const SEEK_BACK_10 = "SEEK_BACK_10";
+const SEEK_BACK_30 = "SEEK_BACK_30";
+const SEEK_FORWARD_10 = "SEEK_FORWARD_10";
+const SEEK_FORWARD_30 = "SEEK_FORWARD_30";
 
-export const isEmpty = (obj) => {
+const isEmpty = (obj) => {
     return !obj || Object.keys(obj).length === 0;
+};
+
+export {
+    PLAYING,
+    PAUSED,
+    BUFFERING,
+    ENDED,
+    VOLUME_MUTED,
+    VOLUME_HALF,
+    VOLUME_FULL,
+    PLAY,
+    PAUSE,
+    SEEK_BACK_10,
+    SEEK_BACK_30,
+    SEEK_FORWARD_10,
+    SEEK_FORWARD_30,
+    isEmpty,
 };

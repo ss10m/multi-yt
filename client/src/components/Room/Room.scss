@@ -1,9 +1,8 @@
+$header-color: #0e0e10;
 $button-color: #3a3a3d;
 $button-hover-color: #46464a;
 
-.room-info {
-    color: whitesmoke;
-
+.room {
     position: absolute;
     left: 0;
     right: 0;
@@ -12,253 +11,247 @@ $button-hover-color: #46464a;
     display: flex;
     flex-direction: column;
 
-    .header {
-        height: 50px;
-        padding: 0 10px;
-        font-weight: 600;
-        background-color: #0e0e10;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        box-shadow: 0px 2px 3px black;
-
-        button {
-            position: absolute;
-            left: 10px;
-            height: 30px;
-            background-color: $button-color;
-            outline: none;
-            border: none;
-            color: whitesmoke;
-            border-radius: 3px;
-
-            &:hover {
-                cursor: pointer;
-                background-color: $button-hover-color;
-            }
-        }
-    }
-
-    .body {
+    .room-body {
         flex: 1;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-
         -ms-overflow-style: none;
         scrollbar-width: none;
         overflow: auto;
-
         &::-webkit-scrollbar {
             display: none;
         }
+    }
+}
 
-        .links {
-            margin: 20px 20px 10px 20px;
+.room-header {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 0 10px;
+    background-color: $header-color;
+    box-shadow: 0px 2px 3px black;
+    font-weight: 600;
+
+    button {
+        position: absolute;
+        left: 10px;
+        height: 30px;
+        outline: none;
+        border: none;
+        border-radius: 3px;
+        background-color: $button-color;
+        color: whitesmoke;
+
+        &:hover {
+            cursor: pointer;
+            background-color: $button-hover-color;
         }
+    }
+}
 
-        input[type="text"] {
-            min-width: 0;
-            flex: 1;
-            height: 100%;
-            padding: 0 10px;
-            margin-right: 10px;
-            outline: none;
-            border: none;
-            border-radius: 3px;
-            color: whitesmoke;
-            border: 2px solid #3a3a3d;
-            box-sizing: border-box;
-            background-color: #3a3a3d;
-        }
+.room-links {
+    margin: 20px 20px 10px 20px;
 
-        .link-btn {
-            height: 100%;
-            background-color: $button-color;
-            padding: 0 10px;
-            outline: none;
-            border: none;
-            color: whitesmoke;
-            border-radius: 3px;
+    .url-link {
+        height: 35px;
+        display: flex;
+        margin-bottom: 10px;
 
-            &:hover {
-                cursor: pointer;
-                background-color: $button-hover-color;
-            }
-        }
-
-        .input {
-            height: 35px;
-            display: flex;
-            margin-bottom: 10px;
-
-            input {
-                &::placeholder {
-                    color: grey;
-                }
-
-                &:disabled {
-                    pointer-events: none;
-                    opacity: 0.3;
-                }
-            }
-        }
-
-        .invite {
-            height: 35px;
-            display: flex;
-        }
-
-        .controls-wrapper {
-            width: 280px;
-            margin: 10px auto;
-        }
-
-        .volume-bar {
-            height: 20px;
-            position: relative;
-            top: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 0 10px;
-            color: grey;
-
-            .volume-controls {
-                width: 80px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-
-                &[disabled] {
-                    opacity: 0.4;
-                    pointer-events: none;
-                }
-
-                .volume-icon {
-                    &:hover {
-                        color: whitesmoke;
-                        cursor: pointer;
-                    }
-
-                    &.active {
-                        color: whitesmoke;
-                    }
-                }
-            }
-        }
-
-        .controls {
-            height: 75px;
-            display: flex;
-            align-items: center;
-            justify-content: space-evenly;
-            margin: 0px auto;
-            position: relative;
-
-            &.disabled {
-                opacity: 0.4;
-                pointer-events: none;
-            }
-
-            .inner {
-                position: absolute;
-                border-radius: 10px;
-
-                width: 100%;
-                height: 50px;
-                background-color: #3a3a3d;
-                box-shadow: 0px 0px 3px 1px black;
-                z-index: 3;
-            }
-
-            .btn-wrapper {
-                width: 73px;
-                height: 73px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 50%;
-                z-index: 5;
-            }
-
-            .btn {
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-
-                color: #e5e5e5;
-                border-radius: 50%;
-                z-index: 4;
+        input {
+            &::placeholder {
                 color: grey;
-
-                &.large {
-                    width: 73px;
-                    height: 73px;
-                    //box-shadow: 0 0 5px black;
-                    box-shadow: 0px 0px 3px 1px black;
-                    background-color: #212121;
-                    color: whitesmoke;
-                }
-
-                &:hover {
-                    cursor: pointer;
-                    color: whitesmoke;
-                    //box-shadow: 0 0 3px whitesmoke;
-                    //transition: box-shadow 0.2s ease-in;
-                }
-
-                &.play {
-                    padding-left: 3px;
-                }
-
-                &.pause {
-                    padding-left: 1px;
-                }
             }
-        }
 
-        .slider {
-            width: 100%;
-            margin: 5px 0;
-
-            &.disabled {
+            &:disabled {
                 pointer-events: none;
                 opacity: 0.3;
             }
+        }
 
-            &:hover:enabled {
+        button {
+            width: 60px;
+        }
+    }
+
+    .invite {
+        height: 35px;
+        display: flex;
+    }
+
+    input[type="text"] {
+        min-width: 0;
+        height: 100%;
+        flex: 1;
+        padding: 0 10px;
+        margin-right: 10px;
+        outline: none;
+        border: none;
+        border-radius: 3px;
+        color: whitesmoke;
+        box-sizing: border-box;
+        border: 2px solid $button-color;
+        background-color: $button-color;
+    }
+
+    .link-btn {
+        height: 100%;
+        background-color: $button-color;
+        padding: 0 10px;
+        outline: none;
+        border: none;
+        color: whitesmoke;
+        border-radius: 3px;
+
+        &:hover {
+            cursor: pointer;
+            background-color: $button-hover-color;
+        }
+    }
+}
+
+.room-status {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .user {
+        height: 20px;
+        display: flex;
+        align-items: center;
+        margin: 5px;
+        padding: 3px 8px;
+        background-color: $button-color;
+        border-radius: 7px;
+
+        p {
+            margin: 0;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+    }
+}
+
+.controls {
+    width: 280px;
+    margin: 5px auto;
+}
+
+.volume-controls {
+    height: 20px;
+    position: relative;
+    top: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 10px;
+    color: grey;
+
+    .volume {
+        width: 80px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        &[disabled] {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .volume-icon {
+            &:hover {
+                color: whitesmoke;
                 cursor: pointer;
             }
-        }
 
-        .status {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 10px;
-
-            flex: 1;
-
-            .user {
-                height: 20px;
-                display: flex;
-                align-items: center;
-                margin: 5px;
-                padding: 3px 8px;
-                background-color: $button-color;
-                border-radius: 7px;
-
-                p {
-                    margin: 0;
-                    margin-right: 10px;
-                    font-size: 14px;
-                }
+            &.active {
+                color: whitesmoke;
             }
         }
+    }
+}
+
+.player-controls {
+    height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    position: relative;
+    margin: 0px auto;
+
+    &.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+    }
+
+    .inner-box {
+        width: 100%;
+        height: 50px;
+        position: absolute;
+        border-radius: 10px;
+        box-shadow: 0px 0px 3px 1px black;
+        background-color: $button-color;
+        z-index: 3;
+    }
+
+    .btn-wrapper {
+        width: 73px;
+        height: 73px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        z-index: 5;
+    }
+
+    .btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        z-index: 4;
+        color: grey;
+
+        &:hover {
+            cursor: pointer;
+            color: whitesmoke;
+        }
+
+        &.large {
+            width: 73px;
+            height: 73px;
+            box-shadow: 0px 0px 3px 1px black;
+            background-color: #212121;
+            color: whitesmoke;
+        }
+
+        &.play {
+            padding-left: 3px;
+        }
+
+        &.pause {
+            padding-left: 1px;
+        }
+    }
+}
+
+.slider {
+    width: 100%;
+    margin: 5px 0;
+
+    &:hover:enabled {
+        cursor: pointer;
+    }
+
+    &.disabled {
+        pointer-events: none;
+        opacity: 0.3;
     }
 }

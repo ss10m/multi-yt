@@ -151,8 +151,9 @@ export const joinRoom = (room) => async (dispatch, getState) => {
     let { socket, username } = getState();
     socket.emit("join-room", room, username);
 };
-export const leaveRoom = (socket) => async (dispatch) => {
+export const leaveRoom = () => async (dispatch, getState) => {
     console.log("ACTION: leave-room");
+    let { socket } = getState();
     socket.emit("leave-room");
 };
 export const setRoom = (room) => ({
@@ -202,16 +203,19 @@ export const clearMessages = () => ({
 //=====================================
 //           VIDEO ACTIONS
 //=====================================
-export const loadVideo = (socket, url) => async (dispatch) => {
+export const loadVideo = (url) => async (dispatch, getState) => {
     console.log("ACTION: load-video");
+    let { socket } = getState();
     socket.emit("load-video", url);
 };
-export const removeVideo = (socket) => async (dispatch) => {
+export const removeVideo = () => async (dispatch, getState) => {
     console.log("ACTION: remove-video");
+    let { socket } = getState();
     socket.emit("remove-video");
 };
-export const updateVideo = (socket, state) => async (dispatch) => {
+export const updateVideo = (state) => async (dispatch, getState) => {
     console.log("ACTION: update-video");
+    let { socket } = getState();
     socket.emit("update-video", state);
 };
 
