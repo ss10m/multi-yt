@@ -36,19 +36,15 @@ $button-hover-color: #46464a;
     box-shadow: 0px 2px 3px black;
     font-weight: 600;
 
-    button {
+    .header-icon {
         position: absolute;
         left: 10px;
-        height: 30px;
-        outline: none;
-        border: none;
-        border-radius: 3px;
-        background-color: $button-color;
-        color: whitesmoke;
+        padding: 5px;
+        border-radius: 7px;
 
         &:hover {
             cursor: pointer;
-            background-color: $button-hover-color;
+            background-color: #26262b;
         }
     }
 }

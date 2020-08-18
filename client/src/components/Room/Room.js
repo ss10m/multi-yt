@@ -11,7 +11,7 @@ import "./Room.scss";
 
 // Icons
 import { IconContext } from "react-icons";
-import { FaPlay, FaPause, FaCheckCircle, FaVolumeMute, FaVolumeUp, FaVolumeDown } from "react-icons/fa";
+import { FaPlay, FaPause, FaCheckCircle, FaVolumeMute, FaVolumeUp, FaVolumeDown, FaArrowLeft } from "react-icons/fa";
 import { MdReplay10, MdReplay30, MdForward10, MdForward30 } from "react-icons/md";
 
 // Other
@@ -41,7 +41,9 @@ export default (props) => {
 const Header = ({ room, leaveRoom }) => {
     return (
         <div className="room-header">
-            <button onClick={leaveRoom}>LEAVE</button>
+            <IconContext.Provider value={{ size: "20px", className: "header-icon" }}>
+                <FaArrowLeft onClick={leaveRoom} />
+            </IconContext.Provider>
             <p>{room.name}</p>
         </div>
     );

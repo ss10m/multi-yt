@@ -1,16 +1,24 @@
+// Libraries & utils
 import React from "react";
-import { FaUserCircle } from "react-icons/fa";
+import classNames from "classnames";
 
+// SCSS
 import "./Input.scss";
 
+// Icons
+import { FaUserCircle } from "react-icons/fa";
+
 export default (props) => {
-    const activeClass = props.value.length > 0 ? " active" : "";
     return (
         <div className="input">
             <div className="icon">
                 <FaUserCircle />
             </div>
-            <div className={"field" + activeClass}>
+            <div
+                className={classNames("field", {
+                    active: props.value.length > 0,
+                })}
+            >
                 <label>
                     <input
                         type={"text"}

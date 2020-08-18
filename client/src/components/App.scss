@@ -26,6 +26,16 @@ body {
     font-family: "Jost", sans-serif;
 }
 
+::selection {
+    color: black;
+    background: yellow;
+}
+
+::-moz-selection {
+    color: black;
+    background: yellow;
+}
+
 .error {
     width: 100%;
     height: 100vh;

@@ -11,12 +11,12 @@ $secondary-color: #273747;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid $primary-color;
+        border: 1px solid #0e0e10;
         border-right: 0;
         border-radius: 5px 0 0 5px;
         font-size: 25px;
-        color: $secondary-color;
-        background-color: $primary-color;
+        color: darkgray;
+        background-color: #0e0e10;
     }
 
     .field {
@@ -28,7 +28,7 @@ $secondary-color: #273747;
                 width: 90%;
                 padding: 0 10px;
                 outline: none;
-                border: 1px solid $primary-color;
+                border: 1px solid #0e0e10;
                 border-radius: 0 5px 5px 0;
                 border-left: none;
                 font-size: 16px;
@@ -53,9 +53,9 @@ $secondary-color: #273747;
                 font-size: 12px;
                 padding: 0 7px;
                 color: white;
-                border: 1px solid $primary-color;
+                border: 1px solid #0e0e10;
                 border-radius: 5px;
-                background-color: $secondary-color;
+                background-color: #18181b;
             }
         }
     }
