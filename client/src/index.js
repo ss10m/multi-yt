@@ -1,13 +1,17 @@
+// Libraries & utils
 import React from "react";
 import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
-import { BrowserRouter, Route } from "react-router-dom";
+
+// Redux
 import { createStore, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
+import { BrowserRouter, Route } from "react-router-dom";
 import thunk from "redux-thunk";
-
-import App from "components/App/AppContainer";
 import reducers from "./store/reducers.js";
+
+// Components
+import App from "components/App/AppContainer";
 
 const store = createStore(reducers, applyMiddleware(thunk));
 

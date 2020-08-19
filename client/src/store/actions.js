@@ -1,6 +1,17 @@
+// Redux
 import { batch } from "react-redux";
 import socketIO from "socket.io-client";
+
+// Helpers
 import { isEmpty } from "helpers";
+
+//=====================================
+//          USER ACTIONS
+//=====================================
+export const setUsername = (username) => ({
+    type: "SET_USERNAME",
+    username,
+});
 
 //=====================================
 //          SOCKET ACTIONS
@@ -10,17 +21,14 @@ export const connectSocket = (id) => async (dispatch, getState) => {
     dispatch(setSocket(socket));
 
     socket.on("handle-error", () => {
-        console.log("RESPONSE: handle-error");
         dispatch(setError("Reached maximum number of allowed tabs in a single browser"));
     });
 
     socket.on("rooms", (rooms) => {
-        console.log("RESPONSE: rooms");
         dispatch(setRooms(rooms));
     });
 
     socket.on("joined-room", (room, video) => {
-        console.log("RESPONSE: joined-room");
         batch(() => {
             dispatch(setRoom(room));
             dispatch(clearRooms());
@@ -29,7 +37,6 @@ export const connectSocket = (id) => async (dispatch, getState) => {
     });
 
     socket.on("left-room", (rooms) => {
-        console.log("RESPONSE: left-room");
         batch(() => {
             dispatch(clearRoom());
             dispatch(clearVideo());
@@ -40,12 +47,10 @@ export const connectSocket = (id) => async (dispatch, getState) => {
     });
 
     socket.on("receive-message", (message) => {
-        console.log("RESPONSE: receive-message");
         dispatch(addMessage(message));
     });
 
     socket.on("load-video", (video) => {
-        console.log("RESPONSE: load-video");
         dispatch(setVideo(video));
     });
 
@@ -55,13 +60,11 @@ export const connectSocket = (id) => async (dispatch, getState) => {
         if (!isEmpty(player)) {
             let playerTime = player.embed.getCurrentTime();
             if (playerTime) currentTime = Math.floor(playerTime);
-            //player.embed.seekTo(currentTime);
         }
         socket.emit("current-video-time", roomId, currentTime);
     });
 
     socket.on("remove-video", () => {
-        console.log("RESPONSE: remove-video");
         batch(() => {
             dispatch(clearPlayer());
             dispatch(clearVideo());
@@ -69,8 +72,6 @@ export const connectSocket = (id) => async (dispatch, getState) => {
     });
 
     socket.on("updated-state", (updatedState) => {
-        console.log("RESPONSE: updated-state");
-        console.log(updatedState);
         let keys = Object.keys(updatedState);
         let { player } = getState();
         batch(() => {
@@ -80,7 +81,6 @@ export const connectSocket = (id) => async (dispatch, getState) => {
                         dispatch(setRoom(updatedState[key]));
                         break;
                     case "seek":
-                        console.log("SEEK");
                         if (isEmpty(player) || isEmpty(player.embed)) return;
                         player.embed.playVideo();
                         player.embed.seekTo(updatedState[key]);
@@ -123,14 +123,6 @@ export const setSocket = (socket) => ({
 });
 
 //=====================================
-//          USER ACTIONS
-//=====================================
-export const setUsername = (username) => ({
-    type: "SET_USERNAME",
-    username,
-});
-
-//=====================================
 //          ERROR ACTIONS
 //=====================================
 export const setError = (error) => ({
@@ -142,17 +134,14 @@ export const setError = (error) => ({
 //           ROOM ACTIONS
 //=====================================
 export const createRoom = () => async (dispatch, getState) => {
-    console.log("ACTION: create-room");
     let { socket, username } = getState();
     socket.emit("create-room", username);
 };
 export const joinRoom = (room) => async (dispatch, getState) => {
-    console.log("ACTION: join-room");
     let { socket, username } = getState();
     socket.emit("join-room", room, username);
 };
 export const leaveRoom = () => async (dispatch, getState) => {
-    console.log("ACTION: leave-room");
     let { socket } = getState();
     socket.emit("leave-room");
 };
@@ -168,7 +157,6 @@ export const clearRoom = () => ({
 //           ROOMS ACTIONS
 //=====================================
 export const refreshRooms = () => async (dispatch, getState) => {
-    console.log("ACTION: rooms");
     let { socket } = getState();
     socket.emit("rooms");
 };
@@ -184,18 +172,15 @@ export const clearRooms = () => ({
 //          MESSAGE ACTIONS
 //=====================================
 export const sendMessage = (msg) => async (dispatch, getState) => {
-    console.log("ACTION: send-message");
     let { username, socket } = getState();
     let message = { username, msg };
     dispatch(addMessage(message));
     socket.emit("send-message", message);
 };
-
 export const addMessage = (message) => ({
     type: "ADD_MESSAGE",
     message,
 });
-
 export const clearMessages = () => ({
     type: "CLEAR_MESSAGES",
 });
@@ -204,21 +189,17 @@ export const clearMessages = () => ({
 //           VIDEO ACTIONS
 //=====================================
 export const loadVideo = (url) => async (dispatch, getState) => {
-    console.log("ACTION: load-video");
     let { socket } = getState();
     socket.emit("load-video", url);
 };
 export const removeVideo = () => async (dispatch, getState) => {
-    console.log("ACTION: remove-video");
     let { socket } = getState();
     socket.emit("remove-video");
 };
 export const updateVideo = (state) => async (dispatch, getState) => {
-    console.log("ACTION: update-video");
     let { socket } = getState();
     socket.emit("update-video", state);
 };
-
 export const setVideo = (video) => ({
     type: "SET_VIDEO",
     video,
@@ -235,17 +216,12 @@ export const clearVideo = () => ({
 //           PLAYER ACTIONS
 //=====================================
 export const updatePlayerState = (state) => async (dispatch, getState) => {
-    console.log("ACTION: update-player-state");
     let { socket } = getState();
     socket.emit("update-player-state", state);
 };
 export const setPlayer = (embed) => ({
     type: "SET_PLAYER",
     embed,
-});
-export const setPlayerState = (state) => ({
-    type: "SET_PLAYER_STATE",
-    state,
 });
 export const clearPlayer = () => ({
     type: "CLEAR_PLAYER",

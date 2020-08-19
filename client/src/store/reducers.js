@@ -1,7 +1,7 @@
+// Redux
 import { combineReducers } from "redux";
 
 const SET_USERNAME = "SET_USERNAME";
-
 const usernameReducer = (state = "", action) => {
     switch (action.type) {
         case SET_USERNAME:
@@ -12,7 +12,6 @@ const usernameReducer = (state = "", action) => {
 };
 
 const SET_ERROR = "SET_ERROR";
-
 const errorReducer = (state = null, action) => {
     switch (action.type) {
         case SET_ERROR:
@@ -23,7 +22,6 @@ const errorReducer = (state = null, action) => {
 };
 
 const SET_SOCKET = "SET_SOCKET";
-
 const socketReducer = (state = null, action) => {
     switch (action.type) {
         case SET_SOCKET:
@@ -35,7 +33,6 @@ const socketReducer = (state = null, action) => {
 
 const SET_ROOMS = "SET_ROOMS";
 const CLEAR_ROOMS = "CLEAR_ROOMS";
-
 const roomsReducer = (state = [], action) => {
     switch (action.type) {
         case SET_ROOMS:
@@ -49,7 +46,6 @@ const roomsReducer = (state = [], action) => {
 
 const SET_ROOM = "SET_ROOM";
 const CLEAR_ROOM = "CLEAR_ROOM";
-
 const roomReducer = (state = {}, action) => {
     switch (action.type) {
         case SET_ROOM:
@@ -63,7 +59,6 @@ const roomReducer = (state = {}, action) => {
 
 const ADD_MESSAGE = "ADD_MESSAGE";
 const CLEAR_MESSAGES = "CLEAR_MESSAGES";
-
 const messagesReducer = (state = [], action) => {
     switch (action.type) {
         case ADD_MESSAGE:
@@ -78,8 +73,6 @@ const messagesReducer = (state = [], action) => {
 const SET_VIDEO = "SET_VIDEO";
 const SET_VIDEO_STATE = "SET_VIDEO_STATE";
 const CLEAR_VIDEO = "CLEAR_VIDEO";
-// add isPlaying state consistent with the server to display the correct play/pause btn
-// if video ended display play btn instead of pause (change in server code ??)
 const videoReducer = (state = {}, action) => {
     switch (action.type) {
         case SET_VIDEO:
@@ -96,7 +89,6 @@ const videoReducer = (state = {}, action) => {
 const SET_PLAYER = "SET_PLAYER";
 const SET_PLAYER_STATE = "SET_PLAYER_STATE";
 const CLEAR_PLAYER = "CLEAR_PLAYER";
-
 const playerReducer = (state = {}, action) => {
     switch (action.type) {
         case SET_PLAYER:
