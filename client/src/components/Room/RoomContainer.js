@@ -35,8 +35,11 @@ class RoomContainer extends React.Component {
     componentDidMount() {
         this.timePlayed = setInterval(() => {
             let { player } = this.props;
+            console.log(player);
             if (!player.embed) return;
             let currentTime = player.embed.getCurrentTime();
+            console.log(currentTime);
+            console.log(player.embed.playerInfo.currentTime);
             let totalTime = player.embed.getDuration();
             if (currentTime !== this.state.timePlayed) {
                 this.setState({ timePlayed: currentTime });
