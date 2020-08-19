@@ -161,7 +161,7 @@ const VolumeBar = ({ volume, controlsDisabled, playedTimer, totalTimer, handleVo
 
 const PlayerControls = ({ isPlaying, controlsDisabled, handleControls }) => {
     return (
-        <div className={"player-controls" + (controlsDisabled ? " disabled" : "")}>
+        <div className={classNames("player-controls", { disabled: controlsDisabled })}>
             <div className="inner-box" />
             <div className="btn" onClick={() => handleControls(SEEK_BACK_30)}>
                 <IconContext.Provider value={{ size: "28px" }}>
@@ -175,7 +175,7 @@ const PlayerControls = ({ isPlaying, controlsDisabled, handleControls }) => {
             </div>
             <div className="btn-wrapper">
                 <div
-                    className={"btn large" + (isPlaying ? " pause" : " play")}
+                    className={classNames("btn large", { pause: isPlaying, play: !isPlaying })}
                     onClick={() => handleControls(isPlaying ? PAUSE : PLAY)}
                 >
                     <IconContext.Provider value={{ size: "30px" }}>

@@ -30,7 +30,7 @@ export default (props) => {
                 muted={true}
                 style={{ position: "absolute" }}
             />
-            <div className="overlay"></div>
+            <div className="player-overlay"></div>
         </div>
     );
 };

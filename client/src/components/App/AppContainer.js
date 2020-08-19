@@ -1,22 +1,22 @@
+// Libraries & utils
 import React from "react";
 
+// Redux
 import { connect } from "react-redux";
 import { connectSocket, setUsername, joinRoom } from "store/actions";
 
-import "./App.scss";
+// Components
+import App from "./App";
 
+// Helpers
 import { isEmpty } from "helpers";
 
-import Player from "./Player/PlayerContainer";
-import Chat from "./Chat/ChatContainer";
-import Room from "./Room/RoomContainer";
-import Rooms from "./Rooms/RoomsContainer";
-import UsernamePrompt from "./UsernamePrompt/UsernamePrompt";
+// SCSS
+import "./App.scss";
 
-class App extends React.Component {
+class AppContainer extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             showUsernamePrompt: true,
             width: window.innerWidth,
@@ -59,17 +59,16 @@ class App extends React.Component {
     render() {
         let { width, height, showUsernamePrompt } = this.state;
         let { room, error } = this.props;
-        if (error) return <div className="error">{error}</div>;
 
         return (
-            <>
-                {showUsernamePrompt && <UsernamePrompt confirmUsername={this.confirmUsername} />}
-                <div className="main">
-                    <Player width={width} height={height} />
-                    <div className="options">{isEmpty(room) ? <Rooms /> : <Room />}</div>
-                    <Chat />
-                </div>
-            </>
+            <App
+                width={width}
+                height={height}
+                isRoomEmpty={isEmpty(room)}
+                showUsernamePrompt={showUsernamePrompt}
+                confirmUsername={this.confirmUsername}
+                error={error}
+            />
         );
     }
 }
@@ -78,11 +77,6 @@ const mapStateToProps = (state) => {
     return {
         room: state.room,
         error: state.error,
-        rooms: state.rooms,
-        video: state.video,
-        messages: state.messages,
-        socket: state.socket,
-        player: state.player,
     };
 };
 
@@ -98,4 +92,4 @@ const mapDispatchToProps = (dispatch) => ({
     },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(AppContainer);

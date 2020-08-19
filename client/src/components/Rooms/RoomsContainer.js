@@ -49,8 +49,6 @@ class RoomsContainer extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        username: state.username,
-        socket: state.socket,
         rooms: state.rooms,
     };
 };

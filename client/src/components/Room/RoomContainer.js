@@ -99,7 +99,7 @@ class RoomContainer extends React.Component {
         if (!url) return;
         let idRegEx = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|\?v=)([^#&?]*).*/;
         let match = url.match(idRegEx);
-        if (match && match[2].length === 11) {
+        if (match && match[2]) {
             this.props.loadVideo("https://www.youtube.com/watch?v=" + match[2]);
             this.setState({ url: "" });
         }

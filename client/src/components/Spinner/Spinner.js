@@ -1,5 +1,7 @@
+// Libraries & utils
 import React from "react";
 
+// SCSS
 import "./Spinner.scss";
 
 export default (props) => {

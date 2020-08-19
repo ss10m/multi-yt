@@ -1,64 +1,32 @@
-import React, { Component } from "react";
+// Libraries & utils
+import React from "react";
 
+// Components
+import Input from "components/Input/Input";
+
+// SCSS
 import "./UsernamePrompt.scss";
 
-import Input from "../Input/Input";
-
-class UsernamePrompt extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            username: "",
-        };
-    }
-
-    handleInput = (inputType) => {
-        return (event) => {
-            let username = event.target.value;
-            if (username.length > 12) return;
-            this.setState({
-                [inputType]: username,
-            });
-        };
-    };
-
-    handleKeyPress = (event) => {
-        if (event.key === "Enter") {
-            this.confirm();
-        }
-    };
-
-    confirm = () => {
-        let { username } = this.state;
-        if (!username.length) return;
-        this.props.confirmUsername(username);
-    };
-
-    render() {
-        return (
-            <div className="prompt-wrapper">
-                <div className="prompt">
-                    <p>ENTER YOUR USERNAME</p>
-
-                    <div className="input">
-                        <Input
-                            title="Username"
-                            icon="user-circle"
-                            value={this.state.username}
-                            onChangeValue={this.handleInput("username")}
-                            onKeyPress={this.handleKeyPress}
-                            autoFocus={true}
-                        />
-                    </div>
-
-                    <div className="btns">
-                        <button onClick={this.confirm}>CONFIRM</button>
-                    </div>
+export default (props) => {
+    let { username, handleInput, handleKeyPress, confirmUsername } = props;
+    return (
+        <div className="prompt-bg">
+            <div className="prompt">
+                <p>ENTER YOUR USERNAME</p>
+                <div className="input">
+                    <Input
+                        title="Username"
+                        icon="user-circle"
+                        value={username}
+                        onChangeValue={handleInput}
+                        onKeyPress={handleKeyPress}
+                        autoFocus={true}
+                    />
+                </div>
+                <div className="confirm-btn">
+                    <button onClick={confirmUsername}>CONFIRM</button>
                 </div>
             </div>
-        );
-    }
-}
-
-export default UsernamePrompt;
+        </div>
+    );
+};

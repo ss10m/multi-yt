@@ -3,7 +3,7 @@ import React from "react";
 
 // Redux
 import { connect } from "react-redux";
-import { setPlayer, updatePlayerState, setPlayerState, setVideoState, updateVideo } from "store/actions";
+import { setPlayer, updatePlayerState, updateVideo } from "store/actions";
 
 // Components
 import Player from "./Player";
@@ -17,42 +17,14 @@ import { isEmpty } from "helpers";
 class PlayerContainer extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             isBuffering: false,
         };
     }
 
-    componentDidMount() {
-        this.timePlayed = setInterval(() => {
-            let { player } = this.props;
-            if (!player.embed) return;
-
-            let loadedBytes = player.embed.getVideoBytesLoaded();
-            let totalBytes = player.embed.getVideoBytesTotal();
-
-            let isVideoBuffered = loadedBytes === totalBytes && this.state.isBuffering;
-            let isStuckBuffering = player.state !== BUFFERING && this.state.isBuffering;
-
-            console.log(loadedBytes, totalBytes);
-            console.log(isStuckBuffering, isVideoBuffered);
-
-            if (isVideoBuffered || isStuckBuffering) {
-                console.log("STUCK");
-                //this.setState({ isBuffering: false });
-                //this.props.updatePlayerState({ isBuffering: false });
-            }
-        }, 1000);
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.timePlayed);
-    }
-
     componentDidUpdate(prevProps) {
         if (!isEmpty(prevProps.player) && isEmpty(this.props.player)) {
             this.setState({ isBuffering: false });
-            console.log("CLEARED STATE");
         }
     }
 
@@ -62,13 +34,10 @@ class PlayerContainer extends React.Component {
     };
 
     onPlayerStateChange = (state) => {
-        console.log(state);
-
         let playerState = state.data;
         let isBuffering = this.state.isBuffering;
 
         if (isBuffering && playerState !== BUFFERING) {
-            console.log("NOT BUFFERING");
             this.setState({ isBuffering: false });
             this.props.player.embed.pauseVideo();
             this.props.updatePlayerState({ isBuffering: false });
@@ -80,7 +49,6 @@ class PlayerContainer extends React.Component {
                 this.props.updateVideo({ ended: true });
                 break;
             case BUFFERING:
-                console.log("BUFFERING");
                 this.setState({ isBuffering: true });
                 this.props.updatePlayerState({ isBuffering: true });
                 break;
@@ -120,7 +88,6 @@ const mapStateToProps = (state) => {
     return {
         video: state.video,
         player: state.player,
-        socket: state.socket,
     };
 };
 
@@ -130,12 +97,6 @@ const mapDispatchToProps = (dispatch) => ({
     },
     updatePlayerState: (state) => {
         dispatch(updatePlayerState(state));
-    },
-    setPlayerState: (state) => {
-        dispatch(setPlayerState(state));
-    },
-    setVideoState: (state) => {
-        dispatch(setVideoState(state));
     },
     updateVideo: (state) => {
         dispatch(updateVideo(state));
