@@ -2,7 +2,6 @@ import express from "express";
 import http from "http";
 import path from "path";
 import ioClient from "socket.io";
-import { nanoid } from "nanoid";
 
 const PORT = 8080;
 const HOST = "0.0.0.0";
@@ -17,7 +16,8 @@ app.use(express.static(CLIENT_BUILD_PATH));
 const server = http.Server(app);
 const io = ioClient(server);
 
-import Room from "./room.js";
+import Connection from "./Connection.js";
+import Room from "./Room.js";
 
 let browserIds = {};
 let socketIdtoBrowserId = {};
@@ -25,20 +25,12 @@ let socketIdtoBrowserId = {};
 io.on("connection", (socket) => {
     console.log("------------------connection------------------");
 
-    /*
     let browserId = socket.handshake.query.id;
-    if (browserIds.hasOwnProperty(browserId)) {
-        let connectedUsers = browserIds[browserId];
-        if (connectedUsers >= 4) {
-            socket.emit("handle-error");
-            return socket.disconnect();
-        }
-        browserIds[browserId] += 1;
-    } else {
-        browserIds[browserId] = 1;
+    let connection = new Connection(browserId, socket.id);
+    if (!connection.isValid) {
+        socket.emit("handle-error");
+        return socket.disconnect();
     }
-    socketIdtoBrowserId[socket.id] = browserId;
-    */
 
     socket.emit("rooms", Room.getRooms());
     socket.join("lobby");
@@ -224,6 +216,7 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         console.log("------------------disconnect------------------");
 
+        Connection.removeConnection(socket.id);
         let room = Room.getRoomBySocketId(socket.id);
         if (!room) {
             return socket.leave("lobby");
@@ -252,16 +245,6 @@ io.on("connection", (socket) => {
             socket.to(room.id).emit("updated-state", updatedState);
         }
         updateLobby();
-
-        let browserId = socketIdtoBrowserId[socket.id];
-        if (!browserId) return;
-        let connectecUsers = browserIds[browserId];
-        if (connectecUsers <= 1) {
-            delete browserIds[browserId];
-        } else {
-            browserIds[browserId] -= 1;
-        }
-        delete socketIdtoBrowserId[socket.id];
     });
 });
 

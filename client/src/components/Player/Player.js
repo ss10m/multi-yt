@@ -1,19 +1,20 @@
 // Libraries & utils
-import React, { useEffect } from "react";
+import React from "react";
 
 // SCSS
 import "./Player.scss";
 
-const Player = (props) => {
-    let player = null;
-    useEffect(() => {
-        new window.YT.Player(player, {
+class Player extends React.Component {
+    componentDidMount() {
+        let { url, onPlayerReady, onPlayerStateChange } = this.props;
+
+        new window.YT.Player(this.player, {
             height: "100%",
             width: "100%",
-            videoId: props.url,
+            videoId: url,
             events: {
-                onReady: props.onPlayerReady,
-                onStateChange: props.onPlayerStateChange,
+                onReady: onPlayerReady,
+                onStateChange: onPlayerStateChange,
             },
             playerVars: {
                 disablekb: 1,
@@ -22,19 +23,22 @@ const Player = (props) => {
                 enablejsapi: 1,
             },
         });
-    }, []);
+    }
 
-    return (
-        <div className="player" style={{ width: props.playerWidth, height: props.playerHeight }}>
-            <div
-                style={{ position: "absolute" }}
-                ref={(ref) => {
-                    player = ref;
-                }}
-            ></div>
-            <div className="player-overlay"></div>
-        </div>
-    );
-};
+    render() {
+        let { playerWidth, playerHeight } = this.props;
+        return (
+            <div className="player" style={{ width: playerWidth, height: playerHeight }}>
+                <div
+                    style={{ position: "absolute" }}
+                    ref={(ref) => {
+                        this.player = ref;
+                    }}
+                ></div>
+                <div className="player-overlay"></div>
+            </div>
+        );
+    }
+}
 
 export default Player;
