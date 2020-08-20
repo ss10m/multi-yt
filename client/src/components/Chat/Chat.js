@@ -56,7 +56,7 @@ const ChatInput = ({ room, message, isEmpty, handleInput, sendMessage }) => {
                 onKeyPress={sendMessage}
                 spellCheck={false}
                 autoFocus={false}
-                maxlength={300}
+                maxLength={300}
             />
         );
     }

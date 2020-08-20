@@ -35,11 +35,8 @@ class RoomContainer extends React.Component {
     componentDidMount() {
         this.timePlayed = setInterval(() => {
             let { player } = this.props;
-            console.log(player);
             if (!player.embed) return;
             let currentTime = player.embed.getCurrentTime();
-            console.log(currentTime);
-            console.log(player.embed.playerInfo.currentTime);
             let totalTime = player.embed.getDuration();
             if (currentTime !== this.state.timePlayed) {
                 this.setState({ timePlayed: currentTime });
@@ -103,7 +100,7 @@ class RoomContainer extends React.Component {
         let idRegEx = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|\?v=)([^#&?]*).*/;
         let match = url.match(idRegEx);
         if (match && match[2]) {
-            this.props.loadVideo("https://www.youtube.com/watch?v=" + match[2]);
+            this.props.loadVideo(match[2]);
             this.setState({ url: "" });
         }
     };
