@@ -1,4 +1,7 @@
-class Connection {
+export class Connection {
+    static browserIds = {};
+    static socketIdtoBrowserId = {};
+
     constructor(browserId, socketId) {
         this.browserId = browserId;
         this.socketId = socketId;
@@ -33,8 +36,3 @@ class Connection {
         delete this.socketIdtoBrowserId[socketId];
     }
 }
-
-Connection.browserIds = {};
-Connection.socketIdtoBrowserId = {};
-
-export default Connection;
