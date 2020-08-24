@@ -2,7 +2,6 @@ import { Room } from "../core/index.js";
 
 export const videoHandlers = (io, socket) => {
     socket.on("load-video", (url) => {
-        console.log("------------------load-video------------------");
         let room = Room.getRoomBySocketId(socket.id);
         if (!room) return;
         room.loadVideo(url);
@@ -10,7 +9,6 @@ export const videoHandlers = (io, socket) => {
     });
 
     socket.on("remove-video", () => {
-        console.log("------------------remove-video------------------");
         let room = Room.getRoomBySocketId(socket.id);
         if (!room) return;
         room.removeVideo();
@@ -18,18 +16,14 @@ export const videoHandlers = (io, socket) => {
     });
 
     socket.on("current-video-time", (id, currentTime) => {
-        console.log("------------current-video-time-------------");
         let room = Room.getRoomById(id);
         if (!room) return;
         room.setAction({ type: "seek", time: currentTime });
     });
 
     socket.on("update-video", (state) => {
-        console.log("------------------update-video------------------");
-
         let room = Room.getRoomBySocketId(socket.id);
         if (!room) return;
-
         if (state.hasOwnProperty("isPlaying")) {
             room.update("video", state);
             let video = {
@@ -49,10 +43,8 @@ export const videoHandlers = (io, socket) => {
     });
 
     socket.on("update-player-state", (state) => {
-        console.log("-----------update-player-state--------------");
         let room = Room.getRoomBySocketId(socket.id);
         if (!room) return;
-
         let user = room.users[socket.id];
         if (!user) return;
 
@@ -62,7 +54,6 @@ export const videoHandlers = (io, socket) => {
         room.update("video", { isBuffering });
 
         let updatedState = {};
-
         if (room.action && !isBuffering) {
             for (let clientId of room.actionClients) {
                 io.to(clientId).emit("updated-state", { seek: room.action.time });

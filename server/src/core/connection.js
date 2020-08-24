@@ -24,7 +24,6 @@ export class Connection {
     }
 
     static removeConnection(socketId) {
-        console.log("removeConnection");
         let browserId = this.socketIdtoBrowserId[socketId];
         if (!browserId) return;
         let connectecUsers = this.browserIds[browserId];

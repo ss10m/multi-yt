@@ -23,7 +23,6 @@ app.get("*", (request, response) => {
 });
 
 io.on("connection", (socket) => {
-    console.log("------------------connection------------------");
     roomHandlers(io, socket);
     videoHandlers(io, socket);
 });

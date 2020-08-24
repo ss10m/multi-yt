@@ -12,7 +12,6 @@ export const roomHandlers = (io, socket) => {
     socket.join("lobby");
 
     socket.on("create-room", (username) => {
-        console.log("------------------create-room------------------");
         let room = new Room(socket.id);
         room.addUser(socket.id, username);
         socket.leave("lobby");
@@ -27,8 +26,6 @@ export const roomHandlers = (io, socket) => {
     });
 
     socket.on("join-room", (id, username) => {
-        console.log("------------------join-room------------------");
-
         let room = Room.getRoomById(id);
         if (!room) return socket.emit("rooms", Room.getRooms());
 
@@ -39,13 +36,11 @@ export const roomHandlers = (io, socket) => {
         if (room.video.url) {
             room.update("video", { isBuffering: true });
             updatedState["video"] = { action: "pause", isPlaying: room.video.isPlaying };
-
             if (!room.actionClients.length) io.to(Object.keys(room.users)[0]).emit("get-video-time", room.id);
             room.addActionClient(socket.id);
         }
 
         room.addUser(socket.id, username);
-
         let users = { users: Object.values(room.users) };
         updatedState["room"] = users;
         updatedState["message"] = { username, msg: "has joined the chat", type: "status" };
@@ -60,8 +55,6 @@ export const roomHandlers = (io, socket) => {
     });
 
     socket.on("leave-room", () => {
-        console.log("------------------leave-room------------------");
-
         let room = Room.getRoomBySocketId(socket.id);
         if (!room) return;
 
@@ -79,7 +72,6 @@ export const roomHandlers = (io, socket) => {
         updatedState["room"] = { users: Object.values(room.users) };
         updatedState["message"] = { username: removed.username, msg: "has left the chat", type: "status" };
         if (isBufferingPrev !== isBuffering) {
-            updatedState["room"] = { users: Object.values(room.users) };
             room.update("video", { isBuffering });
             updatedState["video"] = {
                 isPlaying: room.video.isPlaying,
@@ -90,20 +82,16 @@ export const roomHandlers = (io, socket) => {
     });
 
     socket.on("rooms", () => {
-        console.log("------------------rooms------------------");
         socket.emit("rooms", Room.getRooms());
     });
 
     socket.on("send-message", (message) => {
-        console.log("------------------send-message------------------");
         let room = Room.getRoomBySocketId(socket.id);
         if (!room) return;
         socket.to(room.id).emit("receive-message", message);
     });
 
     socket.on("disconnect", () => {
-        console.log("------------------disconnect------------------");
-
         Connection.removeConnection(socket.id);
         let room = Room.getRoomBySocketId(socket.id);
         if (!room) {
@@ -127,7 +115,6 @@ export const roomHandlers = (io, socket) => {
                     action: room.video.isPlaying && !room.video.isBuffering ? "play" : "pause",
                 };
             }
-
             socket.to(room.id).emit("updated-state", updatedState);
         }
         updateLobby(io);
