@@ -2,9 +2,16 @@ import { Room, Connection } from "../core/index.js";
 
 export const roomHandlers = (io, socket) => {
     let browserId = socket.handshake.query.id;
+    if (!browserId) {
+        socket.emit("handle-error", "Local Storage is not enabled");
+        return socket.disconnect();
+    }
     let connection = new Connection(browserId, socket.id);
     if (!connection.isValid) {
-        socket.emit("handle-error");
+        socket.emit(
+            "handle-error",
+            "Reached maximum number of allowed tabs in a single browser"
+        );
         return socket.disconnect();
     }
 
@@ -36,7 +43,8 @@ export const roomHandlers = (io, socket) => {
         if (room.video.url) {
             room.update("video", { isBuffering: true });
             updatedState["video"] = { action: "pause", isPlaying: room.video.isPlaying };
-            if (!room.actionClients.length) io.to(Object.keys(room.users)[0]).emit("get-video-time", room.id);
+            if (!room.actionClients.length)
+                io.to(Object.keys(room.users)[0]).emit("get-video-time", room.id);
             room.addActionClient(socket.id);
         }
 
@@ -70,7 +78,11 @@ export const roomHandlers = (io, socket) => {
 
         let updatedState = {};
         updatedState["room"] = { users: Object.values(room.users) };
-        updatedState["message"] = { username: removed.username, msg: "has left the chat", type: "status" };
+        updatedState["message"] = {
+            username: removed.username,
+            msg: "has left the chat",
+            type: "status",
+        };
         if (isBufferingPrev !== isBuffering) {
             room.update("video", { isBuffering });
             updatedState["video"] = {
@@ -105,14 +117,19 @@ export const roomHandlers = (io, socket) => {
             let isBuffering = room.isVideoBuffering();
             let updatedState = {};
             updatedState["room"] = { users: room.getUsers() };
-            updatedState["message"] = { username: removed.username, msg: "has left the chat", type: "status" };
+            updatedState["message"] = {
+                username: removed.username,
+                msg: "has left the chat",
+                type: "status",
+            };
 
             if (isBufferingPrev !== isBuffering) {
                 updatedState["room"] = { users: Object.values(room.users) };
                 room.update("video", { isBuffering });
                 updatedState["video"] = {
                     isPlaying: room.video.isPlaying,
-                    action: room.video.isPlaying && !room.video.isBuffering ? "play" : "pause",
+                    action:
+                        room.video.isPlaying && !room.video.isBuffering ? "play" : "pause",
                 };
             }
             socket.to(room.id).emit("updated-state", updatedState);

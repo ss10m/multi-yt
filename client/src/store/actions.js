@@ -20,8 +20,8 @@ export const connectSocket = (id) => async (dispatch, getState) => {
     let socket = socketIO.connect({ query: `id=${id}` });
     dispatch(setSocket(socket));
 
-    socket.on("handle-error", () => {
-        dispatch(setError("Reached maximum number of allowed tabs in a single browser"));
+    socket.on("handle-error", (message) => {
+        dispatch(setError(message));
     });
 
     socket.on("rooms", (rooms) => {
@@ -98,7 +98,9 @@ export const connectSocket = (id) => async (dispatch, getState) => {
                                 break;
                         }
                         if ("isPlaying" in updatedState[key]) {
-                            dispatch(setVideoState({ isPlaying: updatedState[key].isPlaying }));
+                            dispatch(
+                                setVideoState({ isPlaying: updatedState[key].isPlaying })
+                            );
                         }
                         break;
                     case "message":

@@ -3,7 +3,7 @@ import React from "react";
 
 // Redux
 import { connect } from "react-redux";
-import { connectSocket, setUsername, joinRoom } from "store/actions";
+import { connectSocket, setUsername, joinRoom, setError } from "store/actions";
 
 // Components
 import App from "./App";
@@ -25,14 +25,19 @@ class AppContainer extends React.Component {
     }
 
     componentDidMount() {
-        let id = localStorage.getItem("sync-id");
-        if (!id) {
-            id = Math.random().toString(36).substr(2, 9);
-            localStorage.setItem("sync-id", id);
-        }
+        try {
+            let id = localStorage.getItem("sync-id");
+            if (!id) {
+                id = Math.random().toString(36).substr(2, 9);
+                localStorage.setItem("sync-id", id);
+            }
 
-        window.addEventListener("resize", this.updateDimensions);
-        this.props.connectSocket(id);
+            window.addEventListener("resize", this.updateDimensions);
+            this.props.connectSocket(id);
+        } catch (e) {
+            this.props.setError("Local Storage is not enabled");
+            return;
+        }
     }
 
     componentWillUnmount() {
@@ -89,6 +94,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     joinRoom: (room) => {
         dispatch(joinRoom(room));
+    },
+    setError: (error) => {
+        dispatch(setError(error));
     },
 });
 
