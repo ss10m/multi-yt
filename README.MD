@@ -1,14 +1,19 @@
-# [2d-pack](https://sync.ssprojects.ca/)
+# [SyncRoom](https://sync.ssprojects.ca/)
 
-## Live
+-   **SyncWatch** allows you and your friends to watch synchronized YouTube videos together.
+-   Create SyncWatch room and invite others to join. Join either from the front page or by direct personal URL you can get in the room.
+-   Play a video of your choice and communicate using the built-in chat room.
+-   Synchronization handles video seeking, buffering as well as playing and pausing.
 
-## Overview
+## How does it work?
 
-2D bin packing
+1. Create SyncWatch room
+1. Invite your friends
+1. Play the video
 
-## How to Use
+## Getting started
 
-Download [Docker](https://docs.docker.com/engine/install/) and follow its instructions to install it
+Download [Docker](https://docs.docker.com/engine/install/) and follow the instructions to install it
 
 Create a local copy of this repository
 
@@ -28,7 +33,7 @@ React frontend can be accessed at:
 
 And the backend API at:
 
-    http://0.0.0.0:8080/api/orders
+    http://0.0.0.0:8080/api
 
 To stop running local server:
 
@@ -41,3 +46,7 @@ in a separate terminal window or press **control + C**.
 Run
 
     docker-compose up -d --build
+
+### License
+
+**SyncWatch** is [MIT licensed](./LICENSE).
