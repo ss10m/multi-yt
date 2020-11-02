@@ -1,4 +1,4 @@
-# [SyncRoom](https://sync.ssprojects.ca/)
+# [SyncWatch](https://sync.ssprojects.ca/)
 
 -   **SyncWatch** allows you and your friends to watch synchronized YouTube videos together.
 -   Create SyncWatch room and invite others to join. Join either from the front page or by direct personal URL you can get in the room.
@@ -7,7 +7,8 @@
 
 ## How does it work?
 
-1. Create SyncWatch room
+1. Go to [SyncWatch](https://sync.ssprojects.ca/)
+1. Create new room
 1. Invite your friends
 1. Play the video
 
@@ -47,6 +48,6 @@ Run
 
     docker-compose up -d --build
 
-### License
+## License
 
 **SyncWatch** is [MIT licensed](./LICENSE).
