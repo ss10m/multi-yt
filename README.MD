@@ -13,7 +13,7 @@
 
 ## Getting started
 
-Download [Docker](https://docs.docker.com/engine/install/) and follow the instructions to install it
+Download [Docker](https://docs.docker.com/engine/install/) and follow the provided instructions to install it
 
 Create a local copy of this repository
 
