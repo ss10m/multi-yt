@@ -48,11 +48,8 @@ const RoomList = (props) => {
     if (isEmpty(rooms)) {
         return (
             <div className="empty">
-                <IconContext.Provider
-                    value={{ size: "100px", className: "icon" }}
-                    onClick={createRoom}
-                >
-                    <FaPlusCircle />
+                <IconContext.Provider value={{ size: "100px", className: "icon" }}>
+                    <FaPlusCircle onClick={createRoom} />
                 </IconContext.Provider>
             </div>
         );
