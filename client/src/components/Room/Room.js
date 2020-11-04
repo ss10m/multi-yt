@@ -11,12 +11,19 @@ import "./Room.scss";
 
 // Icons
 import { IconContext } from "react-icons";
-import { FaPlay, FaPause, FaCheckCircle, FaVolumeMute, FaVolumeUp, FaVolumeDown, FaArrowLeft } from "react-icons/fa";
+import {
+    FaPlay,
+    FaPause,
+    FaCheckCircle,
+    FaVolumeMute,
+    FaVolumeUp,
+    FaVolumeDown,
+    FaArrowLeft,
+} from "react-icons/fa";
 import { MdReplay10, MdReplay30, MdForward10, MdForward30 } from "react-icons/md";
 
 // Other
-import { isEmpty, VOLUME_MUTED, VOLUME_HALF, VOLUME_FULL } from "helpers";
-import { PLAY, PAUSE, SEEK_BACK_10, SEEK_BACK_30, SEEK_FORWARD_10, SEEK_FORWARD_30 } from "helpers";
+import { PLAYER_ACTION, VOLUME, isEmpty } from "helpers";
 
 export default (props) => {
     return (
@@ -132,27 +139,31 @@ const VolumeBar = ({ volume, controlsDisabled, playedTimer, totalTimer, handleVo
                     value={{
                         size: "20px",
                         className: classNames("volume-icon", {
-                            active: !controlsDisabled && volume === VOLUME_MUTED,
+                            active: !controlsDisabled && volume === VOLUME.MUTED,
                         }),
                     }}
                 >
-                    <FaVolumeMute onClick={() => handleVolume(VOLUME_MUTED)} />
+                    <FaVolumeMute onClick={() => handleVolume(VOLUME.MUTED)} />
                 </IconContext.Provider>
                 <IconContext.Provider
                     value={{
                         size: "20px",
-                        className: classNames("volume-icon", { active: !controlsDisabled && volume === VOLUME_HALF }),
+                        className: classNames("volume-icon", {
+                            active: !controlsDisabled && volume === VOLUME.HALF,
+                        }),
                     }}
                 >
-                    <FaVolumeDown onClick={() => handleVolume(VOLUME_HALF)} />
+                    <FaVolumeDown onClick={() => handleVolume(VOLUME.HALF)} />
                 </IconContext.Provider>
                 <IconContext.Provider
                     value={{
                         size: "20px",
-                        className: classNames("volume-icon", { active: !controlsDisabled && volume === VOLUME_FULL }),
+                        className: classNames("volume-icon", {
+                            active: !controlsDisabled && volume === VOLUME.FULL,
+                        }),
                     }}
                 >
-                    <FaVolumeUp onClick={() => handleVolume(VOLUME_FULL)} />
+                    <FaVolumeUp onClick={() => handleVolume(VOLUME.FULL)} />
                 </IconContext.Provider>
             </div>
         </div>
@@ -163,32 +174,43 @@ const PlayerControls = ({ isPlaying, controlsDisabled, handleControls }) => {
     return (
         <div className={classNames("player-controls", { disabled: controlsDisabled })}>
             <div className="inner-box" />
-            <div className="btn" onClick={() => handleControls(SEEK_BACK_30)}>
+            <div className="btn" onClick={() => handleControls(PLAYER_ACTION.SEEK_BACK_30)}>
                 <IconContext.Provider value={{ size: "28px" }}>
                     <MdReplay30 />
                 </IconContext.Provider>
             </div>
-            <div className="btn" onClick={() => handleControls(SEEK_BACK_10)}>
+            <div className="btn" onClick={() => handleControls(PLAYER_ACTION.SEEK_BACK_10)}>
                 <IconContext.Provider value={{ size: "35px" }}>
                     <MdReplay10 />
                 </IconContext.Provider>
             </div>
             <div className="btn-wrapper">
                 <div
-                    className={classNames("btn large", { pause: isPlaying, play: !isPlaying })}
-                    onClick={() => handleControls(isPlaying ? PAUSE : PLAY)}
+                    className={classNames("btn large", {
+                        pause: isPlaying,
+                        play: !isPlaying,
+                    })}
+                    onClick={() =>
+                        handleControls(isPlaying ? PLAYER_ACTION.PAUSE : PLAYER_ACTION.PLAY)
+                    }
                 >
                     <IconContext.Provider value={{ size: "30px" }}>
                         {isPlaying ? <FaPause /> : <FaPlay />}
                     </IconContext.Provider>
                 </div>
             </div>
-            <div className="btn" onClick={() => handleControls(SEEK_FORWARD_10)}>
+            <div
+                className="btn"
+                onClick={() => handleControls(PLAYER_ACTION.SEEK_FORWARD_10)}
+            >
                 <IconContext.Provider value={{ size: "35px" }}>
                     <MdForward10 />
                 </IconContext.Provider>
             </div>
-            <div className="btn" onClick={() => handleControls(SEEK_FORWARD_30)}>
+            <div
+                className="btn"
+                onClick={() => handleControls(PLAYER_ACTION.SEEK_FORWARD_30)}
+            >
                 <IconContext.Provider value={{ size: "28px" }}>
                     <MdForward30 />
                 </IconContext.Provider>

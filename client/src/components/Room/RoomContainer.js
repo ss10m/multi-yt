@@ -11,23 +11,12 @@ import { leaveRoom, loadVideo, removeVideo, updateVideo } from "store/actions";
 import Room from "./Room";
 
 // Constants
-import {
-    isEmpty,
-    VOLUME_MUTED,
-    VOLUME_HALF,
-    VOLUME_FULL,
-    PLAY,
-    PAUSE,
-    SEEK_BACK_10,
-    SEEK_BACK_30,
-    SEEK_FORWARD_10,
-    SEEK_FORWARD_30,
-} from "helpers";
+import { PLAYER_ACTION, VOLUME, isEmpty } from "helpers";
 
 class RoomContainer extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { url: "", timePlayed: 0, totalTime: 0, volume: VOLUME_MUTED };
+        this.state = { url: "", timePlayed: 0, totalTime: 0, volume: VOLUME.MUTED };
         this.updateServer = debounce(this.updateServer, 200);
         this.sendWithDelay = debounce(this.sendWithDelay, 200);
     }
@@ -53,7 +42,7 @@ class RoomContainer extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (!isEmpty(prevProps.player) && isEmpty(this.props.player)) {
-            this.setState({ url: "", timePlayed: 0, totalTime: 0, volume: VOLUME_MUTED });
+            this.setState({ url: "", timePlayed: 0, totalTime: 0, volume: VOLUME.MUTED });
         }
     }
 
@@ -62,22 +51,22 @@ class RoomContainer extends React.Component {
 
         let actionObj = null;
         switch (action) {
-            case PLAY:
+            case PLAYER_ACTION.PLAY:
                 actionObj = { isPlaying: true };
                 break;
-            case PAUSE:
+            case PLAYER_ACTION.PAUSE:
                 actionObj = { isPlaying: false };
                 break;
-            case SEEK_BACK_10:
+            case PLAYER_ACTION.SEEK_BACK_10:
                 actionObj = { seek: Math.max(player.embed.getCurrentTime() - 10, 0) };
                 break;
-            case SEEK_BACK_30:
+            case PLAYER_ACTION.SEEK_BACK_30:
                 actionObj = { seek: Math.max(player.embed.getCurrentTime() - 30, 0) };
                 break;
-            case SEEK_FORWARD_10:
+            case PLAYER_ACTION.SEEK_FORWARD_10:
                 actionObj = { seek: Math.max(player.embed.getCurrentTime() + 10, 0) };
                 break;
-            case SEEK_FORWARD_30:
+            case PLAYER_ACTION.SEEK_FORWARD_30:
                 actionObj = { seek: Math.max(player.embed.getCurrentTime() + 30, 0) };
                 break;
             default:
@@ -127,24 +116,24 @@ class RoomContainer extends React.Component {
 
         let newVolume;
         switch (action) {
-            case VOLUME_FULL:
+            case VOLUME.FULL:
                 if (isMuted) player.embed.unMute();
                 player.embed.setVolume(100);
-                newVolume = VOLUME_FULL;
+                newVolume = VOLUME.FULL;
                 break;
-            case VOLUME_HALF:
+            case VOLUME.HALF:
                 if (isMuted) player.embed.unMute();
                 player.embed.setVolume(50);
-                newVolume = VOLUME_HALF;
+                newVolume = VOLUME.HALF;
                 break;
-            case VOLUME_MUTED:
+            case VOLUME.MUTED:
                 if (!isMuted) {
                     player.embed.mute();
-                    newVolume = VOLUME_MUTED;
+                    newVolume = VOLUME.MUTED;
                 } else {
                     player.embed.unMute();
                     player.embed.setVolume(100);
-                    newVolume = VOLUME_FULL;
+                    newVolume = VOLUME.FULL;
                 }
                 break;
             default:

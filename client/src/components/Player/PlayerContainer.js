@@ -9,7 +9,7 @@ import { setPlayer, updatePlayerState, updateVideo } from "store/actions";
 import Player from "./Player";
 
 // Constants
-import { BUFFERING, ENDED } from "helpers";
+import { PLAYER_STATE } from "helpers";
 
 // Helpers
 import { isEmpty } from "helpers";
@@ -53,7 +53,7 @@ class PlayerContainer extends React.Component {
         let playerState = state.data;
         let isBuffering = this.state.isBuffering;
 
-        if (isBuffering && playerState !== BUFFERING) {
+        if (isBuffering && playerState !== PLAYER_STATE.BUFFERING) {
             this.setState({ isBuffering: false });
             this.props.player.embed.pauseVideo();
             this.props.updatePlayerState({ isBuffering: false });
@@ -61,10 +61,10 @@ class PlayerContainer extends React.Component {
         }
 
         switch (playerState) {
-            case ENDED:
+            case PLAYER_STATE.ENDED:
                 this.props.updateVideo({ ended: true });
                 break;
-            case BUFFERING:
+            case PLAYER_STATE.BUFFERING:
                 this.setState({ isBuffering: true });
                 this.props.updatePlayerState({ isBuffering: true });
                 break;
@@ -106,7 +106,12 @@ class PlayerContainer extends React.Component {
                 />
             );
         } else {
-            return <div className="player" style={{ width: playerWidth, height: playerHeight }} />;
+            return (
+                <div
+                    className="player"
+                    style={{ width: playerWidth, height: playerHeight }}
+                />
+            );
         }
     }
 }
