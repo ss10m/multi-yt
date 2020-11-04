@@ -6,7 +6,15 @@ import "./Rooms.scss";
 
 // Icons
 import { IconContext } from "react-icons";
-import { FaPlay, FaPause, FaStop, FaUser, FaPlusCircle, FaRedo, FaPlus } from "react-icons/fa";
+import {
+    FaPlay,
+    FaPause,
+    FaStop,
+    FaUser,
+    FaPlusCircle,
+    FaRedo,
+    FaPlus,
+} from "react-icons/fa";
 
 export default (props) => {
     return (
@@ -40,17 +48,20 @@ const RoomList = (props) => {
     if (isEmpty(rooms)) {
         return (
             <div className="empty">
-                <div className="icon" onClick={createRoom}>
-                    <IconContext.Provider value={{ size: "100px" }}>
-                        <FaPlusCircle />
-                    </IconContext.Provider>
-                </div>
+                <IconContext.Provider
+                    value={{ size: "100px", className: "icon" }}
+                    onClick={createRoom}
+                >
+                    <FaPlusCircle />
+                </IconContext.Provider>
             </div>
         );
     } else {
         const rows = [];
         rooms.forEach((room, idx) => {
-            rows.push(<RoomRow key={idx} room={room} joinRoom={joinRoom} isEmpty={isEmpty} />);
+            rows.push(
+                <RoomRow key={idx} room={room} joinRoom={joinRoom} isEmpty={isEmpty} />
+            );
         });
 
         return (
