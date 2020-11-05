@@ -95,24 +95,17 @@ class PlayerContainer extends React.Component {
             playerHeight = "100%";
         }
 
-        if (isIframeReady && isVisible) {
-            return (
-                <Player
-                    playerWidth={playerWidth}
-                    playerHeight={playerHeight}
-                    url={video.url}
-                    onPlayerReady={this.onPlayerReady}
-                    onPlayerStateChange={this.onPlayerStateChange}
-                />
-            );
-        } else {
-            return (
-                <div
-                    className="player"
-                    style={{ width: playerWidth, height: playerHeight }}
-                />
-            );
-        }
+        return (
+            <Player
+                isIframeReady={isIframeReady}
+                isVisible={isVisible}
+                playerWidth={playerWidth}
+                playerHeight={playerHeight}
+                url={video.url}
+                onPlayerReady={this.onPlayerReady}
+                onPlayerStateChange={this.onPlayerStateChange}
+            />
+        );
     }
 }
 

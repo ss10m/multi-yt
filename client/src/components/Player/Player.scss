@@ -1,6 +1,18 @@
 .player {
     background: black;
 
+    .icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50%;
+        height: 50%;
+        max-width: 300px;
+        color: red;
+        opacity: 0.03;
+    }
+
     .player-overlay {
         position: absolute;
         z-index: 1;

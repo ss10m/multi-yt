@@ -1,10 +1,30 @@
 // Libraries & utils
 import React from "react";
 
+// Icons
+import { IconContext } from "react-icons";
+import { FaYoutube } from "react-icons/fa";
+
 // SCSS
 import "./Player.scss";
 
-class Player extends React.Component {
+const Player = (props) => {
+    if (props.isIframeReady && props.isVisible) {
+        return (
+            <YTPlayer
+                playerWidth={props.playerWidth}
+                playerHeight={props.playerHeight}
+                url={props.url}
+                onPlayerReady={props.onPlayerReady}
+                onPlayerStateChange={props.onPlayerStateChange}
+            />
+        );
+    } else {
+        return <Preview playerWidth={props.playerWidth} playerHeight={props.playerHeight} />;
+    }
+};
+
+class YTPlayer extends React.Component {
     componentDidMount() {
         let { url, onPlayerReady, onPlayerStateChange } = this.props;
 
@@ -40,5 +60,15 @@ class Player extends React.Component {
         );
     }
 }
+
+const Preview = ({ playerWidth, playerHeight }) => {
+    return (
+        <div className="player" style={{ width: playerWidth, height: playerHeight }}>
+            <IconContext.Provider value={{ className: "icon" }}>
+                <FaYoutube />
+            </IconContext.Provider>
+        </div>
+    );
+};
 
 export default Player;
