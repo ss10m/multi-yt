@@ -54,6 +54,10 @@ $button-hover-color: #46464a;
     grid-gap: 10px;
     margin: 10px;
 
+    @media (max-width: 700px) {
+        grid-template-columns: 220px 60px 1fr;
+    }
+
     @media (max-width: 600px) {
         grid-template-areas:
             "create refresh"
@@ -138,6 +142,23 @@ $button-hover-color: #46464a;
         border-radius: 7px 0 0 7px;
         font-size: 30px;
         color: whitesmoke;
+
+        &.right {
+            width: 50px;
+            border-radius: 0 7px 7px 0;
+            font-size: 20px;
+
+            span {
+                display: flex;
+                border-radius: 7px;
+                padding: 4px;
+
+                &:hover {
+                    cursor: pointer;
+                    background-color: #292929;
+                }
+            }
+        }
     }
 
     input {
@@ -147,12 +168,15 @@ $button-hover-color: #46464a;
         box-sizing: border-box;
         outline: none;
         border: none;
-        border-radius: 0 7px 7px 0;
         border-left: none;
-        padding-right: 10px;
         font-size: 30px;
         color: whitesmoke;
         background-color: #444444;
+
+        &.rounded {
+            border-radius: 0 7px 7px 0;
+            padding-right: 10px;
+        }
     }
 }
 

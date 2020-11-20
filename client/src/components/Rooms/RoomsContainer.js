@@ -14,8 +14,31 @@ import { isEmpty } from "helpers";
 class RoomsContainer extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { refreshDisabled: false };
+        this.state = { filter: "", refreshDisabled: false };
     }
+
+    handleChange = (event) => {
+        this.setState({ filter: event.target.value });
+    };
+
+    clearFilter = () => {
+        this.setState({ filter: "" });
+    };
+
+    getRooms = () => {
+        let { rooms } = this.props;
+        let { filter } = this.state;
+        if (!filter) return rooms;
+
+        const filtered = filter.toLowerCase().trim();
+
+        return rooms.filter((room) => {
+            const lowerName = room.name.toLowerCase();
+            if (lowerName.includes(filtered)) return true;
+            if (("room " + lowerName).includes(filtered)) return true;
+            return false;
+        });
+    };
 
     refreshRooms = () => {
         if (this.state.refreshDisabled) return;
@@ -33,16 +56,20 @@ class RoomsContainer extends React.Component {
     };
 
     render() {
-        let { rooms } = this.props;
+        let { filter, refreshDisabled } = this.state;
+        let rooms = this.getRooms();
 
         return (
             <Rooms
                 rooms={rooms}
+                filter={filter}
+                handleChange={this.handleChange}
+                clearFilter={this.clearFilter}
                 refreshRooms={this.refreshRooms}
                 createRoom={this.createRoom}
                 joinRoom={this.joinRoom}
                 isEmpty={isEmpty}
-                refreshDisabled={this.state.refreshDisabled}
+                refreshDisabled={refreshDisabled}
             />
         );
     }

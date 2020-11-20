@@ -17,6 +17,7 @@ import {
     FaPause,
     FaStop,
     FaUser,
+    FaTimes,
 } from "react-icons/fa";
 
 export default (props) => {
@@ -73,12 +74,23 @@ function Navigation(props) {
                     <FiSearch />
                 </div>
                 <input
+                    className={classNames({
+                        rounded: !props.filter,
+                    })}
                     type="text"
+                    value={props.filter}
+                    onChange={props.handleChange}
                     spellCheck={false}
                     placeholder="Search"
                     autoComplete="off"
-                    onChange={props.handleChange}
                 />
+                {props.filter && (
+                    <div className="icon right">
+                        <span onClick={props.clearFilter}>
+                            <FaTimes />
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -92,7 +104,7 @@ function CustomTable(props) {
         },
         {
             Header: "Name",
-            accessor: "name",
+            accessor: "displayName",
         },
         {
             Header: <FaUser />,
@@ -105,8 +117,9 @@ function CustomTable(props) {
     ];
 
     for (let room of props.rooms) {
-        room.join = () => props.joinRoom(room.id);
+        room.displayName = `ROOM ${room.name}`;
         room.indicator = <RoomIndicator status={room.status} isEmpty={props.isEmpty} />;
+        room.join = () => props.joinRoom(room.id);
     }
 
     return (
@@ -181,7 +194,6 @@ function Table({ columns, data }) {
                                     >
                                         <div className="header-name">
                                             {column.render("Header")}
-
                                             {column.isSorted ? (
                                                 <span className="sorted">
                                                     {column.isSortedDesc ? (
