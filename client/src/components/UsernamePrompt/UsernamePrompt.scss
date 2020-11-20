@@ -9,10 +9,11 @@
     align-items: center;
     background: rgba(0, 0, 0, 0.9);
     z-index: 5;
+    min-width: 320px;
 }
 
 .prompt {
-    width: 320px;
+    width: 310px;
     position: absolute;
     background-color: #18181b;
     box-shadow: 0px 0px 2px 0px whitesmoke;

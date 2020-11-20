@@ -69,7 +69,7 @@ class AppContainer extends React.Component {
             <App
                 width={width}
                 height={height}
-                isRoomEmpty={isEmpty(room)}
+                showLobby={isEmpty(room)}
                 showUsernamePrompt={showUsernamePrompt}
                 confirmUsername={this.confirmUsername}
                 error={error}

@@ -21,7 +21,7 @@ class RoomsContainer extends React.Component {
         if (this.state.refreshDisabled) return;
         this.props.refreshRooms();
         this.setState({ refreshDisabled: true });
-        setTimeout(() => this.setState({ refreshDisabled: false }), 1000);
+        setTimeout(() => this.setState({ refreshDisabled: false }), 800);
     };
 
     createRoom = () => {
@@ -42,6 +42,7 @@ class RoomsContainer extends React.Component {
                 createRoom={this.createRoom}
                 joinRoom={this.joinRoom}
                 isEmpty={isEmpty}
+                refreshDisabled={this.state.refreshDisabled}
             />
         );
     }

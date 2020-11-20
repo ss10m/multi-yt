@@ -1,100 +1,121 @@
 // Libraries & utils
 import React from "react";
+import classNames from "classnames";
+import { useTable, useSortBy } from "react-table";
 
 // SCSS
 import "./Rooms.scss";
 
 // Icons
 import { IconContext } from "react-icons";
+import { FiSearch, FiRefreshCw } from "react-icons/fi";
 import {
+    FaSort,
+    FaSortUp,
+    FaSortDown,
     FaPlay,
     FaPause,
     FaStop,
     FaUser,
-    FaPlusCircle,
-    FaRedo,
-    FaPlus,
 } from "react-icons/fa";
 
 export default (props) => {
     return (
         <div className="rooms">
-            <RoomsHeader {...props} />
-            <div className="rooms-body">
-                <RoomList {...props} />
+            <div className="rooms-inside">
+                <Header />
+                <Lobby {...props} />
             </div>
         </div>
     );
 };
 
-const RoomsHeader = (props) => {
-    let { refreshRooms, createRoom } = props;
+function Header() {
     return (
-        <div className="rooms-header">
-            <IconContext.Provider value={{ size: "20px", className: "header-icon" }}>
-                <FaRedo onClick={refreshRooms} />
-            </IconContext.Provider>
-            <p>ROOMS</p>
-            <IconContext.Provider value={{ size: "20px", className: "header-icon" }}>
-                <FaPlus onClick={createRoom} />
-            </IconContext.Provider>
+        <div className="header">
+            SYNC<span>WATCH</span>
         </div>
     );
-};
+}
 
-const RoomList = (props) => {
-    let { rooms, isEmpty, createRoom, joinRoom } = props;
-
-    if (isEmpty(rooms)) {
-        return (
-            <IconContext.Provider value={{ size: "100px", className: "icon" }}>
-                <FaPlusCircle onClick={createRoom} />
-            </IconContext.Provider>
-        );
-    } else {
-        const rows = [];
-        rooms.forEach((room, idx) => {
-            rows.push(
-                <RoomRow key={idx} room={room} joinRoom={joinRoom} isEmpty={isEmpty} />
-            );
-        });
-
-        return (
-            <table className="rooms-table">
-                <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>Name</th>
-                        <th>
-                            <div style={{ height: "15px" }}>
-                                <FaUser />
-                            </div>
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>{rows}</tbody>
-            </table>
-        );
-    }
-};
-
-const RoomRow = ({ room, joinRoom, isEmpty }) => {
+function Lobby(props) {
     return (
-        <tr>
-            <td width="20%">
-                <div className="indicator">
-                    <RoomIndicator status={room.status} isEmpty={isEmpty} />
-                </div>
-            </td>
-            <td width="25%">{room.name}</td>
-            <td width="15%">{room.users}</td>
-            <td className="btn">
-                <button onClick={() => joinRoom(room.id)}>JOIN</button>
-            </td>
-        </tr>
+        <div className="lobby">
+            <Navigation {...props} />
+            <CustomTable {...props} />
+        </div>
     );
-};
+}
+
+function Navigation(props) {
+    return (
+        <div className="rooms-nagivation">
+            <div className="create-btn" onClick={props.createRoom}>
+                Create Room
+            </div>
+            <div
+                className={classNames("refresh-btn", {
+                    "refresh-btn-disabled": props.refreshDisabled,
+                })}
+                onClick={props.refreshRooms}
+            >
+                <span
+                    className={classNames({
+                        current: props.refreshDisabled,
+                    })}
+                >
+                    <FiRefreshCw />
+                </span>
+            </div>
+
+            <div className="input-wrapper">
+                <div className="icon">
+                    <FiSearch />
+                </div>
+                <input
+                    type="text"
+                    spellCheck={false}
+                    placeholder="Search"
+                    autoComplete="off"
+                    onChange={props.handleChange}
+                />
+            </div>
+        </div>
+    );
+}
+
+function CustomTable(props) {
+    const columns = [
+        {
+            Header: "Status",
+            accessor: "indicator",
+        },
+        {
+            Header: "Name",
+            accessor: "name",
+        },
+        {
+            Header: <FaUser />,
+            accessor: "users",
+        },
+        {
+            Header: "",
+            accessor: "join",
+        },
+    ];
+
+    for (let room of props.rooms) {
+        room.join = () => props.joinRoom(room.id);
+        room.indicator = <RoomIndicator status={room.status} isEmpty={props.isEmpty} />;
+    }
+
+    return (
+        <div className="table-wrapper">
+            <Table columns={columns} data={props.rooms} refresh={props.refreshRooms} />
+            {props.isEmpty(props.rooms) && <div className="empty">No rooms found</div>}
+        </div>
+    );
+}
 
 const RoomIndicator = ({ status, isEmpty }) => {
     if (isEmpty(status)) {
@@ -118,3 +139,96 @@ const RoomIndicator = ({ status, isEmpty }) => {
         );
     }
 };
+
+function Table({ columns, data }) {
+    const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
+        {
+            columns,
+            data,
+        },
+        useSortBy
+    );
+
+    return (
+        <>
+            <table {...getTableProps()}>
+                <thead>
+                    {headerGroups.map((headerGroup) => (
+                        <tr {...headerGroup.getHeaderGroupProps()}>
+                            {headerGroup.headers.map((column) => {
+                                if (column.id === "join") {
+                                    return (
+                                        <th
+                                            {...column.getHeaderProps()}
+                                            style={{ width: "35%" }}
+                                        ></th>
+                                    );
+                                }
+
+                                if (column.id === "indicator") {
+                                    return (
+                                        <th {...column.getHeaderProps()}>
+                                            {column.render("Header")}
+                                        </th>
+                                    );
+                                }
+
+                                return (
+                                    <th
+                                        {...column.getHeaderProps(
+                                            column.getSortByToggleProps()
+                                        )}
+                                    >
+                                        <div className="header-name">
+                                            {column.render("Header")}
+
+                                            {column.isSorted ? (
+                                                <span className="sorted">
+                                                    {column.isSortedDesc ? (
+                                                        <FaSortDown />
+                                                    ) : (
+                                                        <FaSortUp />
+                                                    )}
+                                                </span>
+                                            ) : (
+                                                <span className="unsorted">
+                                                    <FaSort />
+                                                </span>
+                                            )}
+                                        </div>
+                                    </th>
+                                );
+                            })}
+                        </tr>
+                    ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                    {rows.map((row, i) => {
+                        prepareRow(row);
+                        return (
+                            <tr {...row.getRowProps()}>
+                                {row.cells.map((cell) => {
+                                    if (cell.column.id === "join") {
+                                        return (
+                                            <td {...cell.getCellProps()} className="btn">
+                                                <button onClick={row.original.join}>
+                                                    JOIN
+                                                </button>
+                                            </td>
+                                        );
+                                    } else {
+                                        return (
+                                            <td {...cell.getCellProps()}>
+                                                {cell.render("Cell")}
+                                            </td>
+                                        );
+                                    }
+                                })}
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </>
+    );
+}

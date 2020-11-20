@@ -1,114 +1,243 @@
-$primary-color: #0e0e10;
 $table-header-color: #232325;
-$button-color: #3a3a3d;
+$button-color: #292929;
+$button-border-color: #444444;
 $button-hover-color: #46464a;
 
 .rooms {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.rooms-header {
-    height: 50px;
-    padding: 0 10px;
-    background-color: $primary-color;
-    box-shadow: 0px 2px 3px black;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 2;
-
-    .header-icon {
-        padding: 5px;
-        border-radius: 7px;
-
-        &:hover {
-            cursor: pointer;
-            background-color: #26262b;
-        }
-    }
-
-    p {
-        font-weight: 600;
-    }
-}
-
-.rooms-body {
-    flex: 1;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    overflow: auto;
-    &::-webkit-scrollbar {
-        display: none;
-    }
-    position: relative;
-
-    .icon {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: $primary-color;
-
-        &:hover {
-            cursor: pointer;
-            color: #242429;
-        }
-    }
-}
-
-.rooms-table {
+    height: 100vh;
     width: 100%;
-    border-collapse: collapse;
+    display: flex;
+    color: whitesmoke;
+    min-width: 320px;
 
-    thead {
-        tr {
-            height: 40px;
-            th {
-                font-size: 14px;
-                font-weight: 500;
-                background-color: $table-header-color;
+    .rooms-inside {
+        width: 90%;
+        max-width: 800px;
+        height: 100%;
+        max-height: 900px;
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        margin: auto;
+
+        .header {
+            padding: 30px 0 30px 15px;
+            font-size: 40px;
+            font-weight: 800;
+
+            @media (max-width: 450px) {
+                font-size: 30px;
+            }
+
+            span {
+                color: #710101;
+            }
+        }
+
+        .lobby {
+            flex: 1;
+            margin-bottom: 30px;
+            background-color: #18181b;
+            border-radius: 7px;
+            box-shadow: 0px 0px 2px 0px whitesmoke;
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}
+
+.rooms-nagivation {
+    display: grid;
+    grid-template-areas: "create refresh filter";
+    grid-template-columns: 250px 60px 1fr;
+    grid-template-rows: 60px;
+    grid-gap: 10px;
+    margin: 10px;
+
+    @media (max-width: 600px) {
+        grid-template-areas:
+            "create refresh"
+            "filter filter";
+        grid-template-rows: 60px 60px;
+        grid-template-columns: 1fr 60px;
+    }
+
+    .create-btn {
+        grid-area: create;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+        font-size: 30px;
+        font-weight: 500;
+        color: whitesmoke;
+        background-color: $button-color;
+        border: 1px solid $button-border-color;
+
+        &:hover {
+            cursor: pointer;
+            background-color: #353535;
+        }
+    }
+
+    .refresh-btn {
+        grid-area: refresh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+        font-size: 30px;
+        color: whitesmoke;
+        background-color: $button-color;
+        border: 1px solid $button-border-color;
+
+        &.refresh-btn-disabled {
+            opacity: 0.7;
+        }
+
+        &:hover:not(.refresh-btn-disabled) {
+            cursor: pointer;
+            background-color: #353535;
+        }
+
+        span {
+            display: flex;
+        }
+
+        .current {
+            animation: spin 0.8s linear 1;
+        }
+
+        @keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
             }
         }
     }
 
-    tbody {
-        tr {
-            height: 50px;
+    .input-wrapper {
+        grid-area: filter;
+    }
+}
 
-            td {
-                text-align: center;
+.rooms .input-wrapper {
+    height: 100%;
+    display: flex;
+    box-sizing: border-box;
 
-                .indicator {
-                    position: relative;
-                    top: 3px;
+    .icon {
+        height: 100%;
+        width: 60px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #444444;
+        box-sizing: border-box;
+        border-radius: 7px 0 0 7px;
+        font-size: 30px;
+        color: whitesmoke;
+    }
+
+    input {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        box-sizing: border-box;
+        outline: none;
+        border: none;
+        border-radius: 0 7px 7px 0;
+        border-left: none;
+        padding-right: 10px;
+        font-size: 30px;
+        color: whitesmoke;
+        background-color: #444444;
+    }
+}
+
+.table-wrapper {
+    height: 100%;
+    position: relative;
+
+    .empty {
+        position: absolute;
+        top: 50px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead {
+            background-color: $table-header-color;
+
+            tr {
+                height: 50px;
+                th {
+                    font-size: 18px;
+                    font-weight: 500;
+                }
+            }
+        }
+
+        tbody {
+            tr {
+                height: 50px;
+
+                td {
+                    text-align: center;
+
+                    .indicator {
+                        position: relative;
+                        top: 3px;
+                    }
+                }
+            }
+        }
+
+        .btn {
+            width: 35%;
+
+            button {
+                height: 30px;
+                width: 75%;
+                background-color: $button-color;
+                border: 1px solid $button-hover-color;
+                outline: none;
+                color: whitesmoke;
+                border-radius: 3px;
+
+                &:hover {
+                    cursor: pointer;
+                    background-color: $button-hover-color;
                 }
             }
         }
     }
+}
 
-    .btn {
-        width: 40%;
+.table-wrapper .header-name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        button {
-            height: 30px;
-            width: 75%;
-            background-color: $button-color;
+    span {
+        display: flex;
+        margin-left: 5px;
 
-            outline: none;
-            border: none;
-            color: whitesmoke;
-            border-radius: 3px;
+        &.sorted {
+            color: #710101;
+        }
 
-            &:hover {
-                cursor: pointer;
-                background-color: $button-hover-color;
-            }
+        &.unsorted {
+            color: grey;
         }
     }
 }

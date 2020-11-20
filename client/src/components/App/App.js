@@ -12,16 +12,24 @@ import UsernamePrompt from "components/UsernamePrompt/UsernamePromptContainer";
 import "./App.scss";
 
 export default (props) => {
-    let { width, height, isRoomEmpty, showUsernamePrompt, confirmUsername, error } = props;
+    let { width, height, showLobby, showUsernamePrompt, confirmUsername, error } = props;
+
     if (error) return <div className="error">{error}</div>;
+
+    if (showLobby) {
+        return (
+            <>
+                {showUsernamePrompt && <UsernamePrompt confirmUsername={confirmUsername} />}
+                <Rooms />
+            </>
+        );
+    }
+
     return (
-        <>
-            {showUsernamePrompt && <UsernamePrompt confirmUsername={confirmUsername} />}
-            <div className="main">
-                <Player width={width} height={height} />
-                <div className="options">{isRoomEmpty ? <Rooms /> : <Room />}</div>
-                <Chat />
-            </div>
-        </>
+        <div className="layout">
+            <Player width={width} height={height} />
+            <Room />
+            <Chat />
+        </div>
     );
 };
