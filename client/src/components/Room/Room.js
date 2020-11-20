@@ -51,7 +51,7 @@ const Header = ({ room, leaveRoom }) => {
             <IconContext.Provider value={{ size: "20px", className: "header-icon" }}>
                 <FaArrowLeft onClick={leaveRoom} />
             </IconContext.Provider>
-            <p>{`ROOM ${room.name}`}</p>
+            <p>{room.name}</p>
         </div>
     );
 };

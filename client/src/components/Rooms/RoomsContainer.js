@@ -31,11 +31,12 @@ class RoomsContainer extends React.Component {
         if (!filter) return rooms;
 
         const filtered = filter.toLowerCase().trim();
+        console.log(filtered);
 
         return rooms.filter((room) => {
             const lowerName = room.name.toLowerCase();
             if (lowerName.includes(filtered)) return true;
-            if (("room " + lowerName).includes(filtered)) return true;
+            if (lowerName.includes("room " + filtered)) return true;
             return false;
         });
     };

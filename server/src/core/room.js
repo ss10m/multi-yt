@@ -7,7 +7,7 @@ export class Room {
 
     constructor(socketId) {
         this.id = nanoid(7);
-        this.name = this.generateName(Room.count);
+        this.name = "ROOM " + this.generateName(Room.count);
         this.users = {};
         this.video = {};
         this.action = null;

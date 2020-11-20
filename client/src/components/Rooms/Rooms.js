@@ -104,7 +104,7 @@ function CustomTable(props) {
         },
         {
             Header: "Name",
-            accessor: "displayName",
+            accessor: "name",
         },
         {
             Header: <FaUser />,
@@ -117,7 +117,6 @@ function CustomTable(props) {
     ];
 
     for (let room of props.rooms) {
-        room.displayName = `ROOM ${room.name}`;
         room.indicator = <RoomIndicator status={room.status} isEmpty={props.isEmpty} />;
         room.join = () => props.joinRoom(room.id);
     }
