@@ -9,7 +9,7 @@ import { FaYoutube } from "react-icons/fa";
 import "./Player.scss";
 
 const Player = (props) => {
-    if (props.isIframeReady && props.isVisible) {
+    if (props.isVisible) {
         return (
             <YTPlayer
                 playerWidth={props.playerWidth}

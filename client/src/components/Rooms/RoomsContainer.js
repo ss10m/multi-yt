@@ -31,7 +31,6 @@ class RoomsContainer extends React.Component {
         if (!filter) return rooms;
 
         const filtered = filter.toLowerCase().trim();
-        console.log(filtered);
 
         return rooms.filter((room) => {
             const lowerName = room.name.toLowerCase();

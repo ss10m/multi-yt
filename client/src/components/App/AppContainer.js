@@ -18,6 +18,7 @@ class AppContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            isIframeReady: false,
             showUsernamePrompt: true,
             width: window.innerWidth,
             height: window.innerHeight,
@@ -25,6 +26,16 @@ class AppContainer extends React.Component {
     }
 
     componentDidMount() {
+        if (!window.YT) {
+            const tag = document.createElement("script");
+            tag.src = "https://www.youtube.com/iframe_api";
+            window.onYouTubeIframeAPIReady = this.onIframeReady;
+            const firstScriptTag = document.getElementsByTagName("script")[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        } else {
+            this.onIframeReady();
+        }
+
         try {
             let id = localStorage.getItem("sync-id");
             if (!id) {
@@ -48,6 +59,10 @@ class AppContainer extends React.Component {
         this.setState({ width: window.innerWidth, height: window.innerHeight });
     };
 
+    onIframeReady = () => {
+        this.setState({ isIframeReady: true });
+    };
+
     confirmUsername = (username) => {
         this.setState({ showUsernamePrompt: false });
         this.props.setUsername(username);
@@ -62,13 +77,14 @@ class AppContainer extends React.Component {
     };
 
     render() {
-        let { width, height, showUsernamePrompt } = this.state;
+        let { width, height, isIframeReady, showUsernamePrompt } = this.state;
         let { room, error } = this.props;
 
         return (
             <App
                 width={width}
                 height={height}
+                isIframeReady={isIframeReady}
                 showLobby={isEmpty(room)}
                 showUsernamePrompt={showUsernamePrompt}
                 confirmUsername={this.confirmUsername}

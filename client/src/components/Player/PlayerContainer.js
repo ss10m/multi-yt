@@ -18,19 +18,14 @@ class PlayerContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isIframeReady: false,
             isBuffering: false,
             isVisible: false,
         };
     }
 
     componentDidMount = () => {
-        if (!window.YT) {
-            const tag = document.createElement("script");
-            tag.src = "https://www.youtube.com/iframe_api";
-            window.onYouTubeIframeAPIReady = this.onIframeReady;
-            const firstScriptTag = document.getElementsByTagName("script")[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        if (this.props.video.url) {
+            this.setState({ isVisible: true });
         }
     };
 
@@ -44,10 +39,6 @@ class PlayerContainer extends React.Component {
             this.setState({ isVisible: video.url ? true : false });
         }
     }
-
-    onIframeReady = () => {
-        this.setState({ isIframeReady: true });
-    };
 
     onPlayerStateChange = (state) => {
         let playerState = state.data;
@@ -80,7 +71,7 @@ class PlayerContainer extends React.Component {
     };
 
     render() {
-        let { isIframeReady, isVisible } = this.state;
+        let { isVisible } = this.state;
         let { width, video } = this.props;
         let playerWidth = 0;
         let playerHeight = 0;
@@ -97,7 +88,6 @@ class PlayerContainer extends React.Component {
 
         return (
             <Player
-                isIframeReady={isIframeReady}
                 isVisible={isVisible}
                 playerWidth={playerWidth}
                 playerHeight={playerHeight}

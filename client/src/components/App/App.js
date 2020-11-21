@@ -12,9 +12,17 @@ import UsernamePrompt from "components/UsernamePrompt/UsernamePromptContainer";
 import "./App.scss";
 
 export default (props) => {
-    let { width, height, showLobby, showUsernamePrompt, confirmUsername, error } = props;
+    let {
+        width,
+        height,
+        isIframeReady,
+        showLobby,
+        showUsernamePrompt,
+        confirmUsername,
+        error,
+    } = props;
 
-    if (error) return <div className="error">{error}</div>;
+    if (error || !isIframeReady) return <div className="error">{error}</div>;
 
     if (showLobby) {
         return (
