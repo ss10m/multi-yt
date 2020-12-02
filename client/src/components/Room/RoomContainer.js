@@ -16,7 +16,13 @@ import { PLAYER_ACTION, VOLUME, isEmpty } from "helpers";
 class RoomContainer extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { url: "", timePlayed: 0, totalTime: 0, volume: VOLUME.MUTED };
+        this.state = {
+            searchView: false,
+            url: "",
+            timePlayed: 0,
+            totalTime: 0,
+            volume: VOLUME.MUTED,
+        };
         this.updateServer = debounce(this.updateServer, 200);
         this.sendWithDelay = debounce(this.sendWithDelay, 200);
     }
@@ -45,6 +51,10 @@ class RoomContainer extends React.Component {
             this.setState({ url: "", timePlayed: 0, totalTime: 0, volume: VOLUME.MUTED });
         }
     }
+
+    toggleSearchView = () => {
+        this.setState((prevState) => ({ searchView: !prevState.searchView }));
+    };
 
     handleControls = (action) => {
         let { player } = this.props;
@@ -156,7 +166,7 @@ class RoomContainer extends React.Component {
 
     render() {
         let { room, video, player, leaveRoom } = this.props;
-        let { url, volume, timePlayed, totalTime } = this.state;
+        let { searchView, url, volume, timePlayed, totalTime } = this.state;
 
         let inviteUrl = window.location.href + "invite/" + room.id;
         let playedTimer = this.parseTimer(Math.floor(timePlayed));
@@ -170,6 +180,8 @@ class RoomContainer extends React.Component {
                 video={video}
                 volume={volume}
                 url={url}
+                searchView={searchView}
+                toggleSearchView={this.toggleSearchView}
                 inviteUrl={inviteUrl}
                 playedTimer={playedTimer}
                 totalTimer={totalTimer}

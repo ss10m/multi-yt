@@ -5,6 +5,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 
 // Components
 import Spinner from "../Spinner/Spinner";
+import SearchVideos from "../SearchVideos/SearchVideosContainer";
 
 // SCSS
 import "./Room.scss";
@@ -28,30 +29,40 @@ import { PLAYER_ACTION, VOLUME, isEmpty } from "helpers";
 export default (props) => {
     return (
         <div className="room">
-            <Header room={props.room} leaveRoom={props.leaveRoom} />
-            <div className="room-body">
-                <Links
-                    url={props.url}
-                    inviteUrl={props.inviteUrl}
-                    video={props.video}
-                    loadVideo={props.loadVideo}
-                    removeVideo={props.removeVideo}
-                    handleInput={props.handleInput}
-                />
-                <PlayerStatus users={props.room.users} url={props.video.url} />
-                <Controls {...props} />
-            </div>
+            <Header {...props} />
+            <Body {...props} />
         </div>
     );
 };
 
-const Header = ({ room, leaveRoom }) => {
+const Header = (props) => {
     return (
         <div className="room-header">
             <IconContext.Provider value={{ size: "20px", className: "header-icon" }}>
-                <FaArrowLeft onClick={leaveRoom} />
+                <FaArrowLeft
+                    onClick={props.searchView ? props.toggleSearchView : props.leaveRoom}
+                />
             </IconContext.Provider>
-            <p>{room.name}</p>
+            <p>{props.room.name}</p>
+        </div>
+    );
+};
+
+const Body = (props) => {
+    if (props.searchView) return <SearchVideos />;
+    return (
+        <div className="room-body">
+            <button onClick={props.toggleSearchView}>SEARCH</button>
+            <Links
+                url={props.url}
+                inviteUrl={props.inviteUrl}
+                video={props.video}
+                loadVideo={props.loadVideo}
+                removeVideo={props.removeVideo}
+                handleInput={props.handleInput}
+            />
+            <PlayerStatus users={props.room.users} url={props.video.url} />
+            <Controls {...props} />
         </div>
     );
 };
