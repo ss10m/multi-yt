@@ -11,6 +11,7 @@ class SearchVideosContainer extends React.Component {
             searchValue: "",
         };
 
+        this.inputRef = React.createRef();
         this.searchVideos = debounce(this.searchVideos, 800);
     }
 
@@ -26,6 +27,7 @@ class SearchVideosContainer extends React.Component {
 
     clearInput = () => {
         this.setState({ searchValue: "" });
+        this.inputRef.current.focus();
     };
 
     searchVideos = (query) => {
@@ -42,6 +44,7 @@ class SearchVideosContainer extends React.Component {
                 searchValue={this.state.searchValue}
                 handleChange={this.handleChange}
                 clearInput={this.clearInput}
+                ref={this.inputRef}
             />
         );
     }

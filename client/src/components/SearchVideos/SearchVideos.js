@@ -9,7 +9,7 @@ import { FaTimes } from "react-icons/fa";
 // SCSS
 import "./SearchVideos.scss";
 
-export default (props) => {
+export default React.forwardRef((props, ref) => {
     return (
         <div className="room-search">
             <div className="input-wrapper">
@@ -26,6 +26,7 @@ export default (props) => {
                     spellCheck={false}
                     placeholder="Search"
                     autoComplete="off"
+                    ref={ref}
                     autoFocus
                 />
                 {props.searchValue && (
@@ -39,4 +40,4 @@ export default (props) => {
             <div className="search-results"></div>
         </div>
     );
-};
+});
