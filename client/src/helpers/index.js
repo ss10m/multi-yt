@@ -25,4 +25,12 @@ const isEmpty = (obj) => {
     return !obj || Object.keys(obj).length === 0;
 };
 
-export { PLAYER_STATE, PLAYER_ACTION, VOLUME, isEmpty };
+const parseResponse = async (response) => {
+    try {
+        return await response.json();
+    } catch (err) {
+        return null;
+    }
+};
+
+export { PLAYER_STATE, PLAYER_ACTION, VOLUME, isEmpty, parseResponse };

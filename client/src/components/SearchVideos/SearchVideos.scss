@@ -1,7 +1,12 @@
 .room-search {
-    height: 100%;
+    flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+
+    @media (max-width: 600px) {
+        height: 350px;
+    }
 
     .input-wrapper {
         height: 50px;
@@ -61,5 +66,36 @@
 
     .search-results {
         flex: 1;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        overflow: auto;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        .empty {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .result {
+            display: flex;
+            margin: 10px;
+
+            &:hover {
+                cursor: pointer;
+                text-decoration: underline;
+
+                img {
+                    opacity: 0.8;
+                }
+            }
+
+            img {
+                width: 150px;
+            }
+        }
     }
 }

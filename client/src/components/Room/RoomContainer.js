@@ -104,6 +104,11 @@ class RoomContainer extends React.Component {
         }
     };
 
+    playVideo = (videoId) => {
+        this.setState({ searchView: false });
+        console.log(videoId);
+    };
+
     removeVideo = () => {
         this.setState({ url: "" });
         this.props.removeVideo();
@@ -191,6 +196,7 @@ class RoomContainer extends React.Component {
                 isPlaying={video.isPlaying}
                 controlsDisabled={!player.embed}
                 loadVideo={this.loadVideo}
+                playVideo={this.playVideo}
                 removeVideo={this.removeVideo}
                 handleInput={this.handleInput}
                 handleVolume={this.handleVolume}

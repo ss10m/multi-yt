@@ -83,7 +83,7 @@ body {
             "player"
             "room"
             "chat";
-        grid-template-rows: min-content 400px 300px;
+        grid-template-rows: min-content minmax(min-content, 400px) 300px;
         grid-template-columns: 1fr;
     }
 }

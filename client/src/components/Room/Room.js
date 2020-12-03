@@ -49,7 +49,7 @@ const Header = (props) => {
 };
 
 const Body = (props) => {
-    if (props.searchView) return <SearchVideos />;
+    if (props.searchView) return <SearchVideos playVideo={props.playVideo} />;
     return (
         <div className="room-body">
             <button onClick={props.toggleSearchView}>SEARCH</button>
@@ -238,7 +238,7 @@ const VideoProgress = ({ playedtime, totalTime, controlsDisabled, handleSeek }) 
             value={playedtime}
             min={0}
             max={totalTime}
-            onInput={handleSeek}
+            onChange={handleSeek}
             step={1}
             disabled={controlsDisabled}
         />

@@ -7,6 +7,9 @@ import ioClient from "socket.io";
 // Socket Handlers
 import { roomHandlers, videoHandlers } from "./sockets/index.js";
 
+// Controllers
+import { search } from "./controllers/index.js";
+
 // Initialize Server
 const app = express();
 const CLIENT_BUILD_PATH = path.join(path.resolve(), "../client/build");
@@ -17,6 +20,10 @@ const server = http.Server(app);
 const io = ioClient(server);
 const PORT = 8080;
 const HOST = "0.0.0.0";
+
+app.get("/search", (req, res) => {
+    search(req.query.query, (data) => res.send({ data }));
+});
 
 app.get("*", (request, response) => {
     response.sendFile(path.join(CLIENT_BUILD_PATH, "index.html"));
