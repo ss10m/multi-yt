@@ -2,9 +2,17 @@
 import React from "react";
 import { debounce } from "lodash";
 
+// Componenets
 import SearchVideos from "./SearchVideos";
 
-import { parseResponse } from "helpers";
+// Helpers
+import {
+    parseResponse,
+    dateDifference,
+    roundedToFixed,
+    parseTitle,
+    parseDuration,
+} from "helpers";
 
 class SearchVideosContainer extends React.Component {
     constructor(props) {
@@ -45,7 +53,28 @@ class SearchVideosContainer extends React.Component {
         if (!parsed) return this.setState({ searchResults: null, isFetching: false });
         const results = parsed.data;
         if (!results) return this.setState({ searchResults: null, isFetching: false });
-        this.setState({ searchResults: results, isFetching: false });
+        this.cacheImages(results);
+    };
+
+    cacheImages = (videos) => {
+        const totalImages = videos.length;
+        let cachedImages = 0;
+
+        videos.forEach((video) => {
+            video.title = parseTitle(video.title);
+            video.publishedAt = dateDifference(new Date(video.publishedAt), new Date());
+            video.viewCount = roundedToFixed(video.viewCount);
+            video.duration = parseDuration(video.duration);
+
+            const image = new window.Image();
+            image.onload = () => {
+                cachedImages++;
+                if (cachedImages === totalImages) {
+                    this.setState({ searchResults: videos, isFetching: false });
+                }
+            };
+            image.src = video.thumbnail;
+        });
     };
 
     render() {

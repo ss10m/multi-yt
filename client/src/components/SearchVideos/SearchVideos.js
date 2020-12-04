@@ -67,7 +67,7 @@ function SearchResults({ isFetching, searchResults, playVideo }) {
         );
     } else {
         results = searchResults.map((result) => (
-            <SearchResult result={result} playVideo={playVideo} />
+            <SearchResult key={result.id} result={result} playVideo={playVideo} />
         ));
     }
 
@@ -77,8 +77,19 @@ function SearchResults({ isFetching, searchResults, playVideo }) {
 function SearchResult({ result, playVideo }) {
     return (
         <div className="result" onClick={() => playVideo(result.id)}>
-            <img width="200px" src={result.thumbnail} />
-            <div>{result.title}</div>
+            <div className="preview">
+                <img src={result.thumbnail} alt="preview" />
+                <div className="duration">{result.duration}</div>
+                {result.likeRatio && (
+                    <div className="likes">
+                        <div style={{ width: result.likeRatio * 100 + "%" }}></div>
+                    </div>
+                )}
+            </div>
+            <div className="title">{result.title}</div>
+            <div className="details">
+                {`${result.viewCount} views`} &sdot; {`${result.publishedAt}`}
+            </div>
         </div>
     );
 }
