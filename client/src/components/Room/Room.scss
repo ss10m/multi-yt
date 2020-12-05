@@ -46,62 +46,110 @@ $button-hover-color: #46464a;
     }
 }
 
-.room-links {
-    margin: 20px 20px 10px 20px;
+.video-details {
+    margin: 10px;
+    margin-top: 20px;
 
-    .url-link {
-        height: 35px;
+    .room-links {
         display: flex;
+        margin-bottom: 20px;
+
+        .link-btn {
+            height: 40px;
+            width: 50%;
+            background-color: $button-color;
+            outline: none;
+            border: none;
+            color: whitesmoke;
+            border-radius: 7px;
+            box-shadow: 0px 0px 2px 1px #080808;
+            font-size: 14px;
+            font-weight: 500;
+
+            &:first-of-type {
+                margin-right: 10px;
+            }
+
+            &:hover {
+                cursor: pointer;
+                background-color: $button-hover-color;
+            }
+        }
+    }
+
+    .preview {
+        display: grid;
+        grid-template:
+            "preview title"
+            "preview details"
+            "preview clear";
+        grid-template-columns: min-content 1fr;
+        grid-template-rows: 40px 20px 20px;
         margin-bottom: 10px;
+        font-size: 14px;
 
-        input {
-            &::placeholder {
-                color: grey;
+        .video-preview {
+            grid-area: preview;
+            position: relative;
+
+            img {
+                width: 142px;
+                max-height: 100%;
+                border-radius: 3px;
+
+                .views {
+                    width: 50px;
+                    height: 20px;
+                }
             }
 
-            &:disabled {
-                pointer-events: none;
-                opacity: 0.3;
+            .duration {
+                position: absolute;
+                bottom: 5px;
+                right: 3px;
+                border-radius: 3px;
+                padding: 0 3px;
+                background-color: rgba(0, 0, 0, 0.8);
             }
         }
 
-        button {
-            width: 60px;
+        .title {
+            grid-area: title;
+            white-space: wrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-left: 8px;
         }
-    }
 
-    .invite {
-        height: 35px;
-        display: flex;
-    }
+        .details {
+            grid-area: details;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-left: 8px;
+            font-size: 12px;
+            color: #6f6f6f;
+        }
 
-    input[type="text"] {
-        min-width: 0;
-        height: 100%;
-        flex: 1;
-        padding: 0 10px;
-        margin-right: 10px;
-        outline: none;
-        border: none;
-        border-radius: 3px;
-        color: whitesmoke;
-        box-sizing: border-box;
-        border: 2px solid $button-color;
-        background-color: $button-color;
-    }
+        .clear {
+            grid-area: clear;
 
-    .link-btn {
-        height: 100%;
-        background-color: $button-color;
-        padding: 0 10px;
-        outline: none;
-        border: none;
-        color: whitesmoke;
-        border-radius: 3px;
+            button {
+                height: 100%;
+                width: 100px;
+                background-color: $button-color;
+                outline: none;
+                border: none;
+                color: whitesmoke;
+                border-radius: 3px;
+                margin-left: 8px;
+                box-shadow: 0px 0px 2px 1px #080808;
 
-        &:hover {
-            cursor: pointer;
-            background-color: $button-hover-color;
+                &:hover {
+                    cursor: pointer;
+                    background-color: $button-hover-color;
+                }
+            }
         }
     }
 }
@@ -121,6 +169,7 @@ $button-hover-color: #46464a;
         padding: 3px 8px;
         background-color: $button-color;
         border-radius: 7px;
+        box-shadow: 0px 0px 2px 1px #080808;
 
         p {
             margin: 0;

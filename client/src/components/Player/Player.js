@@ -31,7 +31,7 @@ class YTPlayer extends React.Component {
         new window.YT.Player(this.player, {
             height: "100%",
             width: "100%",
-            videoId: url,
+            videoId: url.id,
             events: {
                 onReady: onPlayerReady,
                 onStateChange: onPlayerStateChange,

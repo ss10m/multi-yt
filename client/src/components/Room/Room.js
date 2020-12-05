@@ -52,14 +52,11 @@ const Body = (props) => {
     if (props.searchView) return <SearchVideos playVideo={props.playVideo} />;
     return (
         <div className="room-body">
-            <button onClick={props.toggleSearchView}>SEARCH</button>
-            <Links
-                url={props.url}
+            <Navigation
+                video={props.video.url}
                 inviteUrl={props.inviteUrl}
-                video={props.video}
-                loadVideo={props.loadVideo}
+                toggleSearchView={props.toggleSearchView}
                 removeVideo={props.removeVideo}
-                handleInput={props.handleInput}
             />
             <PlayerStatus users={props.room.users} url={props.video.url} />
             <Controls {...props} />
@@ -67,50 +64,35 @@ const Body = (props) => {
     );
 };
 
-const Links = ({ url, inviteUrl, video, loadVideo, removeVideo, handleInput }) => {
-    let isVideoLoaded = !isEmpty(video);
-    let loadVideoBtn;
-    if (isVideoLoaded) {
-        loadVideoBtn = {
-            onClick: removeVideo,
-            content: "CLEAR",
-        };
-    } else {
-        loadVideoBtn = {
-            onClick: loadVideo,
-            content: "PLAY",
-        };
-    }
-
+const Navigation = ({ video, inviteUrl, toggleSearchView, removeVideo }) => {
     return (
-        <div className="room-links">
-            <div className="url-link">
-                <input
-                    type={"text"}
-                    value={isVideoLoaded ? video.url : url}
-                    placeholder={"Youtube URL"}
-                    onChange={handleInput}
-                    spellCheck={false}
-                    autoFocus={false}
-                    disabled={isVideoLoaded}
-                />
-                <button className="link-btn" onClick={loadVideoBtn.onClick}>
-                    {loadVideoBtn.content}
+        <div className="video-details">
+            <div className="room-links">
+                <button className="link-btn" onClick={toggleSearchView}>
+                    SEARCH VIDEOS
                 </button>
-            </div>
-            <div className="invite">
-                <input
-                    type={"text"}
-                    value={inviteUrl}
-                    placeholder={"Invite"}
-                    spellCheck={false}
-                    autoFocus={false}
-                    readOnly={true}
-                    onFocus={(event) => event.target.select()}
-                />
                 <CopyToClipboard text={inviteUrl}>
                     <button className="link-btn">COPY INVITE LINK</button>
                 </CopyToClipboard>
+            </div>
+            {!isEmpty(video) && <Preview video={video} removeVideo={removeVideo} />}
+        </div>
+    );
+};
+
+const Preview = ({ video, removeVideo }) => {
+    return (
+        <div className="preview">
+            <div className="video-preview">
+                <img src={video.thumbnail} alt="preview" />
+                <div className="duration">{video.duration}</div>
+            </div>
+            <div className="title">{video.title}</div>
+            <div className="details">
+                {`${video.viewCount} views`} &sdot; {`${video.publishedAt}`}
+            </div>
+            <div className="clear">
+                <button onClick={removeVideo}>CLEAR</button>
             </div>
         </div>
     );

@@ -76,7 +76,7 @@ function SearchResults({ isFetching, searchResults, playVideo }) {
 
 function SearchResult({ result, playVideo }) {
     return (
-        <div className="result" onClick={() => playVideo(result.id)}>
+        <div className="result" onClick={() => playVideo(result)}>
             <div className="preview">
                 <img src={result.thumbnail} alt="preview" />
                 <div className="duration">{result.duration}</div>

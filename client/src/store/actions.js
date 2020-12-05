@@ -51,6 +51,8 @@ export const connectSocket = (id) => async (dispatch, getState) => {
     });
 
     socket.on("load-video", (video) => {
+        dispatch(clearPlayer());
+        dispatch(clearVideo());
         dispatch(setVideo(video));
     });
 

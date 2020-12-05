@@ -18,7 +18,6 @@ class RoomContainer extends React.Component {
         super(props);
         this.state = {
             searchView: false,
-            url: "",
             timePlayed: 0,
             totalTime: 0,
             volume: VOLUME.MUTED,
@@ -48,7 +47,7 @@ class RoomContainer extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (!isEmpty(prevProps.player) && isEmpty(this.props.player)) {
-            this.setState({ url: "", timePlayed: 0, totalTime: 0, volume: VOLUME.MUTED });
+            this.setState({ timePlayed: 0, totalTime: 0, volume: VOLUME.MUTED });
         }
     }
 
@@ -89,28 +88,12 @@ class RoomContainer extends React.Component {
         this.props.updateVideo(action);
     };
 
-    handleInput = (event) => {
-        this.setState({ url: event.target.value });
-    };
-
-    loadVideo = () => {
-        let url = this.state.url;
-        if (!url) return;
-        let idRegEx = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|\?v=)([^#&?]*).*/;
-        let match = url.match(idRegEx);
-        if (match && match[2]) {
-            this.props.loadVideo(match[2]);
-            this.setState({ url: "" });
-        }
-    };
-
-    playVideo = (videoId) => {
+    playVideo = (video) => {
         this.setState({ searchView: false });
-        this.props.loadVideo(videoId);
+        this.props.loadVideo(video);
     };
 
     removeVideo = () => {
-        this.setState({ url: "" });
         this.props.removeVideo();
     };
 
@@ -171,7 +154,7 @@ class RoomContainer extends React.Component {
 
     render() {
         let { room, video, player, leaveRoom } = this.props;
-        let { searchView, url, volume, timePlayed, totalTime } = this.state;
+        let { searchView, volume, timePlayed, totalTime } = this.state;
 
         let inviteUrl = window.location.href + "invite/" + room.id;
         let playedTimer = this.parseTimer(Math.floor(timePlayed));
@@ -184,7 +167,6 @@ class RoomContainer extends React.Component {
                 room={room}
                 video={video}
                 volume={volume}
-                url={url}
                 searchView={searchView}
                 toggleSearchView={this.toggleSearchView}
                 inviteUrl={inviteUrl}
@@ -195,10 +177,8 @@ class RoomContainer extends React.Component {
                 leaveRoom={leaveRoom}
                 isPlaying={video.isPlaying}
                 controlsDisabled={!player.embed}
-                loadVideo={this.loadVideo}
                 playVideo={this.playVideo}
                 removeVideo={this.removeVideo}
-                handleInput={this.handleInput}
                 handleVolume={this.handleVolume}
                 handleControls={this.handleControls}
                 handleSeek={this.handleSeek}
