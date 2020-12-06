@@ -76,7 +76,7 @@ $button-hover-color: #46464a;
         font-weight: 500;
         color: whitesmoke;
         background-color: $button-color;
-        border: 1px solid $button-border-color;
+        box-shadow: 0px 0px 2px 1px #080808;
 
         &:hover {
             cursor: pointer;
@@ -93,7 +93,7 @@ $button-hover-color: #46464a;
         font-size: 30px;
         color: whitesmoke;
         background-color: $button-color;
-        border: 1px solid $button-border-color;
+        box-shadow: 0px 0px 2px 1px #080808;
 
         &.refresh-btn-disabled {
             opacity: 0.7;

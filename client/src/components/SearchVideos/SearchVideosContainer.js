@@ -6,13 +6,7 @@ import { debounce } from "lodash";
 import SearchVideos from "./SearchVideos";
 
 // Helpers
-import {
-    parseResponse,
-    dateDifference,
-    roundedToFixed,
-    parseTitle,
-    parseDuration,
-} from "helpers";
+import { parseResponse, timeSince, roundedToFixed, parseTitle, parseDuration } from "helpers";
 
 class SearchVideosContainer extends React.Component {
     constructor(props) {
@@ -57,12 +51,13 @@ class SearchVideosContainer extends React.Component {
     };
 
     cacheImages = (videos) => {
+        if (!videos.length) return this.setState({ searchResults: [], isFetching: false });
         const totalImages = videos.length;
         let cachedImages = 0;
 
         videos.forEach((video) => {
             video.title = parseTitle(video.title);
-            video.publishedAt = dateDifference(new Date(video.publishedAt), new Date());
+            video.publishedAt = timeSince(new Date(video.publishedAt));
             video.viewCount = roundedToFixed(video.viewCount);
             video.duration = parseDuration(video.duration);
 
