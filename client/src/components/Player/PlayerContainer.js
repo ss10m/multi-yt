@@ -65,6 +65,12 @@ class PlayerContainer extends React.Component {
     };
 
     onPlayerReady = (event) => {
+        const videoData = event.target.getVideoData();
+        const current = this.props.video.url;
+        current["title"] = videoData.title;
+        current["duration"] = event.target.getDuration();
+        current["thumbnail"] = `http://img.youtube.com/vi/${current.id}/0.jpg`;
+
         this.props.setPlayer(event.target);
         event.target.mute();
         event.target.playVideo();

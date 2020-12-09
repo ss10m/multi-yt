@@ -26,22 +26,45 @@ $button-hover-color: #46464a;
     height: 50px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    position: relative;
+    justify-content: space-between;
     padding: 0 10px;
     background-color: $header-color;
     box-shadow: 0px 2px 3px black;
     font-weight: 600;
 
     .header-icon {
-        position: absolute;
-        left: 10px;
         padding: 5px;
         border-radius: 7px;
 
         &:hover {
             cursor: pointer;
             background-color: #26262b;
+        }
+    }
+
+    .back-btn {
+        flex: 1;
+        display: flex;
+    }
+
+    .id-btn {
+        flex: 1;
+        height: 25px;
+
+        button {
+            height: 25px;
+            float: right;
+            background-color: $button-color;
+            outline: none;
+            border: none;
+            color: whitesmoke;
+            border-radius: 3px;
+            padding: 0 10px;
+
+            &:hover {
+                cursor: pointer;
+                background-color: $button-hover-color;
+            }
         }
     }
 }

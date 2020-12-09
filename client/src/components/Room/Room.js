@@ -38,12 +38,17 @@ export default (props) => {
 const Header = (props) => {
     return (
         <div className="room-header">
-            <IconContext.Provider value={{ size: "20px", className: "header-icon" }}>
-                <FaArrowLeft
-                    onClick={props.searchView ? props.toggleSearchView : props.leaveRoom}
-                />
-            </IconContext.Provider>
+            <div className="back-btn">
+                <IconContext.Provider value={{ size: "20px", className: "header-icon" }}>
+                    <FaArrowLeft
+                        onClick={props.searchView ? props.toggleSearchView : props.leaveRoom}
+                    />
+                </IconContext.Provider>
+            </div>
             <p>{props.room.name}</p>
+            <div className="id-btn">
+                <button>ENTER URL</button>
+            </div>
         </div>
     );
 };
@@ -88,9 +93,11 @@ const Preview = ({ video, removeVideo }) => {
                 <div className="duration">{video.duration}</div>
             </div>
             <div className="title">{video.title}</div>
-            <div className="details">
-                {`${video.viewCount} views`} &sdot; {`${video.publishedAt}`}
-            </div>
+            {video.viewCount && (
+                <div className="details">
+                    {`${video.viewCount} views`} &sdot; {`${video.publishedAt}`}
+                </div>
+            )}
             <div className="clear">
                 <button onClick={removeVideo}>CLEAR</button>
             </div>

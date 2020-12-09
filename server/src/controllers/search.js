@@ -17,7 +17,7 @@ const fetchVideos = async (query) => {
             url: `https://www.googleapis.com/youtube/v3/search`,
             params: {
                 part: "snippet",
-                maxResults: 20,
+                maxResults: 10,
                 type: "video",
                 q: query,
                 key: API_KEY,
