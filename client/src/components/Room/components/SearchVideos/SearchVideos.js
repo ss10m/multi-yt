@@ -7,7 +7,7 @@ import { FiSearch } from "react-icons/fi";
 import { FaTimes } from "react-icons/fa";
 
 // Componenets
-import Spinner from "../Spinner/Spinner";
+import Spinner from "components/Spinner/Spinner";
 
 // SCSS
 import "./SearchVideos.scss";

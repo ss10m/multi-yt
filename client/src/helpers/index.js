@@ -23,6 +23,13 @@ const VOLUME = {
     FULL: 3,
 };
 
+// Room Views
+const ROOM_VIEW = {
+    MAIN: "MAIN",
+    SEARCH: "SEARCH",
+    URL: "URL",
+};
+
 const isEmpty = (obj) => {
     return !obj || Object.keys(obj).length === 0;
 };
@@ -49,7 +56,8 @@ const parseTitle = (title) => {
         .replace(/&amp;/g, "&‎‎‎")
         .replace(/&apos;/g, "‏‏‎'")
         .replace(/&gt;/g, '>‏‎"‎‎')
-        .replace(/&lt;/g, '<"‎‎');
+        .replace(/&lt;/g, '<"‎‎')
+        .replace(/&#39;/g, "'");
 };
 
 const parseDuration = (duration) => {
@@ -70,6 +78,7 @@ export {
     PLAYER_STATE,
     PLAYER_ACTION,
     VOLUME,
+    ROOM_VIEW,
     isEmpty,
     parseResponse,
     timeSince,

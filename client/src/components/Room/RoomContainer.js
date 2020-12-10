@@ -11,13 +11,13 @@ import { leaveRoom, loadVideo, removeVideo, updateVideo } from "store/actions";
 import Room from "./Room";
 
 // Constants
-import { PLAYER_ACTION, VOLUME, isEmpty } from "helpers";
+import { PLAYER_ACTION, VOLUME, ROOM_VIEW, isEmpty } from "helpers";
 
 class RoomContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            searchView: false,
+            view: ROOM_VIEW.MAIN,
             timePlayed: 0,
             totalTime: 0,
             volume: VOLUME.MUTED,
@@ -39,12 +39,6 @@ class RoomContainer extends React.Component {
                 this.setState({ totalTime });
             }
         }, 1000);
-
-        /*
-        setTimeout(() => {
-            this.playVideo({ id: "M5IfCdJq_ow" });
-        }, 2000);
-        */
     }
 
     componentWillUnmount() {
@@ -57,8 +51,21 @@ class RoomContainer extends React.Component {
         }
     }
 
-    toggleSearchView = () => {
-        this.setState((prevState) => ({ searchView: !prevState.searchView }));
+    switchView = (view) => {
+        if (view) this.setState({ view });
+    };
+
+    handleBackPress = () => {
+        switch (this.state.view) {
+            case ROOM_VIEW.MAIN:
+                return this.props.leaveRoom();
+            case ROOM_VIEW.SEARCH:
+                return this.setState({ view: ROOM_VIEW.MAIN });
+            case ROOM_VIEW.URL:
+                return this.setState({ view: ROOM_VIEW.SEARCH });
+            default:
+                break;
+        }
     };
 
     handleControls = (action) => {
@@ -95,7 +102,7 @@ class RoomContainer extends React.Component {
     };
 
     playVideo = (video) => {
-        this.setState({ searchView: false });
+        this.setState({ view: ROOM_VIEW.MAIN });
         this.props.loadVideo(video);
     };
 
@@ -159,8 +166,8 @@ class RoomContainer extends React.Component {
     };
 
     render() {
-        let { room, video, player, leaveRoom } = this.props;
-        let { searchView, volume, timePlayed, totalTime } = this.state;
+        let { room, video, player } = this.props;
+        let { view, volume, timePlayed, totalTime } = this.state;
 
         let inviteUrl = window.location.href + "invite/" + room.id;
         let playedTimer = this.parseTimer(Math.floor(timePlayed));
@@ -173,14 +180,14 @@ class RoomContainer extends React.Component {
                 room={room}
                 video={video}
                 volume={volume}
-                searchView={searchView}
-                toggleSearchView={this.toggleSearchView}
+                view={view}
+                switchView={this.switchView}
+                handleBackPress={this.handleBackPress}
                 inviteUrl={inviteUrl}
                 playedTimer={playedTimer}
                 totalTimer={totalTimer}
                 playedtime={isDisabled ? 0 : timePlayed}
                 totalTime={isDisabled ? 1 : Math.floor(player.embed.getDuration())}
-                leaveRoom={leaveRoom}
                 isPlaying={video.isPlaying}
                 controlsDisabled={!player.embed}
                 playVideo={this.playVideo}

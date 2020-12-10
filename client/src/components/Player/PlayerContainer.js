@@ -12,7 +12,7 @@ import Player from "./Player";
 import { PLAYER_STATE } from "helpers";
 
 // Helpers
-import { isEmpty } from "helpers";
+import { parseDuration, isEmpty } from "helpers";
 
 class PlayerContainer extends React.Component {
     constructor(props) {
@@ -65,11 +65,19 @@ class PlayerContainer extends React.Component {
     };
 
     onPlayerReady = (event) => {
+        const { video } = this.props;
         const videoData = event.target.getVideoData();
-        const current = this.props.video.url;
-        current["title"] = videoData.title;
-        current["duration"] = event.target.getDuration();
-        current["thumbnail"] = `http://img.youtube.com/vi/${current.id}/0.jpg`;
+        const current = video.url;
+
+        if (!videoData.title && !current.title) {
+            current["title"] = "Video unavailable";
+        } else if (!current.title) {
+            current["title"] = videoData.title;
+            current["duration"] = parseDuration(event.target.getDuration() * 1000);
+            current["thumbnail"] = `http://img.youtube.com/vi/${current.id}/0.jpg`;
+        } else {
+            current["title"] = videoData.title;
+        }
 
         this.props.setPlayer(event.target);
         event.target.mute();

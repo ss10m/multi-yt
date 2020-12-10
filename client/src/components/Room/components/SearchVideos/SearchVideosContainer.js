@@ -6,7 +6,7 @@ import { debounce } from "lodash";
 import SearchVideos from "./SearchVideos";
 
 // Helpers
-import { parseResponse, timeSince, roundedToFixed, parseTitle, parseDuration } from "helpers";
+import { parseResponse, timeSince, roundedToFixed, parseDuration } from "helpers";
 
 class SearchVideosContainer extends React.Component {
     constructor(props) {
@@ -56,7 +56,6 @@ class SearchVideosContainer extends React.Component {
         let cachedImages = 0;
 
         videos.forEach((video) => {
-            video.title = parseTitle(video.title);
             video.publishedAt = timeSince(new Date(video.publishedAt));
             video.viewCount = roundedToFixed(video.viewCount);
             video.duration = parseDuration(video.duration);

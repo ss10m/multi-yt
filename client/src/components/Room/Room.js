@@ -5,7 +5,8 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 
 // Components
 import Spinner from "../Spinner/Spinner";
-import SearchVideos from "../SearchVideos/SearchVideosContainer";
+import SearchVideos from "./components/SearchVideos/SearchVideosContainer";
+import FindById from "./components/FindById/FindByIdContainer";
 
 // SCSS
 import "./Room.scss";
@@ -22,9 +23,10 @@ import {
     FaArrowLeft,
 } from "react-icons/fa";
 import { MdReplay10, MdReplay30, MdForward10, MdForward30 } from "react-icons/md";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 // Other
-import { PLAYER_ACTION, VOLUME, isEmpty } from "helpers";
+import { PLAYER_ACTION, VOLUME, isEmpty, ROOM_VIEW } from "helpers";
 
 export default (props) => {
     return (
@@ -40,27 +42,28 @@ const Header = (props) => {
         <div className="room-header">
             <div className="back-btn">
                 <IconContext.Provider value={{ size: "20px", className: "header-icon" }}>
-                    <FaArrowLeft
-                        onClick={props.searchView ? props.toggleSearchView : props.leaveRoom}
-                    />
+                    <FaArrowLeft onClick={props.handleBackPress} />
                 </IconContext.Provider>
             </div>
             <p>{props.room.name}</p>
             <div className="id-btn">
-                <button>ENTER URL</button>
+                {props.view === ROOM_VIEW.SEARCH && (
+                    <button onClick={() => props.switchView(ROOM_VIEW.URL)}>ENTER URL</button>
+                )}
             </div>
         </div>
     );
 };
 
 const Body = (props) => {
-    if (props.searchView) return <SearchVideos playVideo={props.playVideo} />;
+    if (props.view === ROOM_VIEW.SEARCH) return <SearchVideos playVideo={props.playVideo} />;
+    if (props.view === ROOM_VIEW.URL) return <FindById playVideo={props.playVideo} />;
     return (
         <div className="room-body">
             <Navigation
                 video={props.video.url}
                 inviteUrl={props.inviteUrl}
-                toggleSearchView={props.toggleSearchView}
+                switchView={props.switchView}
                 removeVideo={props.removeVideo}
             />
             <PlayerStatus users={props.room.users} url={props.video.url} />
@@ -69,11 +72,11 @@ const Body = (props) => {
     );
 };
 
-const Navigation = ({ video, inviteUrl, toggleSearchView, removeVideo }) => {
+const Navigation = ({ video, inviteUrl, switchView, removeVideo }) => {
     return (
         <div className="video-details">
             <div className="room-links">
-                <button className="link-btn" onClick={toggleSearchView}>
+                <button className="link-btn" onClick={() => switchView(ROOM_VIEW.SEARCH)}>
                     SEARCH VIDEOS
                 </button>
                 <CopyToClipboard text={inviteUrl}>
@@ -86,12 +89,27 @@ const Navigation = ({ video, inviteUrl, toggleSearchView, removeVideo }) => {
 };
 
 const Preview = ({ video, removeVideo }) => {
-    return (
-        <div className="preview">
-            <div className="video-preview">
+    console.log(video);
+    let preview;
+    if (video.title && video.thumbnail) {
+        preview = (
+            <>
                 <img src={video.thumbnail} alt="preview" />
                 <div className="duration">{video.duration}</div>
+            </>
+        );
+    } else if (video.title) {
+        preview = (
+            <div className="no-video">
+                <AiOutlineExclamationCircle />
             </div>
+        );
+    } else {
+        return null;
+    }
+    return (
+        <div className="preview">
+            <div className="video-preview">{preview}</div>
             <div className="title">{video.title}</div>
             {video.viewCount && (
                 <div className="details">
