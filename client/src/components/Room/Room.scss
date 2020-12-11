@@ -1,6 +1,6 @@
 $header-color: #0e0e10;
 $button-color: #3a3a3d;
-$button-hover-color: #46464a;
+$button-hover-color: #343436;
 
 .room {
     min-height: 400px;
@@ -58,6 +58,7 @@ $button-hover-color: #46464a;
             outline: none;
             border: none;
             color: whitesmoke;
+            box-shadow: 0px 0px 2px 1px #080808;
             border-radius: 3px;
             padding: 0 10px;
 
