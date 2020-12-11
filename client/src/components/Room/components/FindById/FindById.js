@@ -1,6 +1,9 @@
 // Libraries & utils
 import React, { useState } from "react";
 
+// SCSS
+import "./FindById.scss";
+
 export default ({ playVideo }) => {
     const [url, setUrl] = useState("");
 
@@ -17,10 +20,15 @@ export default ({ playVideo }) => {
     };
 
     return (
-        <>
-            <div>ENTER YOUTUBE URL OR VIDEO ID</div>
-            <input value={url} onChange={onChange} autoFocus />
+        <div className="findById">
+            <textarea
+                value={url}
+                onChange={onChange}
+                placeholder="ENTER YOUTUBE URL OR VIDEO ID"
+                spellCheck={false}
+                autoFocus
+            />
             <button onClick={onClick}>PLAY</button>
-        </>
+        </div>
     );
 };

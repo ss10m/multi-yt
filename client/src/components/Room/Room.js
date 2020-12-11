@@ -6,7 +6,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 // Components
 import Spinner from "../Spinner/Spinner";
 import SearchVideos from "./components/SearchVideos/SearchVideosContainer";
-import FindById from "./components/FindById/FindByIdContainer";
+import FindById from "./components/FindById/FindById";
 
 // SCSS
 import "./Room.scss";

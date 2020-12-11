@@ -1,0 +1,35 @@
+.findById {
+    margin: 15px 10px;
+
+    textarea {
+        height: 135px;
+        width: 100%;
+        padding: 10px;
+        overflow: hidden;
+        box-sizing: border-box;
+        outline: none;
+        border: none;
+        border-left: none;
+        font-size: 20px;
+        border-radius: 7px;
+        color: whitesmoke;
+        resize: none;
+        background-color: #3a3a3d;
+    }
+
+    button {
+        height: 50px;
+        width: 100%;
+        background-color: #272727;
+        outline: none;
+        border: none;
+        color: whitesmoke;
+        border-radius: 7px;
+        box-shadow: 0px 0px 2px 1px #080808;
+
+        &:hover {
+            cursor: pointer;
+            background-color: #2a2a2a;
+        }
+    }
+}
