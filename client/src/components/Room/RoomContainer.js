@@ -41,18 +41,23 @@ class RoomContainer extends React.Component {
         }, 1000);
     }
 
-    componentWillUnmount() {
-        clearInterval(this.timePlayed);
-    }
-
     componentDidUpdate(prevProps) {
         if (!isEmpty(prevProps.player) && isEmpty(this.props.player)) {
             this.setState({ timePlayed: 0, totalTime: 0, volume: VOLUME.MUTED });
         }
     }
 
+    componentWillUnmount() {
+        clearInterval(this.timePlayed);
+    }
+
     switchView = (view) => {
         if (view) this.setState({ view });
+    };
+
+    copyInviteLink = () => {
+        const inviteUrl = window.location.href + "invite/" + this.props.room.id;
+        navigator.clipboard.writeText(inviteUrl);
     };
 
     handleBackPress = () => {
@@ -169,10 +174,8 @@ class RoomContainer extends React.Component {
         let { room, video, player } = this.props;
         let { view, volume, timePlayed, totalTime } = this.state;
 
-        let inviteUrl = window.location.href + "invite/" + room.id;
         let playedTimer = this.parseTimer(Math.floor(timePlayed));
         let totalTimer = this.parseTimer(Math.floor(totalTime));
-
         let isDisabled = !player.embed;
 
         return (
@@ -183,7 +186,7 @@ class RoomContainer extends React.Component {
                 view={view}
                 switchView={this.switchView}
                 handleBackPress={this.handleBackPress}
-                inviteUrl={inviteUrl}
+                copyInviteLink={this.copyInviteLink}
                 playedTimer={playedTimer}
                 totalTimer={totalTimer}
                 playedtime={isDisabled ? 0 : timePlayed}

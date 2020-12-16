@@ -1,7 +1,6 @@
 // Libraries & utils
 import React from "react";
 import classNames from "classnames";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 
 // Components
 import Spinner from "../Spinner/Spinner";
@@ -62,7 +61,7 @@ const Body = (props) => {
         <div className="room-body">
             <Navigation
                 video={props.video.url}
-                inviteUrl={props.inviteUrl}
+                copyInviteLink={props.copyInviteLink}
                 switchView={props.switchView}
                 removeVideo={props.removeVideo}
             />
@@ -72,16 +71,16 @@ const Body = (props) => {
     );
 };
 
-const Navigation = ({ video, inviteUrl, switchView, removeVideo }) => {
+const Navigation = ({ video, copyInviteLink, switchView, removeVideo }) => {
     return (
         <div className="video-details">
             <div className="room-links">
                 <button className="link-btn" onClick={() => switchView(ROOM_VIEW.SEARCH)}>
                     SEARCH VIDEOS
                 </button>
-                <CopyToClipboard text={inviteUrl}>
-                    <button className="link-btn">COPY INVITE LINK</button>
-                </CopyToClipboard>
+                <button className="link-btn" onClick={copyInviteLink}>
+                    COPY INVITE LINK
+                </button>
             </div>
             {!isEmpty(video) && <Preview video={video} removeVideo={removeVideo} />}
         </div>
@@ -89,7 +88,6 @@ const Navigation = ({ video, inviteUrl, switchView, removeVideo }) => {
 };
 
 const Preview = ({ video, removeVideo }) => {
-    console.log(video);
     let preview;
     if (video.title && video.thumbnail) {
         preview = (
