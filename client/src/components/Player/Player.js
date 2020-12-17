@@ -55,7 +55,7 @@ class YTPlayer extends React.Component {
         return (
             <div>
                 <div
-                    style={{ position: "absolute" }}
+                    style={{ position: "absolute", pointerEvents: "none" }}
                     ref={(ref) => {
                         this.player = ref;
                     }}

@@ -1,5 +1,5 @@
 .player {
-    background: black;
+    background-color: black;
 
     .icon {
         position: absolute;
@@ -15,7 +15,6 @@
 
     .player-overlay {
         position: absolute;
-        z-index: 1;
         width: 100%;
         height: 100%;
     }
