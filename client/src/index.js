@@ -13,6 +13,8 @@ import reducers from "./store/reducers.js";
 // Components
 import App from "components/App/AppContainer";
 
+import "animate.min.css";
+
 const store = createStore(reducers, applyMiddleware(thunk));
 
 ReactDOM.render(

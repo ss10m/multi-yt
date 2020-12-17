@@ -1,3 +1,6 @@
+// Libraries & utils
+import { nanoid } from "nanoid";
+
 // Redux
 import { combineReducers } from "redux";
 
@@ -102,6 +105,20 @@ const playerReducer = (state = {}, action) => {
     }
 };
 
+const ADD_NOTIFICATION = "ADD_NOTIFICATION";
+const REMOVE_NOTIFICATION = "REMOVE_NOTIFICATION";
+const notificationsReducer = (state = [], action) => {
+    switch (action.type) {
+        case ADD_NOTIFICATION:
+            let notification = { id: nanoid(7), ...action.notification };
+            return [notification, ...state];
+        case REMOVE_NOTIFICATION:
+            return state.filter((notification) => notification.id !== action.id);
+        default:
+            return state;
+    }
+};
+
 export default combineReducers({
     username: usernameReducer,
     error: errorReducer,
@@ -111,4 +128,5 @@ export default combineReducers({
     messages: messagesReducer,
     video: videoReducer,
     player: playerReducer,
+    notifications: notificationsReducer,
 });

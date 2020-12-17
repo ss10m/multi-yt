@@ -230,3 +230,16 @@ export const setPlayer = (embed) => ({
 export const clearPlayer = () => ({
     type: "CLEAR_PLAYER",
 });
+
+//=====================================
+//        NOTIFICATION ACTIONS
+//=====================================
+export const addNotification = (notification) => ({
+    type: "ADD_NOTIFICATION",
+    notification,
+});
+
+export const removeNotification = (id) => ({
+    type: "REMOVE_NOTIFICATION",
+    id,
+});

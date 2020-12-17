@@ -5,7 +5,13 @@ import { sprintf } from "sprintf-js";
 
 // Redux
 import { connect } from "react-redux";
-import { leaveRoom, loadVideo, removeVideo, updateVideo } from "store/actions";
+import {
+    leaveRoom,
+    loadVideo,
+    removeVideo,
+    updateVideo,
+    addNotification,
+} from "store/actions";
 
 // Components
 import Room from "./Room";
@@ -58,6 +64,12 @@ class RoomContainer extends React.Component {
     copyInviteLink = () => {
         const inviteUrl = window.location.href + "invite/" + this.props.room.id;
         navigator.clipboard.writeText(inviteUrl);
+        let notification = {
+            type: "success",
+            message: "Copied to clipboard",
+            duration: 3000,
+        };
+        this.props.addNotification(notification);
     };
 
     handleBackPress = () => {
@@ -223,6 +235,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     updateVideo: (state) => {
         dispatch(updateVideo(state));
+    },
+    addNotification: (notification) => {
+        dispatch(addNotification(notification));
     },
 });
 

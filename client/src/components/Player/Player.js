@@ -5,23 +5,29 @@ import React from "react";
 import { IconContext } from "react-icons";
 import { FaYoutube } from "react-icons/fa";
 
+import Notifications from "components/Notifications/NotificationsContainer";
+
 // SCSS
 import "./Player.scss";
 
 const Player = (props) => {
-    if (props.isVisible) {
-        return (
-            <YTPlayer
-                playerWidth={props.playerWidth}
-                playerHeight={props.playerHeight}
-                url={props.url}
-                onPlayerReady={props.onPlayerReady}
-                onPlayerStateChange={props.onPlayerStateChange}
-            />
-        );
-    } else {
-        return <Preview playerWidth={props.playerWidth} playerHeight={props.playerHeight} />;
-    }
+    return (
+        <div
+            className="player"
+            style={{ width: props.playerWidth, height: props.playerHeight }}
+        >
+            {props.isVisible ? (
+                <YTPlayer
+                    url={props.url}
+                    onPlayerReady={props.onPlayerReady}
+                    onPlayerStateChange={props.onPlayerStateChange}
+                />
+            ) : (
+                <Preview />
+            )}
+            <Notifications />
+        </div>
+    );
 };
 
 class YTPlayer extends React.Component {
@@ -46,9 +52,8 @@ class YTPlayer extends React.Component {
     }
 
     render() {
-        let { playerWidth, playerHeight } = this.props;
         return (
-            <div className="player" style={{ width: playerWidth, height: playerHeight }}>
+            <div>
                 <div
                     style={{ position: "absolute" }}
                     ref={(ref) => {
@@ -61,13 +66,11 @@ class YTPlayer extends React.Component {
     }
 }
 
-const Preview = ({ playerWidth, playerHeight }) => {
+const Preview = () => {
     return (
-        <div className="player" style={{ width: playerWidth, height: playerHeight }}>
-            <IconContext.Provider value={{ className: "icon" }}>
-                <FaYoutube />
-            </IconContext.Provider>
-        </div>
+        <IconContext.Provider value={{ className: "icon" }}>
+            <FaYoutube />
+        </IconContext.Provider>
     );
 };
 
